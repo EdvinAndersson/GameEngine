@@ -1,0 +1,52 @@
+{
+    "tasks": [
+        {
+            "type": "cppbuild",
+            "label": "BuildCore",
+            "command": "build.bat",
+            "args": [],
+            "options": {
+                "cwd": "${workspaceFolder}/Core"
+            },
+            "problemMatcher": [
+                "$msCompile"
+            ],
+            "group": {
+                "kind": "build"
+            },
+            "presentation": {
+                "echo": false,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": false,
+                "clear": true
+            }
+        },
+        {
+            "type": "cppbuild",
+            "label": "BuildEditor",
+            "command": "build.bat",
+            "args": [],
+            "options": {
+                "cwd": "${workspaceFolder}/Editor"
+            },
+            "problemMatcher": [
+                "$msCompile"
+            ],
+            "group": {
+                "kind": "build"
+            },
+            "presentation": {
+                "echo": false,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": false,
+                "clear": true
+            },
+            "dependsOn":["BuildCore"]
+        }
+    ],
+    "version": "2.0.0"
+}
