@@ -5,7 +5,7 @@
         "name": "C/C++: cl.exe build and debug active file",
         "type": "cppvsdbg",
         "request": "launch",
-        "program": "Editor/build/EngineEditor.exe",
+        "program": "Editor/build/CogwheelEditor.exe",
         "args": [],
         "stopAtEntry": false,
         "cwd": "${workspaceFolder}",

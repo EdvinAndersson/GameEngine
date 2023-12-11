@@ -7,7 +7,7 @@
 #include "Texture.h"
 #include "Model.h"
 
-namespace GL {
+namespace CW {
 
 	struct R3D_RenderObject {
 		unsigned int vao;
@@ -41,7 +41,7 @@ namespace GL {
 	void R3D_SetDirectionalLight(Vec3 direction, Vec3 ambient, Vec3 diffuse, Vec3 specular);
 	void R3D_SetPointLight(Vec3 position, Vec3 ambient, Vec3 diffuse, Vec3 specular, float constant, float linear, float quadratic);
 
-	GL::Model *R3D_GetDefaultCubeModel();
+	CW::Model *R3D_GetDefaultCubeModel();
 	void R3D_UseShader(Shader *shader);
 	void R3D_UseDefaultShader();
 	void R3D__ResizeCallback(int screen_width, int screen_height);

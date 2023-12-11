@@ -6,7 +6,7 @@
 #include <fstream>
 #include <string>
 
-namespace GL {
+namespace CW {
 
 	struct Shader {
 		unsigned int id;

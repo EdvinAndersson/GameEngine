@@ -4,27 +4,22 @@
 #include <stdio.h>
 #include <string.h>
 
-namespace GL {
+namespace CW {
 
-    void BindMeshTextures(Mesh *mesh, Shader *shader);
+    Mesh::Mesh(Vertex *vertices, unsigned int *indices, Texture *textures, unsigned int vertex_count, unsigned int index_count, unsigned int texture_count)
+        :vertices(vertices), indices(indices), textures(textures), vertex_count(vertex_count), index_count(index_count), texture_count(texture_count) {
 
-    Mesh CreateMesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture> textures) {
-        Mesh mesh;
-        mesh.vertices = vertices;
-        mesh.indices = indices;
-        mesh.textures = textures;
+        glGenVertexArrays(1, &VAO);
+        glGenBuffers(1, &VBO);
+        glGenBuffers(1, &EBO);
 
-        glGenVertexArrays(1, &mesh.VAO);
-        glGenBuffers(1, &mesh.VBO);
-        glGenBuffers(1, &mesh.EBO);
+        glBindVertexArray(VAO);
+        glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
-        glBindVertexArray(mesh.VAO);
-        glBindBuffer(GL_ARRAY_BUFFER, mesh.VBO);
+        glBufferData(GL_ARRAY_BUFFER, vertex_count * sizeof(Vertex), &vertices[0], GL_STATIC_DRAW);
 
-        glBufferData(GL_ARRAY_BUFFER, mesh.vertices.size() * sizeof(Vertex), &mesh.vertices[0], GL_STATIC_DRAW);
-
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.EBO);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh.indices.size() * sizeof(unsigned int), &mesh.indices[0], GL_STATIC_DRAW);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, index_count * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
 
         // vertex positions
         glEnableVertexAttribArray(0);
@@ -40,11 +35,9 @@ namespace GL {
         glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, tangent));
 
         glBindVertexArray(0);
-
-        return mesh;
     }
-    void _MakeInstanced(Mesh *mesh) {
-        glBindVertexArray(mesh->VAO);
+    void Mesh::MakeInstanced() {
+        glBindVertexArray(VAO);
 
         glEnableVertexAttribArray(3);
         glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(Vec4), (void *)0);
@@ -65,31 +58,31 @@ namespace GL {
 
         glBindVertexArray(0);
     }
-    void DrawMesh(Mesh *mesh, Shader *shader) {
-        BindMeshTextures(mesh, shader);
+    void Mesh::DrawMesh(Shader *shader) {
+        BindMeshTextures(shader);
 
-        glBindVertexArray(mesh->VAO);
-        glDrawElements(GL_TRIANGLES, (GLsizei) mesh->indices.size(), GL_UNSIGNED_INT, 0);
+        glBindVertexArray(VAO);
+        glDrawElements(GL_TRIANGLES, (GLsizei) index_count, GL_UNSIGNED_INT, 0);
         glBindVertexArray(0);
     }
-    void DrawMeshInstanced(Mesh *mesh, Shader *shader, int instance_count) {
-        BindMeshTextures(mesh, shader);
+    void Mesh::DrawMeshInstanced(Shader *shader, int instance_count) {
+        BindMeshTextures(shader);
 
-        glBindVertexArray(mesh->VAO);
-        glDrawElementsInstanced(GL_TRIANGLES, (GLsizei)mesh->indices.size(), GL_UNSIGNED_INT, 0, instance_count);
+        glBindVertexArray(VAO);
+        glDrawElementsInstanced(GL_TRIANGLES, (GLsizei) index_count, GL_UNSIGNED_INT, 0, instance_count);
         glBindVertexArray(0);
     }
 
-    void BindMeshTextures(Mesh *mesh, Shader *shader) {
+    void Mesh::BindMeshTextures(Shader *shader) {
         unsigned int diffuseNr = 1;
         unsigned int specularNr = 1;
         unsigned int normalsNr = 1;
 
-        for (unsigned int i = 0; i < mesh->textures.size(); i++)
+        for (unsigned int i = 0; i < texture_count; i++)
         {
             char number[3] = { 0 };
 
-            const char *name = mesh->textures[i].type;
+            const char *name = textures[i].type;
             if (strcmp(name, "texture_diffuse"))
                 sprintf(number, "%i", diffuseNr++);
             else if (strcmp(name, "texture_specular"))
@@ -103,7 +96,7 @@ namespace GL {
             strcat(result, number);
 
             shader->SetInt(result, i);
-            mesh->textures[i].Use(i);
+            textures[i].Use(i);
         }
     }
 }

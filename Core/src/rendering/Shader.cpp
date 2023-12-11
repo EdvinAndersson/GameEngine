@@ -1,6 +1,6 @@
 #include "shader.h"
 
-namespace GL {
+namespace CW {
 
     std::string LoadShaderFromFile(const char *vSource);
 

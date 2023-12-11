@@ -2,7 +2,7 @@
 #include "Mesh.h"
 #include "Shader.h"
 
-namespace GL {
+namespace CW {
 
 	typedef struct {
 		std::vector<Mesh> meshes;

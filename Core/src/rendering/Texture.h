@@ -1,7 +1,7 @@
 #pragma once
 #include "../GLFunc.h"
 
-namespace GL {
+namespace CW {
 
 	enum Texture_Filter {
 		TEXTURE_LINEAR_MIPMAP,

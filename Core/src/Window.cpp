@@ -1,8 +1,5 @@
 #include "Window.h"
-#include <windowsx.h>
-#include <stdio.h>
-#include <GL/GL.h>
-#include "GLFunc.h"
+#include "event/EventManager.h"
 
 #pragma comment (lib, "opengl32.lib")
 
@@ -10,25 +7,17 @@
 #define X(proc, name) proc name;
 GLFUNCTIONS
 
-namespace GL {
+//TODO: ASK HAMPUS
+#include "../../Editor/src/vendor/imgui/imgui.h"
+extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
-	#define Assert(cond) do { if (!(cond)) __debugbreak(); } while (0)
-
-	static void FatalError(const char* message)
-	{
-		MessageBoxA(NULL, message, "Error", MB_ICONEXCLAMATION);
-		ExitProcess(0);
-	}
-
-	static PFNWGLCHOOSEPIXELFORMATARBPROC wglChoosePixelFormatARB = NULL;
-	static PFNWGLCREATECONTEXTATTRIBSARBPROC wglCreateContextAttribsARB = NULL;
-
-	static void GetWglFunctions(void);
+namespace CW {
 
 	Window *window_instance;
 
 	LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
-		if (window_instance->WindowCallback(uMsg, wParam, lParam) == 1) return 0;
+		if (ImGui_ImplWin32_WndProcHandler(hwnd, uMsg, wParam, lParam)) return true;
+		if (window_instance->WindowCallback(uMsg, wParam, lParam)) return true;
 
 		return DefWindowProc(hwnd, uMsg, wParam, lParam);
 	}
@@ -65,7 +54,7 @@ namespace GL {
 			NULL);
 
 		if (hwnd == NULL)
-			return 0;
+			return 1;
 
 
 		ShowWindow(hwnd, 1);
@@ -85,7 +74,7 @@ namespace GL {
 
 		EnableVSync(true);
 
-		return 1;
+		return 0;
 	}
 	void Window::Destroy() {
 		DestroyWindow(hwnd);
@@ -102,13 +91,14 @@ namespace GL {
 	void Window::WinSwapBuffers() {
 		SwapBuffers(hdc);
 	}
+
 	int Window::WindowCallback(UINT uMsg, WPARAM wParam, LPARAM lParam) {
 		switch (uMsg)
 		{
 			case WM_DESTROY:
 			{
-				if (onQuitCallback)
-					onQuitCallback();
+				EventManager::InvokeEvent(WINDOW_CLOSE, 0);
+
 				wglDeleteContext(renderingContext);
 				PostQuitMessage(0);
 				return 1;
@@ -118,14 +108,8 @@ namespace GL {
 				window_width = LOWORD(lParam);
 				window_height = HIWORD(lParam);
 
-				if (onResizeCallback)
-					onResizeCallback(window_width, window_height);
-
-				if (onResizeCallbackRenderer2D)
-					onResizeCallbackRenderer2D(window_width, window_height);
-
-				if (onResizeCallbackRenderer3D)
-					onResizeCallbackRenderer3D(window_width, window_height);
+				EventData_WINDOW_RESIZE e = {window_width, window_height};
+				EventManager::InvokeEvent(WINDOW_RESIZE, &e);
 
 				return 1;
 			}
@@ -133,19 +117,41 @@ namespace GL {
 			{
 				int scroll = GET_Y_LPARAM(wParam);
 
-				if (onScrollCallback)
-					onScrollCallback(scroll);
+				//if (onScrollCallback)
+				//	onScrollCallback(scroll);
+				
+				return 1;
 			}
 			case WM_MOUSEMOVE:
 			{
 				int new_mouse_position_x = GET_X_LPARAM(lParam);
 				int new_mouse_position_y = GET_Y_LPARAM(lParam);
 
-				if (onMouseCallback)
-					onMouseCallback(new_mouse_position_x, new_mouse_position_y);
+				//if (onMouseCallback)
+				//	onMouseCallback(new_mouse_position_x, new_mouse_position_y);
 
 				mouse_position_x = new_mouse_position_x;
 				mouse_position_y = new_mouse_position_y;
+
+				return 1;
+			}
+			case WM_KEYDOWN:
+			{
+				EventData_WINDOW_KEYDOWN e = { (KeyCode) wParam };
+				EventManager::InvokeEvent(WINDOW_KEYDOWN, &e);
+
+				if ((lParam & (1 << 30)) == 0) {
+					EventData_WINDOW_KEYPRESSED e = { (KeyCode) wParam };
+					EventManager::InvokeEvent(WINDOW_KEYPRESSED, &e);
+				}
+
+				return 1;
+			}
+			case WM_KEYUP:
+			{
+				EventData_WINDOW_KEYUP e = { (KeyCode) wParam };
+				EventManager::InvokeEvent(WINDOW_KEYUP, &e);
+				return 1;
 			}
 		}
 		return 0;
@@ -211,31 +217,11 @@ namespace GL {
 	bool Window::GetInputState(KeyCode keycode) {
 		return GetKeyState(keycode) & 0x8000;
 	}
-	void Window::SetOnQuitCallback(WinOnQuitCallback *callback) {
-		this->onQuitCallback = callback;
-	}
-	void Window::SetOnResizeCallback(WinOnResizeCallback *callback) {
-		this->onResizeCallback = callback;
-	}
-	void Window::SetOnScrollCallback(WinOnScrollCallback *callback) {
-		this->onScrollCallback = callback;
-	}
-	void Window::SetOnMouseCallback(WinOnMouseCallback *callback) {
-		this->onMouseCallback = callback;
-	}
-
-	void Window::_SetOnResizeCallbakRenderer2D(WinOnResizeCallbackRenderer2D *callback) {
-		this->onResizeCallbackRenderer2D = callback;
-	}
-	void Window::_SetOnResizeCallbakRenderer3D(WinOnResizeCallbackRenderer3D *callback) {
-		this->onResizeCallbackRenderer3D = callback;
-	}
 
 	void Window::CreateOpenGLContext() {
 		GetWglFunctions();
 
-		{
-			// set pixel format for OpenGL context
+		{ // set pixel format for OpenGL context
 			int attrib[] =
 			{
 				WGL_DRAW_TO_WINDOW_ARB, GL_TRUE,
@@ -245,16 +231,9 @@ namespace GL {
 				WGL_COLOR_BITS_ARB,     24,
 				WGL_DEPTH_BITS_ARB,     24,
 				WGL_STENCIL_BITS_ARB,   8,
-
-				// uncomment for sRGB framebuffer, from WGL_ARB_framebuffer_sRGB extension
-				// https://www.khronos.org/registry/OpenGL/extensions/ARB/ARB_framebuffer_sRGB.txt
 				//WGL_FRAMEBUFFER_SRGB_CAPABLE_ARB, GL_TRUE,
-
-				// uncomment for multisampeld framebuffer, from WGL_ARB_multisample extension
-				// https://www.khronos.org/registry/OpenGL/extensions/ARB/ARB_multisample.txt
 				//WGL_SAMPLE_BUFFERS_ARB, 1,
 				//WGL_SAMPLES_ARB,        4, // 4x MSAA
-
 				0,
 			};
 
@@ -276,9 +255,7 @@ namespace GL {
 			}
 		}
     
-
     	// create modern OpenGL context
-    
         int attrib[] =
         {
             WGL_CONTEXT_MAJOR_VERSION_ARB, 4,
@@ -310,24 +287,7 @@ namespace GL {
 		GLFUNCTIONS
 	}
 
-	Window *WinGetWindowInstance() {
-		return window_instance;
-	}
-
-	static int StringsAreEqual(const char* src, const char* dst, size_t dstlen)
-	{
-		while (*src && dstlen-- && *dst)
-		{
-			if (*src++ != *dst++)
-			{
-				return 0;
-			}
-		}
-
-		return (dstlen && *src == *dst) || (!dstlen && *src == 0);
-	}
-
-	static void GetWglFunctions(void)
+	void Window::GetWglFunctions()
 	{
 		// to get WGL functions we need valid GL context, so create dummy window for dummy GL contetx
 		HWND dummy = CreateWindowExW(
@@ -415,5 +375,27 @@ namespace GL {
 		wglDeleteContext(rc);
 		ReleaseDC(dummy, dc);
 		DestroyWindow(dummy);
+	}
+	void Window::FatalError(const char* message)
+	{
+		MessageBoxA(NULL, message, "Error", MB_ICONEXCLAMATION);
+		ExitProcess(0);
+	}
+
+	int Window::StringsAreEqual(const char* src, const char* dst, size_t dstlen)
+	{
+		while (*src && dstlen-- && *dst)
+		{
+			if (*src++ != *dst++)
+			{
+				return 0;
+			}
+		}
+
+		return (dstlen && *src == *dst) || (!dstlen && *src == 0);
+	}
+
+	Window *WinGetWindowInstance() {
+		return window_instance;
 	}
 }

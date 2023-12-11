@@ -6,23 +6,23 @@
 #include "Texture.h"
 #include "../GLFunc.h"
 
-namespace GL {
+namespace CW {
 
 	void GetSubStringByLastFoundChar(char *destStr, const char *str, char a);
 	void ProcessNode(Model *model, struct aiNode *node, const struct aiScene *scene);
 	Mesh ProcessMesh(Model *model, struct aiMesh *mesh, const struct aiScene *scene);
 	std::vector<Texture> LoadMaterialTextures(Model *model, struct aiMaterial *mat, enum aiTextureType type, const char *typeName);
 
-	void DrawModel(Model *model, GL::Shader *shader) {
+	void DrawModel(Model *model, CW::Shader *shader) {
 		size_t meshes_size = model->meshes.size();
 		for (unsigned int i = 0; i < meshes_size; i++) {
-			DrawMesh(&model->meshes[i], shader);
+			model->meshes[i].DrawMesh(shader);
 		}
 	}
 	void DrawModelInstanced(Model *model, Shader *shader, int instance_count) {
 		size_t meshes_size = model->meshes.size();
 		for (unsigned int i = 0; i < meshes_size; i++) {
-			DrawMeshInstanced(&model->meshes[i], shader, instance_count);
+			model->meshes[i].DrawMeshInstanced(shader, instance_count);
 		}
 	}
 	void LoadModel(Model *model, const char *path) {
@@ -66,9 +66,15 @@ namespace GL {
 	}
 	Mesh ProcessMesh(Model *model, struct aiMesh *mesh, const struct aiScene *scene)
 	{
-		std::vector<Vertex> vertices;
-		std::vector<unsigned int> indices;
-		std::vector<Texture> textures;
+		Vertex *vertices = new Vertex[mesh->mNumVertices];
+
+		unsigned int index_count = 0;
+		for (unsigned int i = 0; i < mesh->mNumFaces; i++) {
+			index_count += mesh->mFaces[i].mNumIndices;
+		}
+		unsigned int *indices = new unsigned int[index_count];
+		
+		Texture *textures;
 
 		for (unsigned int i = 0; i < mesh->mNumVertices; i++)
 		{
@@ -109,17 +115,20 @@ namespace GL {
 			bitangent.z = mesh->mBitangents[i].z;
 			vertex.bitangent = bitangent;
 			
-			vertices.push_back(vertex);
+			vertices[i] = vertex;
 		}
 
 		// process indices
+		unsigned int index = 0;
 		for (unsigned int i = 0; i < mesh->mNumFaces; i++) {
 			struct aiFace face = mesh->mFaces[i];
 			for (unsigned int j = 0; j < face.mNumIndices; j++) {
-				indices.push_back(face.mIndices[j]);
+				indices[index++] = face.mIndices[j];
 			}
 		}
 		// process material
+		unsigned int texture_count = 0;
+
 		if (mesh->mMaterialIndex >= 0)
 		{
 			struct aiMaterial *material = scene->mMaterials[mesh->mMaterialIndex];
@@ -131,19 +140,22 @@ namespace GL {
 			std::vector<Texture> normalMaps = LoadMaterialTextures(model, material, aiTextureType_NORMALS, "texture_normal");
 
 			size_t diffuseMaps_size = diffuseMaps.size();
-			for (unsigned int i = 0; i < diffuseMaps_size; i++) {
-				textures.push_back(diffuseMaps[i]);
-			}
 			size_t specularMaps_size = specularMaps.size();
-			for (unsigned int i = 0; i < specularMaps_size; i++) {
-				textures.push_back(specularMaps[i]);
-			}
 			size_t normalMaps_size = normalMaps.size();
+			texture_count = diffuseMaps_size + specularMaps_size + normalMaps_size;
+			textures = new Texture[texture_count];
+
+			for (unsigned int i = 0; i < diffuseMaps_size; i++) {
+				textures[i] = diffuseMaps[i];
+			}
+			for (unsigned int i = 0; i < specularMaps_size; i++) {
+				textures[diffuseMaps_size + i] = specularMaps[i];
+			}
 			for (unsigned int i = 0; i < normalMaps_size; i++) {
-				textures.push_back(normalMaps[i]);
+				textures[diffuseMaps_size + specularMaps_size + i] = normalMaps[i];
 			}
 		}
-		return CreateMesh(vertices, indices, textures);
+		return Mesh(vertices, indices, textures, mesh->mNumVertices, index_count, texture_count);
 	}
 
 	std::vector<Texture> LoadMaterialTextures(Model *model, struct aiMaterial *mat, enum aiTextureType type, const char *typeName) {
@@ -155,13 +167,17 @@ namespace GL {
 			struct aiString path;
 
 			aiGetMaterialTexture(mat, type, i, &path, NULL, NULL, NULL, NULL, NULL, NULL);
-
 			bool skip = false;
 			size_t textures_loaded_size = model->textures_loaded.size();
 			for (unsigned int j = 0; j < textures_loaded_size; j++) {
-				if (std::strcmp(model->textures_loaded[j].path, path.data) == 0) {
+				char temp_tex_path[200] = { 0 };
+				strcat(temp_tex_path, model->directory);
+				strcat(temp_tex_path, "/");
+				strcat(temp_tex_path, path.data);
+				if (strncmp(model->textures_loaded[j].path, temp_tex_path, 1) == 0) {
 					textures.push_back(model->textures_loaded[j]);
 					skip = true;
+					printf("Already Loaded: %s\n", temp_tex_path);
 					break;
 				}
 			}
@@ -183,10 +199,10 @@ namespace GL {
 						break;
 				}
 
-				Texture texture = GL::CreateTexture(texPath, texture_format);
+				Texture texture = CW::CreateTexture(texPath, texture_format);
 				texture.path = texPath;
 				texture.type = typeName;
-
+				printf("Loaded: %s\n", texPath);
 				textures.push_back(texture);
 				model->textures_loaded.push_back(texture);
 			}

@@ -4,7 +4,7 @@
 #include "Shader.h"
 #include <vector>
 
-namespace GL {
+namespace CW {
 
 	typedef struct {
 		Vec3 position;
@@ -14,18 +14,24 @@ namespace GL {
 		Vec3 bitangent;
 	} Vertex;
 
-	typedef struct {
-		std::vector<Vertex> vertices;
-		std::vector<unsigned int> indices;
-		std::vector<Texture> textures;
 
-		unsigned int VAO, VBO, EBO;
-	} Mesh;
+	class Mesh {
+		public:
+			Mesh(Vertex *vertices, unsigned int *indices, Texture *textures, unsigned int vertex_count, unsigned int index_count, unsigned int texture_count);
+			void DrawMesh(Shader *shader);
+			void DrawMeshInstanced(Shader *shader, int instance_count);
+
+			Vertex *vertices;
+			unsigned int *indices;
+			Texture *textures;
+
+			unsigned int VAO, VBO, EBO;
+			unsigned int vertex_count, index_count, texture_count;
+		
+		private:
+			void MakeInstanced();
+			void BindMeshTextures(Shader *shader);
+	};
 
 	typedef Mesh *Vec_Mesh;
-
-	Mesh CreateMesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture> textures);
-	void _MakeInstanced(Mesh *mesh);
-	void DrawMesh(Mesh *mesh, Shader *shader);
-	void DrawMeshInstanced(Mesh *mesh, Shader *shader, int instance_count);
 }

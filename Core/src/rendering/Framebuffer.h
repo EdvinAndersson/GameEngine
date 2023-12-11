@@ -4,7 +4,7 @@
 #include "../GLFunc.h"
 #include "Texture.h"
 
-namespace GL {
+namespace CW {
 
 	class Framebuffer {
 	public:

@@ -1,12 +1,16 @@
 #pragma once
 #include <Windows.h>
 #include "GLMath.h"
+#include <windowsx.h>
+#include <stdio.h>
+#include <GL/GL.h>
+#include "GLFunc.h"
 
 #ifndef UNICODE
 #define UNICODE
 #endif
 
-namespace GL {
+namespace CW {
 
 	enum KeyCode {
 		MOUSE_BUTTON_1 = 0x01,
@@ -81,12 +85,7 @@ namespace GL {
 		F12 = 0x7B,
 	};
 
-	typedef void (WinOnQuitCallback)();
-	typedef void (WinOnResizeCallback)(int width, int height);
-	typedef void (WinOnResizeCallbackRenderer2D)(int width, int height);
-	typedef void (WinOnResizeCallbackRenderer3D)(int width, int height);
-	typedef void (WinOnScrollCallback)(int scroll);
-	typedef void (WinOnMouseCallback)(int dx, int dy);
+	#define Assert(cond) do { if (!(cond)) __debugbreak(); } while (0)
 
 	class Window {
 	public:
@@ -96,20 +95,13 @@ namespace GL {
 		void Destroy();
 		void WinSwapBuffers();
 
-		void SetOnQuitCallback(WinOnQuitCallback *callback);
-		void SetOnResizeCallback(WinOnResizeCallback *callback);
-		void SetOnScrollCallback(WinOnScrollCallback *callback);
-		void SetOnMouseCallback(WinOnMouseCallback *callback);
-
-		void _SetOnResizeCallbakRenderer2D(WinOnResizeCallbackRenderer2D *callback);
-		void _SetOnResizeCallbakRenderer3D(WinOnResizeCallbackRenderer3D *callback);
-
 		bool GetInputState(KeyCode keycode);
 
 		void WinSetFullscreen(bool fullscreen);
 		void WinSetMousePosition(int x, int y);
 		void WinShowCursor(bool show);
 		void EnableVSync(bool enable);
+		inline HWND GetHandle() { return hwnd; }
 		inline int GetWidth() { return window_width; }
 		inline int GetHeight() { return window_height; }
 		int GetMousePositionX();
@@ -121,16 +113,15 @@ namespace GL {
 	private:
 		void CreateOpenGLContext();
 		void LoadOpenGLFunctions();
+		void GetWglFunctions();
+		void FatalError(const char* message);
+		int StringsAreEqual(const char* src, const char* dst, size_t dstlen);
 
 		HWND hwnd;
 		HDC hdc;
 
-		WinOnQuitCallback *onQuitCallback;
-		WinOnResizeCallback *onResizeCallback;
-		WinOnResizeCallbackRenderer2D *onResizeCallbackRenderer2D;
-		WinOnResizeCallbackRenderer3D *onResizeCallbackRenderer3D;
-		WinOnScrollCallback *onScrollCallback;
-		WinOnMouseCallback *onMouseCallback;
+		PFNWGLCHOOSEPIXELFORMATARBPROC wglChoosePixelFormatARB = NULL;
+		PFNWGLCREATECONTEXTATTRIBSARBPROC wglCreateContextAttribsARB = NULL;
 
 		HGLRC renderingContext;
 		WINDOWPLACEMENT g_wpPrev = { sizeof(g_wpPrev) };

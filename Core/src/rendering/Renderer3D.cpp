@@ -5,7 +5,7 @@
 #include "Models.h"
 #include "../raw_cube.h"
 
-namespace GL {
+namespace CW {
 
     void APIENTRY glDebugOutput(GLenum source, GLenum type, unsigned int id, GLenum severity, GLsizei length, const char *message, const void *userParam) {
         // ignore non-significant error/warning codes
@@ -95,15 +95,13 @@ namespace GL {
         stbi_set_flip_vertically_on_load(false);
 
         g_r3d_data->window = window;
-        window->_SetOnResizeCallbakRenderer3D(R3D__ResizeCallback);
 
+        g_r3d_data->default_shader = CW::CreateShader(vertex_shader, fragment_shader);
+        g_r3d_data->skybox_shader = CW::CreateShader(vertex_shader_skybox, fragment_shader_skybox);
+        g_r3d_data->instance_shader = CW::CreateShader(vertex_shader_instanced, fragment_shader);
 
-        g_r3d_data->default_shader = GL::CreateShader(vertex_shader, fragment_shader);
-        g_r3d_data->skybox_shader = GL::CreateShader(vertex_shader_skybox, fragment_shader_skybox);
-        g_r3d_data->instance_shader = GL::CreateShader(vertex_shader_instanced, fragment_shader);
-
-        GL::Texture_Format format = { GL_RGBA, GL::TEXTURE_NEAREST_NEIGHBOR };
-        g_r3d_data->defualt_texture = GL::CreateBlankTexture(format);
+        CW::Texture_Format format = { GL_RGBA, CW::TEXTURE_NEAREST_NEIGHBOR };
+        g_r3d_data->defualt_texture = CW::CreateBlankTexture(format);
 
         R3D__ResizeCallback(window->GetWidth(), window->GetHeight());
         R3D_SetViewModel(Mat4Identity());
@@ -134,7 +132,7 @@ namespace GL {
         g_r3d_data->active_shader.Use();
 
         g_r3d_data->cube = new Model();
-        GL::LoadModelFromMemory(g_r3d_data->cube, (const char*)g_cube_model, sizeof(g_cube_model));
+        CW::LoadModelFromMemory(g_r3d_data->cube, (const char*)g_cube_model, sizeof(g_cube_model));
 
         R3D__CreateInstanceSSBO();
     }
@@ -198,7 +196,7 @@ namespace GL {
 
         skybox_texture.Use(0);
 
-        GL::DrawModel(g_r3d_data->cube, &g_r3d_data->skybox_shader);
+        CW::DrawModel(g_r3d_data->cube, &g_r3d_data->skybox_shader);
 
         glDepthMask(GL_TRUE);
     }
@@ -287,7 +285,7 @@ namespace GL {
         glBindBuffer(GL_SHADER_STORAGE_BUFFER, g_r3d_data->instance_ssbo);
         glBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, 4 * sizeof(Vec4) * g_r3d_data->instance_count, g_r3d_data->matrices);
 
-        GL::DrawModelInstanced(g_r3d_data->instance_model, &g_r3d_data->instance_shader, g_r3d_data->instance_count);
+        CW::DrawModelInstanced(g_r3d_data->instance_model, &g_r3d_data->instance_shader, g_r3d_data->instance_count);
     
         g_r3d_data->instance_count = 0;
     }
@@ -323,7 +321,7 @@ namespace GL {
         g_r3d_data->point_lights++;
         g_r3d_data->active_shader.SetInt("number_of_point_lights", g_r3d_data->point_lights);
     }
-    GL::Model* R3D_GetDefaultCubeModel() {
+    CW::Model* R3D_GetDefaultCubeModel() {
         return g_r3d_data->cube;
     }
     void R3D_UseShader(Shader *shader) {

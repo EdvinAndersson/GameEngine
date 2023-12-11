@@ -1,7 +1,7 @@
 #include "texture.h"
 #include "../vendor/stb_image/stb_image.h"
 
-namespace GL {
+namespace CW {
 
     void Texture::Use(int textureSlot) {
         glActiveTexture(GL_TEXTURE0 + textureSlot);
