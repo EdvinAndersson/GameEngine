@@ -1,10 +1,13 @@
 #pragma once
 
-#include "IEventListener.h"
+#include "Events.h"
 
 namespace CW {
 
     #define InvokeEvent(event_type, data) InvokeEvent_(event_type, data, sizeof(EventData_##event_type))
+
+    class IEventListener;
+    enum EventType;
 
     class EventManager {
         public:        

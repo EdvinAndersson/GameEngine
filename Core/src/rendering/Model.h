@@ -1,18 +1,23 @@
 #pragma once
+
 #include "Mesh.h"
 #include "Shader.h"
+#include "Texture.h"
+
+#include <stdio.h>
 
 namespace CW {
 
-	typedef struct {
-		std::vector<Mesh> meshes;
-		char *directory;
-		std::vector<Texture> textures_loaded;
-	} Model;
+	class Model {
+		public:
+			void Draw(Shader *shader);
+			void DrawInstanced(Shader *shader, int instance_count);
 
-	void DrawModel(Model *model, Shader *shader);
-	void DrawModelInstanced(Model *model, Shader *shader, int instance_count);
-
-	void LoadModel(Model *model, const char *path);
-	void LoadModelFromMemory(Model *model, const char *data, int data_size);
+			void Load(const char *path);
+			void LoadFromMemory(const char *data, int data_size);
+			
+			std::vector<Mesh> meshes;
+			char *directory;
+			std::vector<Texture> textures_loaded;
+	};
 }

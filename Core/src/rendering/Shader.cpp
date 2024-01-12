@@ -12,6 +12,10 @@ namespace CW {
         unsigned int loc = glGetUniformLocation(id, name);
         glUniform4f(loc, x, y, z, w);
     }
+    void Shader::SetV4(const char* name, Vec4 vec4) {
+        unsigned int loc = glGetUniformLocation(id, name);
+        glUniform4f(loc, vec4.x, vec4.y, vec4.z, vec4.w);
+    }
     void Shader::SetV3(const char* name, float x, float y, float z) {
         unsigned int loc = glGetUniformLocation(id, name);
         glUniform3f(loc, x, y, z);

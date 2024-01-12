@@ -1,0 +1,15 @@
+Unnamed Project
+Resolution mode {0}
+Windowed size {982,1080}
+Vsync {1}
+Scene count {2}
+Scenes {
+	{
+	Scene name {Basic Scene}
+	Game objects {3}
+	}
+	{
+	Scene name {Test scene}
+	Game objects {0}
+	}
+}

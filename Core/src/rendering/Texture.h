@@ -16,7 +16,7 @@ namespace CW {
 	struct Texture {
 		unsigned int id;
 		const char *type;
-		const char *path;
+		char path[256];
 		Texture_Format texture_format;
 
 		void Use(int textureSlot);

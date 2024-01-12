@@ -1,4 +1,7 @@
 #include "Utility.h"
+#include <stdlib.h>
+#include <stdio.h>
+#include <string>
 
 namespace CW {
 
@@ -25,4 +28,23 @@ namespace CW {
         }
         fprintf(file_output, "};\n");
 	}
+    char* ConvertWideCharToChar(const wchar_t *str) {
+        size_t origsize = wcslen(str) + 1;
+        size_t convertedChars = 0;
+        const size_t newsize = origsize * 2;
+        char* nstring = new char[newsize];
+        wcstombs_s(&convertedChars, nstring, newsize, str, _TRUNCATE);
+
+        return nstring;
+    }
+
+    int StrToInt(char *str) {
+        int len = strlen(str);
+        int result = 0;
+
+        for (int i = 0; i < len; i++) {
+            result += pow(10, len - i - 1) * (str[i] - 0x30);    
+        }
+        return result;
+    }
 }

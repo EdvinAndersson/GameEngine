@@ -1,10 +1,9 @@
 #include "Model.h"
-#include <stdio.h>
-#include <assimp/cimport.h>
-#include <assimp/scene.h>
-#include <assimp/postprocess.h>
-#include "Texture.h"
 #include "../GLFunc.h"
+
+#include "assimp/cimport.h"
+#include "assimp/scene.h"
+#include "assimp/postprocess.h"
 
 namespace CW {
 
@@ -13,19 +12,19 @@ namespace CW {
 	Mesh ProcessMesh(Model *model, struct aiMesh *mesh, const struct aiScene *scene);
 	std::vector<Texture> LoadMaterialTextures(Model *model, struct aiMaterial *mat, enum aiTextureType type, const char *typeName);
 
-	void DrawModel(Model *model, CW::Shader *shader) {
-		size_t meshes_size = model->meshes.size();
+	void Model::Draw(CW::Shader *shader) {
+		size_t meshes_size = meshes.size();
 		for (unsigned int i = 0; i < meshes_size; i++) {
-			model->meshes[i].DrawMesh(shader);
+			meshes[i].DrawMesh(shader);
 		}
 	}
-	void DrawModelInstanced(Model *model, Shader *shader, int instance_count) {
-		size_t meshes_size = model->meshes.size();
+	void Model::DrawInstanced(Shader *shader, int instance_count) {
+		size_t meshes_size = meshes.size();
 		for (unsigned int i = 0; i < meshes_size; i++) {
-			model->meshes[i].DrawMeshInstanced(shader, instance_count);
+			meshes[i].DrawMeshInstanced(shader, instance_count);
 		}
 	}
-	void LoadModel(Model *model, const char *path) {
+	void Model::Load(const char *path) {
 		const struct aiScene *scene = aiImportFile(path, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
 
 		if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
@@ -35,11 +34,11 @@ namespace CW {
 
 		char directory[200] = { 0 };
 		GetSubStringByLastFoundChar(directory, path, '/');
-		model->directory = directory;
+		this->directory = directory;
 
-		ProcessNode(model, scene->mRootNode, scene);
+		ProcessNode(this, scene->mRootNode, scene);
 	}
-	void LoadModelFromMemory(Model *model, const char *data, int data_size) {
+	void Model::LoadFromMemory(const char *data, int data_size) {
 		const struct aiScene *scene = aiImportFileFromMemory(data, data_size, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace, 0);
 
 		if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
@@ -47,7 +46,7 @@ namespace CW {
 			return;
 		}
 
-		ProcessNode(model, scene->mRootNode, scene);
+		ProcessNode(this, scene->mRootNode, scene);
 	}
 	void ProcessNode(Model *model, struct aiNode *node, const struct aiScene *scene)
 	{
@@ -155,7 +154,9 @@ namespace CW {
 				textures[diffuseMaps_size + specularMaps_size + i] = normalMaps[i];
 			}
 		}
-		return Mesh(vertices, indices, textures, mesh->mNumVertices, index_count, texture_count);
+
+		Mesh m(vertices, indices, textures, mesh->mNumVertices, index_count, texture_count);
+		return m;
 	}
 
 	std::vector<Texture> LoadMaterialTextures(Model *model, struct aiMaterial *mat, enum aiTextureType type, const char *typeName) {
@@ -168,25 +169,21 @@ namespace CW {
 
 			aiGetMaterialTexture(mat, type, i, &path, NULL, NULL, NULL, NULL, NULL, NULL);
 			bool skip = false;
+			
+			char tex_path[2000] = {0};
+			strcpy(tex_path, model->directory);
+			strcat(tex_path, "/");
+			strcat(tex_path, path.data);
+
 			size_t textures_loaded_size = model->textures_loaded.size();
 			for (unsigned int j = 0; j < textures_loaded_size; j++) {
-				char temp_tex_path[200] = { 0 };
-				strcat(temp_tex_path, model->directory);
-				strcat(temp_tex_path, "/");
-				strcat(temp_tex_path, path.data);
-				if (strncmp(model->textures_loaded[j].path, temp_tex_path, 1) == 0) {
+				if (strcmp(model->textures_loaded[j].path, tex_path) == 0) {
 					textures.push_back(model->textures_loaded[j]);
 					skip = true;
-					printf("Already Loaded: %s\n", temp_tex_path);
 					break;
 				}
 			}
 			if (!skip) { // If texure haven't been loaded before
-				char texPath[200] = { 0 };
-				strcat(texPath, model->directory);
-				strcat(texPath, "/");
-				strcat(texPath, path.data);
-
 				Texture_Format texture_format;
 				texture_format.texture_filtering = TEXTURE_LINEAR_MIPMAP;
 				switch (type)
@@ -199,10 +196,9 @@ namespace CW {
 						break;
 				}
 
-				Texture texture = CW::CreateTexture(texPath, texture_format);
-				texture.path = texPath;
+				Texture texture = CW::CreateTexture(tex_path, texture_format);
+				strcpy(texture.path, tex_path);
 				texture.type = typeName;
-				printf("Loaded: %s\n", texPath);
 				textures.push_back(texture);
 				model->textures_loaded.push_back(texture);
 			}

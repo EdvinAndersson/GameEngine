@@ -1,4 +1,5 @@
 #include "EventManager.h"
+#include "IEventListener.h"
 #include <memory>
 
 namespace CW {

@@ -132,7 +132,7 @@ namespace CW {
         g_r3d_data->active_shader.Use();
 
         g_r3d_data->cube = new Model();
-        CW::LoadModelFromMemory(g_r3d_data->cube, (const char*)g_cube_model, sizeof(g_cube_model));
+        g_r3d_data->cube->LoadFromMemory((const char*)g_cube_model, sizeof(g_cube_model));
 
         R3D__CreateInstanceSSBO();
     }
@@ -196,7 +196,7 @@ namespace CW {
 
         skybox_texture.Use(0);
 
-        CW::DrawModel(g_r3d_data->cube, &g_r3d_data->skybox_shader);
+        g_r3d_data->cube->Draw(&g_r3d_data->skybox_shader);
 
         glDepthMask(GL_TRUE);
     }
@@ -222,7 +222,7 @@ namespace CW {
         g_r3d_data->active_shader.SetMat4f("model", &transform);
         g_r3d_data->active_shader.SetV4("objectColor", color.r, color.g, color.b, 1.0f);
 
-        DrawModel(model, &g_r3d_data->active_shader);
+        model->Draw(&g_r3d_data->active_shader);
     }
 
     void R3D_RenderCube(Vec3 position, Vec3 scale, Vec3 color) {
@@ -247,7 +247,7 @@ namespace CW {
 
         texture.Use(0);
 
-        DrawModel(g_r3d_data->cube, &g_r3d_data->active_shader);
+        g_r3d_data->cube->Draw(&g_r3d_data->active_shader);
     }
     void R3D__CreateInstanceSSBO() {
         g_r3d_data->matrices = new Mat4[g_r3d_data->max_instance_count];
@@ -285,7 +285,7 @@ namespace CW {
         glBindBuffer(GL_SHADER_STORAGE_BUFFER, g_r3d_data->instance_ssbo);
         glBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, 4 * sizeof(Vec4) * g_r3d_data->instance_count, g_r3d_data->matrices);
 
-        CW::DrawModelInstanced(g_r3d_data->instance_model, &g_r3d_data->instance_shader, g_r3d_data->instance_count);
+        g_r3d_data->instance_model->DrawInstanced(&g_r3d_data->instance_shader, g_r3d_data->instance_count);
     
         g_r3d_data->instance_count = 0;
     }

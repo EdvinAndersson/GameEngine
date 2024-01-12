@@ -87,6 +87,8 @@ namespace CW {
 
 	#define Assert(cond) do { if (!(cond)) __debugbreak(); } while (0)
 
+	typedef LRESULT (ImGUIWindowsProcHandler)(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+
 	class Window {
 	public:
 		int Init(const wchar_t *title, int width, int height);
@@ -100,6 +102,8 @@ namespace CW {
 		void WinSetFullscreen(bool fullscreen);
 		void WinSetMousePosition(int x, int y);
 		void WinShowCursor(bool show);
+		void WinSetTitle(char *title);
+		void WinSetSize(int width, int height);
 		void EnableVSync(bool enable);
 		inline HWND GetHandle() { return hwnd; }
 		inline int GetWidth() { return window_width; }
@@ -109,7 +113,8 @@ namespace CW {
 		double GetTime();
 		inline double GetCpuFrequency() { return cpu_frequency; }
 		inline bool IsFullscreen() { return is_fullscreen; }
-
+		inline void SetImGUIWindowsProcHandler(ImGUIWindowsProcHandler handler) { imgui_windows_proc_handler = handler; }
+		inline ImGUIWindowsProcHandler *GetImGUIWindowsProcHandler() { return imgui_windows_proc_handler; }
 	private:
 		void CreateOpenGLContext();
 		void LoadOpenGLFunctions();
@@ -125,6 +130,8 @@ namespace CW {
 
 		HGLRC renderingContext;
 		WINDOWPLACEMENT g_wpPrev = { sizeof(g_wpPrev) };
+
+		ImGUIWindowsProcHandler *imgui_windows_proc_handler;
 
 		bool is_fullscreen;
 		double process_start_time, cpu_frequency;

@@ -13,6 +13,7 @@ namespace CW {
 
 		void Use();
 		void SetV4(const char *name, float x, float y, float z, float w);
+		void SetV4(const char* name, Vec4 vec4);
 		void SetV3(const char *name, float x, float y, float z);
 		void SetV3(const char *name, Vec3 vec3);
 		void SetV2(const char *name, float x, float y);

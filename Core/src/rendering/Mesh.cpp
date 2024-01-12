@@ -6,8 +6,8 @@
 
 namespace CW {
 
-    Mesh::Mesh(Vertex *vertices, unsigned int *indices, Texture *textures, unsigned int vertex_count, unsigned int index_count, unsigned int texture_count)
-        :vertices(vertices), indices(indices), textures(textures), vertex_count(vertex_count), index_count(index_count), texture_count(texture_count) {
+    Mesh::Mesh(Vertex *_vertices, unsigned int *_indices, Texture *_textures, unsigned int vertex_count, unsigned int index_count, unsigned int texture_count)
+        :vertices(_vertices), indices(_indices), textures(_textures), vertex_count(vertex_count), index_count(index_count), texture_count(texture_count) {
 
         glGenVertexArrays(1, &VAO);
         glGenBuffers(1, &VBO);
@@ -35,6 +35,11 @@ namespace CW {
         glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, tangent));
 
         glBindVertexArray(0);
+    }
+    Mesh::~Mesh() {
+        //delete[] vertices;
+        //delete[] indices;
+        //delete[] textures;
     }
     void Mesh::MakeInstanced() {
         glBindVertexArray(VAO);

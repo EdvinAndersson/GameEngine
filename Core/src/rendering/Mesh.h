@@ -18,6 +18,8 @@ namespace CW {
 	class Mesh {
 		public:
 			Mesh(Vertex *vertices, unsigned int *indices, Texture *textures, unsigned int vertex_count, unsigned int index_count, unsigned int texture_count);
+			~Mesh();
+
 			void DrawMesh(Shader *shader);
 			void DrawMeshInstanced(Shader *shader, int instance_count);
 
@@ -27,7 +29,7 @@ namespace CW {
 
 			unsigned int VAO, VBO, EBO;
 			unsigned int vertex_count, index_count, texture_count;
-		
+
 		private:
 			void MakeInstanced();
 			void BindMeshTextures(Shader *shader);

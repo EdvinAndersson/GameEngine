@@ -7,16 +7,14 @@
 #define X(proc, name) proc name;
 GLFUNCTIONS
 
-//TODO: ASK HAMPUS
-#include "../../Editor/src/vendor/imgui/imgui.h"
-extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
-
 namespace CW {
 
 	Window *window_instance;
 
 	LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
-		if (ImGui_ImplWin32_WndProcHandler(hwnd, uMsg, wParam, lParam)) return true;
+		if (window_instance->GetImGUIWindowsProcHandler())
+			if (window_instance->GetImGUIWindowsProcHandler()(hwnd, uMsg, wParam, lParam)) return true;
+
 		if (window_instance->WindowCallback(uMsg, wParam, lParam)) return true;
 
 		return DefWindowProc(hwnd, uMsg, wParam, lParam);
@@ -200,6 +198,22 @@ namespace CW {
 	}
 	void Window::WinShowCursor(bool show) {
 		ShowCursor(show);
+	}
+	void Window::WinSetTitle(char *title) {
+		size_t newsize = strlen(title) + 1;
+		wchar_t* wcstring = new wchar_t[newsize];
+		size_t convertedChars = 0;
+		mbstowcs_s(&convertedChars, wcstring, newsize, title, _TRUNCATE);
+
+		SetWindowText(hwnd, wcstring);
+
+		delete []wcstring;
+	}
+	void Window::WinSetSize(int width, int height) {
+		int xPos = GetSystemMetrics(SM_CXSCREEN) / 2 - width / 2;
+		int yPos = GetSystemMetrics(SM_CYSCREEN) / 2 - height / 2;
+
+		SetWindowPos(hwnd, 0, xPos, yPos, width, height, SWP_FRAMECHANGED);
 	}
 	int Window::GetMousePositionX() { 
 		return mouse_position_x;
