@@ -1,5 +1,5 @@
 #include "ProjectManager.h"
-#include "../Utility.h"
+#include "Utility/Utility.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string>
@@ -91,7 +91,7 @@ namespace CW {
         printf("Vsync: %i\n", (int) project.specification.vsync);
         printf("Scene count: %i\n", scene_count);
 
-        printf("\nData: %s\n", data);
+        //printf("\nData: %s\n", data);
         delete data;
 
         LoadProject(project);

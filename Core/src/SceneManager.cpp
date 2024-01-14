@@ -34,14 +34,12 @@ namespace CW {
             case EventType::ECS_INSTANTIATE_GAMEOBJECT:
             {
                 EventData_ECS_INSTANTIATE_GAMEOBJECT *e = (EventData_ECS_INSTANTIATE_GAMEOBJECT*) event.data;
-                printf("ECS_INSTANTIATE_GAMEOBJECT: %i\n", e->game_object.GetEntity());
 
                 scenes[current_scene_id].game_objects.insert(e->game_object);
             } break;
             case EventType::ECS_DESTROY_GAMEOBJECT:
             {
                 EventData_ECS_DESTROY_GAMEOBJECT *e = (EventData_ECS_DESTROY_GAMEOBJECT*) event.data;
-                printf("ECS_DESTROY_GAMEOBJECT: %i\n", e->game_object.GetEntity());
                 scenes[current_scene_id].game_objects.erase(e->game_object);
             } break;            
         }

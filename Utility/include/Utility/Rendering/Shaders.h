@@ -134,7 +134,7 @@ void main()
 	if(color.a < 0.5)
         discard;
 
-	FragColor = color;
+	FragColor = vec4(pow(color.rgb,vec3(1/2.2f)),color.a);
 }
 
 vec4 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir) {
