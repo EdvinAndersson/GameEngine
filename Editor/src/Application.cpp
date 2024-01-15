@@ -15,7 +15,7 @@ namespace CWEditor {
         cogwheel->Init();
 
         window = new Window();
-        int success = window->Init(L"Cogwheel Engine", 1920/2, 1080/2);
+        int success = window->Init(L"Cogwheel Engine", 1920, 1080);
         if (success == 1) {
             cogwheel->Stop();
             return;
@@ -37,6 +37,9 @@ namespace CWEditor {
 
         for (int i = 0; i < 3; i++) {
             CW::GameObject obj = CW::GameObject::Instantiate();
+            CW::ModelRenderer& model_renderer = obj.AddComponent<CW::ModelRenderer>();
+            model_renderer.model = R3D_GetDefaultCubeModel();
+            model_renderer.tint = Vec3 {0.0f, 0.0f, 1.0f};
             CW::Transform& transform = obj.GetComponent<CW::Transform>();
             transform.position = Vec3 {-1.5f + i*1.5f, 0, -4.0f };
         }

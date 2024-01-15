@@ -10,12 +10,13 @@
 
 namespace CW {
 
-	extern EntityManager *entityManager;
-	extern ComponentManager *componentManager;
+	extern EntityManager *entity_manager;
+	extern ComponentManager *component_manager;
 
 	struct GameObject {
 	public:
 		static GameObject Instantiate();
+		static GameObject Instantiate(Vec3 position);
 		static void Destory(GameObject &gameObject);
 		
 		bool operator<(const GameObject &rhs) const noexcept {
@@ -23,33 +24,35 @@ namespace CW {
 		}
 		template<typename T>
 		T& AddComponent() {
-			componentManager->AddComponent<T>(entity);
+			component_manager->AddComponent<T>(entity);
 
-			Signature signature = entityManager->GetSignature(entity);
-			signature.set(componentManager->GetComponentType<T>(), true);
-			entityManager->SetSignature(entity, signature);
+			Signature signature = entity_manager->GetSignature(entity);
+			signature.set(component_manager->GetComponentType<T>(), true);
+			entity_manager->SetSignature(entity, signature);
 
-			return componentManager->GetComponent<T>(entity);
+			return component_manager->GetComponent<T>(entity);
 		}
 		template<typename T>
 		T& GetComponent() {
-			return componentManager->GetComponent<T>(entity);
+			return component_manager->GetComponent<T>(entity);
 		}
 		template<typename T>
 		void RemoveComponent() {
-			componentManager->RemoveComponent<T>(entity);
+			component_manager->RemoveComponent<T>(entity);
 
-			Signature signature = entityManager->GetSignature(entity);
-			signature.set(componentManager->GetComponentType<T>(), false);
-			entityManager->SetSignature(entity, signature);
+			Signature signature = entity_manager->GetSignature(entity);
+			signature.set(component_manager->GetComponentType<T>(), false);
+			entity_manager->SetSignature(entity, signature);
 		}
 		template<typename T>
 		bool HasComponent() {
-			Signature signature = entityManager->GetSignature(entity);
+			Signature signature = entity_manager->GetSignature(entity);
 
-			return signature.test(componentManager->GetComponentType<T>());
+			return signature.test(component_manager->GetComponentType<T>());
 		}
-
+		Signature GetSignature() {
+			return entity_manager->GetSignature(entity);
+		}
 		Entity GetEntity() {
 			return entity;
 		}

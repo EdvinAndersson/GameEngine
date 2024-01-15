@@ -180,6 +180,8 @@ void R3D_RenderModel(Model *model, Vec3 position, Vec3 scale, Vec3 color, Quater
 
     g_r3d_data->active_shader.SetMat4f("model", &transform);
     g_r3d_data->active_shader.SetV4("objectColor", color.r, color.g, color.b, 1.0f);
+    
+    g_r3d_data->defualt_texture.Use(0);
 
     model->Draw(&g_r3d_data->active_shader);
 }

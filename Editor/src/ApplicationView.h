@@ -5,6 +5,7 @@
 
 #include "Utility/Rendering/Renderer3D.h"
 #include "Utility/Rendering/Framebuffer.h"
+#include "Utility/Utility.h"
 
 #include "vendor/imgui/imgui.h"
 #include "vendor/imgui/backends/imgui_impl_opengl3.h"
@@ -20,6 +21,7 @@ namespace CWEditor {
             void Update();
         private:
             void OnEvent(CW::Event event) override;
+            void RenderDockspace();
 
             Framebuffer *framebuffer_game_view;
             CW::Cogwheel *cogwheel;

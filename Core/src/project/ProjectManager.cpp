@@ -82,7 +82,7 @@ namespace CW {
         //Get scene count
         char *scene_count_raw = GetStrBetween(data + offset, '{', '}', &temp_offset);
         offset += temp_offset;
-        int scene_count = StrToInt(scene_count_raw);
+        unsigned int scene_count = StrToInt(scene_count_raw);
         delete scene_count_raw;
 
         printf("Name: %s\n", project.specification.project_name);
@@ -90,6 +90,32 @@ namespace CW {
         printf("Windowed size: (%i, %i)\n", (int) project.specification.windowed_size.width, (int) project.specification.windowed_size.height);
         printf("Vsync: %i\n", (int) project.specification.vsync);
         printf("Scene count: %i\n", scene_count);
+
+        for (unsigned int i = 0; i < scene_count; i++) {
+            //Get scene count
+            char *scene_name = GetStrBetween(data + offset, '{', '}', &temp_offset);
+            offset += temp_offset;
+            printf("Scene name %s\n", scene_name);
+            //delete scene_name;
+
+            //Get game object count
+            char *game_object_count_raw = GetStrBetween(data + offset, '{', '}', &temp_offset);
+            offset += temp_offset;
+            unsigned int game_object_count = StrToInt(game_object_count_raw);
+            delete game_object_count_raw;
+
+            printf("Game objects %i\n", game_object_count);
+            for (unsigned int j = 0; j < game_object_count; j++) {
+                //Get game object signature
+                char *signature_raw = GetStrBetween(data + offset, '{', '}', &temp_offset);
+                offset += temp_offset;
+                unsigned int signature = StrToInt(signature_raw);
+                delete signature_raw;
+                printf("Signature: %i\n", signature);
+
+                
+            }
+        }
 
         //printf("\nData: %s\n", data);
         delete data;
@@ -151,14 +177,15 @@ namespace CW {
 
         //Scenes
         char *scenes = (char *) calloc((size_t) (PROJECT_FILE_SIZE * 0.8), 1);
-        sprintf(scenes, "Scenes {\n");
         for (unsigned int i = 0; i < scene_manager->GetSceneCount(); i++) {
-            strcat(scenes, "\t{\n");
-            sprintf(scenes + strlen(scenes), "\tScene name {%s}\n", scene_manager->GetScenes()[i].name);
-            sprintf(scenes + strlen(scenes), "\tGame objects {%i}\n", scene_manager->GetScenes()[i].game_objects.size());
-            strcat(scenes, "\t}\n");
+            Scene& scene = scene_manager->GetScenes()[i];
+            sprintf(scenes + strlen(scenes), "Scene name {%s}\n", scene.name);
+            sprintf(scenes + strlen(scenes), "Game objects {%i}\n", (int)scene.game_objects.size());
+
+            for (GameObject obj : scene.game_objects) {
+                sprintf(scenes + strlen(scenes), "{%i}\n", obj.GetSignature());
+            }
         }
-        strcat(scenes, "}\n");
         strcat(project_data, scenes);
 
         //Write to file

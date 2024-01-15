@@ -81,7 +81,13 @@ namespace CW {
 
 			return std::static_pointer_cast<ComponentArray<T>>(mComponentArrays[typeName]);
 		}
-
+		
+		const char * GetComponentValue(ComponentType type) {
+			for (auto it = mComponentTypes.begin(); it != mComponentTypes.end(); ++it) {
+				if (it->second == type) return it->first;
+			}
+			return 0;
+		}
 	private:
 		// Map from type string pointer to a component type
 		std::unordered_map<const char *, ComponentType> mComponentTypes{};

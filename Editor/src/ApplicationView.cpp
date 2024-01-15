@@ -2,8 +2,6 @@
 
 namespace CWEditor {
 
-    void ShowDockSpace();
-
     ApplicationView::ApplicationView() {}
 
     void ApplicationView::Init(CW::Cogwheel *_cogwheel, Window *_window) {
@@ -37,7 +35,7 @@ namespace CWEditor {
 
         ImGui::NewFrame();
 
-        ShowDockSpace();
+        RenderDockspace();
         
         {
             ImGui::Begin("Game View");
@@ -47,10 +45,19 @@ namespace CWEditor {
             R3D_Clear(Vec4 {0,0,0,1} );
             
             CW::Scene& active_scene = cogwheel->GetSceneManager()->GetActiveScene();
-            for (CW::GameObject game_object : active_scene.game_objects) {
-                CW::Transform& transform = game_object.GetComponent<CW::Transform>();
 
-                R3D_RenderCube(transform.position, transform.scale, Vec3{0,1,0});
+
+            for (CW::GameObject game_object : active_scene.game_objects) {
+                //CW::Transform& transform = game_object.GetComponent<CW::Transform>();
+            }
+            for (CW::GameObject game_object : active_scene.game_objects) {
+                if (game_object.HasComponent<CW::ModelRenderer>()) {
+                    CW::Transform& transform = game_object.GetComponent<CW::Transform>();
+                    CW::ModelRenderer& model_renderer = game_object.GetComponent<CW::ModelRenderer>();
+
+                    Quaternion quat = QuatEuler(transform.rotation);
+                    R3D_RenderModel(model_renderer.model, transform.position, transform.scale, model_renderer.tint, quat);
+                }
             }
 
             framebuffer_game_view->UnBind();
@@ -73,6 +80,12 @@ namespace CWEditor {
         }
         if (ImGui::Button("Load project 2")) {
             cogwheel->GetProjectManager()->LoadProject("Editor/res/projects/TestProject.proj");
+        }
+        if (ImGui::Button("Create Random Cube")) {
+            CW::GameObject obj = CW::GameObject::Instantiate(Vec3 {(float) (CW::Random()*2.0f-1)*5, (float) (CW::Random()*2.0f-1)*5, -5-(float) CW::Random()*5.0f });
+            CW::ModelRenderer& model_renderer = obj.AddComponent<CW::ModelRenderer>();
+            model_renderer.model = R3D_GetDefaultCubeModel();
+            model_renderer.tint = Vec3 { (float) CW::Random(), (float) CW::Random(), (float) CW::Random() };
         }
         ImGui::End();
 
@@ -97,9 +110,7 @@ namespace CWEditor {
             } break;
         }
     }
-    void ShowDockSpace()
-    {
-        // Variables to configure the Dockspace example.
+    void ApplicationView::RenderDockspace() {
         static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None; // Config flags for the Dockspace
 
         ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;

@@ -47,4 +47,7 @@ namespace CW {
         }
         return result;
     }
+    double Random() {
+        return rand() / (double) RAND_MAX;
+    }
 }
