@@ -34,24 +34,13 @@ namespace CWEditor {
 
         application_view = new ApplicationView();
         application_view->Init(cogwheel, window);
-
-        for (int i = 0; i < 3; i++) {
-            CW::GameObject obj = CW::GameObject::Instantiate();
-            CW::ModelRenderer& model_renderer = obj.AddComponent<CW::ModelRenderer>();
-            model_renderer.model = R3D_GetDefaultCubeModel();
-            model_renderer.tint = Vec3 {0.0f, 0.0f, 1.0f};
-            CW::Transform& transform = obj.GetComponent<CW::Transform>();
-            transform.position = Vec3 {-1.5f + i*1.5f, 0, -4.0f };
-        }
-
-        cogwheel->GetSceneManager()->CreateNewScene("Test scene");
     }
 
     void Application::Run() {
         while (cogwheel->IsRunning()) {
-            cogwheel->Update();
+            //cogwheel->Update();
             
-            application_view->Update();
+            //application_view->Update();
 
             window->WinSwapBuffers();
             window->PollEvents();
@@ -66,7 +55,7 @@ namespace CWEditor {
             } break;
             case CW::WINDOW_RESIZE:
             {
-                CW::EventData_WINDOW_RESIZE* e = (CW::EventData_WINDOW_RESIZE*) event.data;
+                //CW::EventData_WINDOW_RESIZE* e = (CW::EventData_WINDOW_RESIZE*) event.data;
                 //R3D__ResizeCallback(e->width, e->height);
             } break;
             case CW::WINDOW_KEYDOWN:
@@ -87,7 +76,7 @@ namespace CWEditor {
             case CW::PROJECT_LOAD:
             {
                 CW::EventData_PROJECT_LOAD* e = (CW::EventData_PROJECT_LOAD*) event.data;
-                window->WinSetTitle(e->project.specification.project_name);
+                window->WinSetTitle(e->project->specification.project_name);
             } break;
             default:
             {

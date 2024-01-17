@@ -10,6 +10,7 @@ namespace CW {
 	public:
 		virtual ~IComponentArray() = default;
 		virtual void EntityDestroyed(Entity entity) = 0;
+		virtual void Reset() = 0;
 	};
 
 
@@ -17,8 +18,7 @@ namespace CW {
 	class ComponentArray : public IComponentArray
 	{
 	public:
-		void InsertData(Entity entity, T component)
-		{
+		void InsertData(Entity entity, T component) {
 			assert(mEntityToIndexMap.find(entity) == mEntityToIndexMap.end() && "Component added to same entity more than once.");
 
 			// Put new entry at end and update the maps
@@ -29,8 +29,7 @@ namespace CW {
 			++mSize;
 		}
 
-		void RemoveData(Entity entity)
-		{
+		void RemoveData(Entity entity) {
 			assert(mEntityToIndexMap.find(entity) != mEntityToIndexMap.end() && "Removing non-existent component.");
 
 			// Copy element at end into deleted element's place to maintain density
@@ -49,21 +48,26 @@ namespace CW {
 			--mSize;
 		}
 
-		T &GetData(Entity entity)
-		{
+		T &GetData(Entity entity) {
 			assert(mEntityToIndexMap.find(entity) != mEntityToIndexMap.end() && "Retrieving non-existent component.");
 
 			// Return a reference to the entity's component
 			return mComponentArray[mEntityToIndexMap[entity]];
 		}
 
-		void EntityDestroyed(Entity entity) override
-		{
+		void EntityDestroyed(Entity entity) override {
 			if (mEntityToIndexMap.find(entity) != mEntityToIndexMap.end())
 			{
 				// Remove the entity's component if it existed
 				RemoveData(entity);
 			}
+		}
+
+		void Reset() override {
+			memset(mComponentArray, 0, sizeof(T) * MAX_ENTITIES);
+			mEntityToIndexMap.clear();
+			mIndexToEntityMap.clear();
+			mSize = 0;
 		}
 
 	private:

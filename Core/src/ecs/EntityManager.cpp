@@ -4,11 +4,7 @@
 namespace CW {
 	EntityManager::EntityManager()
 	{
-		// Initialize the queue with all possible entity IDs
-		for (uint32_t id = 0; id < MAX_ENTITIES; ++id)
-		{
-			mAvailableEntities.push(Entity(id));
-		}
+		ResetEntities();
 	}
 
 	Entity EntityManager::CreateEntity()
@@ -49,5 +45,17 @@ namespace CW {
 
 		// Get this entity's signature from the array
 		return mSignatures[entity];
+	}
+
+	void EntityManager::ResetEntities() {
+		while(!mAvailableEntities.empty()) mAvailableEntities.pop();
+
+		// Initialize the queue with all possible entity IDs
+		for (uint32_t id = 0; id < MAX_ENTITIES; ++id)
+		{
+			mAvailableEntities.push(Entity(id));
+		}
+		mSignatures->reset();
+		mLivingEntityCount = 0;
 	}
 }

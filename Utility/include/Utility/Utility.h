@@ -10,4 +10,5 @@ namespace CW {
 	char* ConvertWideCharToChar(const wchar_t *str);
 	int StrToInt(char *str);
 	double Random();
+	int NumDigits(int x);
 }

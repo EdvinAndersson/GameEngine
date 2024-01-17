@@ -24,7 +24,7 @@ namespace CW {
     };
 
     struct EventData_PROJECT_LOAD {
-        Project project;
+        Project *project;
     };
     struct EventData_WINDOW_RESIZE {
         int width, height;

@@ -16,6 +16,7 @@ namespace CW {
 		void DestroyEntity(Entity entity);
 		void SetSignature(Entity entity, Signature signature);
 		Signature GetSignature(Entity entity);
+		void ResetEntities();
 
 	private:
 		// Queue of unused entity IDs

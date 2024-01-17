@@ -81,7 +81,14 @@ namespace CW {
 
 			return std::static_pointer_cast<ComponentArray<T>>(mComponentArrays[typeName]);
 		}
-		
+		void ResetComponentArrays() {
+			for (auto const &pair : mComponentArrays)
+			{
+				auto const &component = pair.second;
+
+				component->Reset();
+			}
+		}
 		const char * GetComponentValue(ComponentType type) {
 			for (auto it = mComponentTypes.begin(); it != mComponentTypes.end(); ++it) {
 				if (it->second == type) return it->first;

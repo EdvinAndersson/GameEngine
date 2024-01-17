@@ -34,19 +34,19 @@ namespace CW {
         spec.windowed_size = Vec2 { 1920, 1080 };
 
         scene_manager = new SceneManager();
-        scene_manager->CreateNewScene("Basic Scene");
-        
         project_manager->SetSceneManager(scene_manager);
 
-        project_manager->CreateProject(spec);
-
+        Project *project = project_manager->CreateProject(spec);
+        project_manager->LoadProject(project);
+        scene_manager->CreateNewScene("Basic Scene");
+        
         return 0;
     }
 
     void Cogwheel::Update() {
         //Update systems here
 
-        
+        //printf("Allocation: %i \n", allocation_metrics.CurrentUsage());
     }
 
     void Cogwheel::Stop() {

@@ -18,7 +18,9 @@ set source_files=^
 ../src/*.cpp ^
 ../src/event/*.cpp ^
 ../src/ecs/*.cpp ^
-../src/project/*.cpp 
+../src/project/*.cpp ^
+../src/scene/*.cpp ^
+../src/serialization/*.cpp 
 
 cl %compile_flags% %source_files%
 if %ERRORLEVEL% == 0 (

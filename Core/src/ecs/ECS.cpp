@@ -17,6 +17,7 @@ namespace CW {
         component_manager->RegisterComponent<Transform>();
         component_manager->RegisterComponent<ModelRenderer>();
 
+        EventListen(PROJECT_LOAD);
 
         ComponentType t = component_manager->GetComponentType<ModelRenderer>();
         printf("%i\n", t);
@@ -26,7 +27,7 @@ namespace CW {
         const char *name_begin = strchr(a, ':') + 2;
         printf("%s\n", name_begin);
 
-        GameObject obj = GameObject::Instantiate();
+        //GameObject obj = GameObject::Instantiate();
         
         FILE *file_output = fopen("Core/src/ecs/AddComponents.h", "w");
         fprintf(file_output, "#pragma once\n");
@@ -41,6 +42,16 @@ namespace CW {
         //
         //AddC(obj);
 
-        printf("%i\n", obj.GetSignature());
+        //printf("%i\n", obj.GetSignature());
+    }
+    void ECS::OnEvent(Event event) {
+        switch (event.event_type)
+        {
+            case EventType::PROJECT_LOAD:
+            {
+                component_manager->ResetComponentArrays();
+                entity_manager->ResetEntities();
+            } break;
+        }
     }
 }
