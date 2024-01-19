@@ -2,7 +2,7 @@
 
 namespace CWEditor {
     
-    void OnWindowEvent(WindowEventType e, void *data);
+    void OnWindowEvent(CW::WindowEventType e, void *data);
 
     Application::~Application() {
         delete window;
@@ -11,10 +11,7 @@ namespace CWEditor {
     }
 
     void Application::Init() {
-        cogwheel = new CW::Cogwheel();
-        cogwheel->Init();
-
-        window = new Window();
+        window = new CW::Window();
         int success = window->Init(L"Cogwheel Engine", 1920, 1080);
         if (success == 1) {
             cogwheel->Stop();
@@ -24,8 +21,27 @@ namespace CWEditor {
         window->SetImGUIWindowsProcHandler(ImGui_ImplWin32_WndProcHandler);
         window->on_window_event = OnWindowEvent;
 
-        R3D_Init(window);
+        cogwheel = new CW::Cogwheel();
+        cogwheel->Init();
 
+        CW::R3D_Init(window);
+        
+        #if 1
+        { //Create project
+            CW::ProjectSpecification spec;
+            spec.project_name = "Unnamed Project";
+            spec.vsync = true;
+            spec.resolution_mode = CW::ResolutionMode::WINDOWED;
+            spec.windowed_size = Vec2 { 1920, 1080 };
+
+            CW::Project *project = cogwheel->GetProjectManager()->CreateProject("Editor/res/projects/Project1", spec);
+            cogwheel->GetProjectManager()->LoadProject(project);
+            cogwheel->GetSceneManager()->CreateNewScene("Basic Scene");
+        }
+        #endif
+
+        //cogwheel->GetProjectManager()->LoadProject("Editor/res/projects/Project1/Unnamed Project.proj");
+        
         EventListen(CW::WINDOW_CLOSE);
         EventListen(CW::WINDOW_RESIZE);
         EventListen(CW::WINDOW_KEYDOWN);
@@ -38,12 +54,12 @@ namespace CWEditor {
 
     void Application::Run() {
         while (cogwheel->IsRunning()) {
-            //cogwheel->Update();
+            cogwheel->Update();
             
-            //application_view->Update();
+            application_view->Update();
 
-            window->WinSwapBuffers();
             window->PollEvents();
+            window->WinSwapBuffers();
         }
     }
     void Application::OnEvent(CW::Event event) {
@@ -55,13 +71,11 @@ namespace CWEditor {
             } break;
             case CW::WINDOW_RESIZE:
             {
-                //CW::EventData_WINDOW_RESIZE* e = (CW::EventData_WINDOW_RESIZE*) event.data;
-                //R3D__ResizeCallback(e->width, e->height);
             } break;
             case CW::WINDOW_KEYDOWN:
             {
                 CW::EventData_WINDOW_KEYDOWN* e = (CW::EventData_WINDOW_KEYDOWN*) event.data;
-                if (e->keycode == KeyCode::ESCAPE) {
+                if (e->keycode == CW::KeyCode::ESCAPE) {
                     cogwheel->Stop();
                     window->Destroy();
                 }
@@ -69,7 +83,7 @@ namespace CWEditor {
             case CW::WINDOW_KEYPRESSED:
             {
                 CW::EventData_WINDOW_KEYPRESSED* e = (CW::EventData_WINDOW_KEYPRESSED*) event.data;
-                if (e->keycode == KeyCode::F11) {
+                if (e->keycode == CW::KeyCode::F11) {
                     window->WinSetFullscreen(!window->IsFullscreen());
                 }
             } break;
@@ -85,21 +99,21 @@ namespace CWEditor {
         }
     }
 
-    void OnWindowEvent(WindowEventType e, void *data) {
+    void OnWindowEvent(CW::WindowEventType e, void *data) {
         switch (e) {
-            case WindowEventType::WINDOW_CLOSE: {
+            case CW::WindowEventType::EVENT_WINDOW_CLOSE: {
                 CW::EventManager::InvokeEvent_(CW::WINDOW_CLOSE, data, sizeof(CW::EventData_WINDOW_CLOSE));
             } break;
-            case WindowEventType::WINDOW_RESIZE: {
+            case CW::WindowEventType::EVENT_WINDOW_RESIZE: {
                 CW::EventManager::InvokeEvent_(CW::WINDOW_RESIZE, data, sizeof(CW::EventData_WINDOW_RESIZE));
             } break;
-            case WindowEventType::WINDOW_KEYDOWN: {
+            case CW::WindowEventType::EVENT_WINDOW_KEYDOWN: {
                 CW::EventManager::InvokeEvent_(CW::WINDOW_KEYDOWN, data, sizeof(CW::EventData_WINDOW_KEYDOWN));
             } break;
-            case WindowEventType::WINDOW_KEYPRESSED: {
+            case CW::WindowEventType::EVENT_WINDOW_KEYPRESSED: {
                 CW::EventManager::InvokeEvent_(CW::WINDOW_KEYPRESSED, data, sizeof(CW::EventData_WINDOW_KEYPRESSED));
             } break;
-            case WindowEventType::WINDOW_KEYUP: {
+            case CW::WindowEventType::EVENT_WINDOW_KEYUP: {
                 CW::EventManager::InvokeEvent_(CW::WINDOW_KEYUP, data, sizeof(CW::EventData_WINDOW_KEYUP));
             } break;
             default: {

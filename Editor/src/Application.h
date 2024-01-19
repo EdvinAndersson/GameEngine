@@ -6,8 +6,7 @@
 #include "Core/src/event/EventManager.h"
 #include "Core/src/event/IEventListener.h"
 #include "Core/src/ecs/GameObject.h"
-
-#include "Utility/Rendering/Renderer3D.h"
+#include "Core/src/Rendering/Renderer3D.h"
 
 #include "ApplicationView.h"
 
@@ -25,7 +24,7 @@ namespace CWEditor {
             void OnEvent(CW::Event event) override;
         private:
             CW::Cogwheel *cogwheel;
-            Window *window;
+            CW::Window *window;
             ApplicationView *application_view;
     };
 }

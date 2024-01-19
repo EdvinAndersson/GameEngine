@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Utility/GLMath.h"
+#include "GLMath.h"
 
 namespace CW {
 

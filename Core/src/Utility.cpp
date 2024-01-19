@@ -62,5 +62,46 @@ namespace CW {
             (x < 100000000 ? 8 :  
             (x < 1000000000 ? 9 :  
             10)))))))));  
-    } 
+    }
+    int NumDigits(size_t x) {  
+        return (x < 10 ? 1 :   
+            (x < 100 ? 2 :   
+            (x < 1000 ? 3 :   
+            (x < 10000 ? 4 :   
+            (x < 100000 ? 5 :   
+            (x < 1000000 ? 6 :   
+            (x < 10000000 ? 7 :  
+            (x < 100000000 ? 8 :  
+            (x < 1000000000 ? 9 :
+            (x < 10000000000 ? 10 : 
+            (x < 100000000000 ? 11 : 
+            (x < 1000000000000 ? 12 : 
+            (x < 10000000000000 ? 13 : 
+            (x < 100000000000000 ? 14 : 
+            (x < 1000000000000000 ? 15 : 
+            (x < 10000000000000000 ? 16 : 
+            (x < 100000000000000000 ? 17 : 
+            (x < 1000000000000000000 ? 18 : 
+            (x < 10000000000000000000 ? 19 : 
+            20)))))))))))))))))));  
+    }
+    size_t HashString(char* p) {
+        size_t result = 0;
+        size_t length = strlen(p);
+        const size_t prime = 31;
+        for (size_t i = 0; i < length; ++i) {
+            result = p[i] + (result * prime);
+        }
+        return result;
+    }
+    int FolderExists(char *path) {
+        struct stat s;
+        if (stat(path, &s) == 0 && (s.st_mode & S_IFDIR)) {
+            return 1;
+        }
+        return 0;
+    }
+    int FolderCreate(char *path) {
+        return _mkdir(path);
+    }
 }

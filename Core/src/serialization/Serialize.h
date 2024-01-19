@@ -4,7 +4,8 @@
 #include "stdio.h"
 #include "string"
 
-#include "Utility/Utility.h"
+#include "Utility.h"
+#include "GLMath.h"
 
 namespace CW {
 
@@ -14,7 +15,11 @@ namespace CW {
             ~Serialize();
 
             void SubmitInt(int data);
+            void SubmitSize_t(size_t data);
+            void SubmitFloat(float data);
             void SubmitString(char *data);
+            void SubmitVec3(Vec3 data);
+            void SubmitVec2(Vec2 data);
 
             inline char *GetData() { return data_buffer; }
         private:

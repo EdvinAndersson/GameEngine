@@ -9,10 +9,10 @@ namespace CW {
 
     class ProjectManager {
         public:
-            Project* CreateProject(ProjectSpecification spec);
-            void LoadProject(char *path);
+            Project* CreateProject(char *projects_folder_path, ProjectSpecification spec);
+            void LoadProject(char *project_file_path);
             void LoadProject(Project *project);
-            void SaveProject(char *file_path);
+            void SaveProject();
             void CloseProject(Project *project);
 
             inline Project* GetCurrentProject() { return current_project; }

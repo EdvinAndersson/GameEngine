@@ -1,20 +1,33 @@
 #include "ProjectManager.h"
-#include "Utility/Utility.h"
+#include "Utility.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string>
 #include "../event/EventManager.h"
 
-#include "Utility/Rendering/Renderer3D.h"
+#include "Rendering/Renderer3D.h"
 
 namespace CW {
 
     #define PROJECT_FILE_SIZE 1024*1024
 
-    Project* ProjectManager::CreateProject(ProjectSpecification spec) {
+    Project* ProjectManager::CreateProject(char *project_folder_path, ProjectSpecification spec) {
         Project *project = new Project();
         project->specification = spec;
+        strcpy(project->project_folder_path, project_folder_path);
 
+        if (!FolderExists(project_folder_path)) {
+            int result = FolderCreate(project_folder_path);
+
+            if (result == -1) {
+                printf("Project folder could not be created. %s\n", project_folder_path);
+                return 0;
+            }
+        }
+
+        EventData_PROJECT_CREATE e = { project };
+        EventManager::InvokeEvent(PROJECT_CREATE, &e);
+        
         return project;
     }
     char *GetStrBetween(char *data, char b, char e, int *offset){
@@ -31,11 +44,11 @@ namespace CW {
         return str;
     }
     
-    void ProjectManager::LoadProject(char *path) {
-        FILE *file = fopen(path, "r");
+    void ProjectManager::LoadProject(char *project_file_path) {
+        FILE *file = fopen(project_file_path, "r");
 
         if (!file) {
-            printf("Falied to load project: %s\n", path);
+            printf("Falied to load project: %s\n", project_file_path);
             return;
         }
 
@@ -44,7 +57,7 @@ namespace CW {
 
         ProjectSpecification project_specification;
 
-        printf("Loading project... %s\n", path);
+        printf("Loading project... %s\n", project_file_path);
 
         //Get project file size
         fseek(file, 0, SEEK_END);
@@ -62,13 +75,13 @@ namespace CW {
         project_specification.windowed_size = Vec2 { (float) deserialized.GetInt(), (float) deserialized.GetInt() };
         int scene_count = deserialized.GetInt();
 
-        printf("Name: %s\n", project_specification.project_name);
-        printf("Resolution mode: %i\n", project_specification.resolution_mode);
-        printf("Windowed size: (%i, %i)\n", (int) project_specification.windowed_size.width, (int) project_specification.windowed_size.height);
-        printf("Vsync: %i\n", (int) project_specification.vsync);
-        printf("Scene count: %i\n", scene_count);
+        // Get the project folder path
+        char *last_occurrence_of_slash = strrchr(project_file_path, '/');
+        int project_folder_path_lenght = last_occurrence_of_slash - project_file_path;
+        char project_folder_path[1024] = {};
+        strncpy(project_folder_path, project_file_path, project_folder_path_lenght);
 
-        current_project = CreateProject(project_specification); 
+        current_project = CreateProject(project_folder_path, project_specification); 
         
         EventData_PROJECT_LOAD e = { current_project };
         EventManager::InvokeEvent(PROJECT_LOAD, &e);
@@ -80,13 +93,25 @@ namespace CW {
 
             for (unsigned int j = 0; j < game_object_count; j++) {
                 int entity_id = deserialized.GetInt();
-                Signature signature = deserialized.GetInt();
+                Signature signature;
+                char *str_signature = deserialized.GetString();
+                for (int i = 0; i < MAX_COMPONENTS; i++)
+                    signature.set(i, (int) (str_signature[i] - '0'));
 
-                Vec3 pos = { (int) deserialized.GetInt(), (int) deserialized.GetInt(), (int) deserialized.GetInt() };
+                Vec3 pos = deserialized.GetVec3();
+                Vec3 rotation = deserialized.GetVec3();
+                Vec3 scale = deserialized.GetVec3();
+
                 GameObject obj = GameObject::Instantiate(pos);
+                CW::Transform& transform = obj.GetComponent<CW::Transform>();
+                transform.rotation = rotation;
+                transform.scale = scale;
 
-                CW::ModelRenderer& m = obj.AddComponent<CW::ModelRenderer>();
-                m.model = R3D_GetDefaultCubeModel();
+                if (signature.test(1)) {
+                    CW::MeshRenderer& mesh_renderer = obj.AddComponent<CW::MeshRenderer>();
+                    //mesh_renderer.mesh = R3D_GetDefaultCubeModel();
+                    mesh_renderer.material = deserialized.GetSize_t();
+                }
             }
         }
         delete data;
@@ -100,10 +125,10 @@ namespace CW {
         EventData_PROJECT_LOAD e = { current_project };
         EventManager::InvokeEvent(PROJECT_LOAD, &e);
     }
-    void ProjectManager::SaveProject(char *path_to_project) {
+    void ProjectManager::SaveProject() {
         char full_path[1024] = {0};
-        strcpy(full_path, path_to_project);
-
+        strcpy(full_path, current_project->project_folder_path);
+        strcat(full_path, "/");
         strcat(full_path, current_project->specification.project_name);
         strcat(full_path, ".proj");
 
@@ -117,7 +142,6 @@ namespace CW {
         }
 
         Serialize serialized(PROJECT_FILE_SIZE, ';');
-
         serialized.SubmitString(current_project->specification.project_name);
         serialized.SubmitInt(current_project->specification.resolution_mode);
         serialized.SubmitInt(current_project->specification.vsync);
@@ -136,20 +160,23 @@ namespace CW {
                     if (signature.test(c)) component_count++;
 
                 serialized.SubmitInt(obj.GetEntity());
-                serialized.SubmitInt(1);
-                //serialized.SubmitInt(component_count);
 
-                if (obj.HasComponent<CW::Transform>()) {
-                    CW::Transform& transform = obj.GetComponent<CW::Transform>();
-                    serialized.SubmitInt((int)transform.position.x);
-                    serialized.SubmitInt((int)transform.position.y);
-                    serialized.SubmitInt((int)transform.position.z);
-                }
+                char str_signature[MAX_COMPONENTS+1];
+                for (int c = 0; c < MAX_COMPONENTS; c++)
+                {
+                    str_signature[c] = signature.test(c) ? '1' : '0';
+                }           
+                str_signature[MAX_COMPONENTS] = 0;      
+                serialized.SubmitString(str_signature);
+                
+                CW::Transform& transform = obj.GetComponent<CW::Transform>();
+                serialized.SubmitVec3(transform.position);
+                serialized.SubmitVec3(transform.rotation);
+                serialized.SubmitVec3(transform.scale);
 
-                for (int c = 0; c < MAX_COMPONENTS; c++) {
-                    if (signature.test(c)) {
-                        //serialized.SubmitInt(c);
-                    }
+                if (obj.HasComponent<CW::MeshRenderer>()) {
+                    CW::MeshRenderer& mesh_renderer = obj.GetComponent<CW::MeshRenderer>();
+                    serialized.SubmitSize_t(mesh_renderer.material);
                 }
             }
         }
@@ -159,7 +186,6 @@ namespace CW {
     }
 
     void ProjectManager::CloseProject(Project *project) {
-        delete project->specification.project_name;
         delete project;
     }
 }

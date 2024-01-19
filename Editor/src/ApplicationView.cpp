@@ -4,11 +4,11 @@ namespace CWEditor {
 
     ApplicationView::ApplicationView() {}
 
-    void ApplicationView::Init(CW::Cogwheel *_cogwheel, Window *_window) {
+    void ApplicationView::Init(CW::Cogwheel *_cogwheel, CW::Window *_window) {
         cogwheel = _cogwheel;
         window = _window;
 
-        framebuffer_game_view = new Framebuffer(window->GetWidth(), window->GetHeight());
+        framebuffer_game_view = new CW::Framebuffer(window->GetWidth(), window->GetHeight());
 
         EventListen(CW::EventType::WINDOW_CLOSE);
         EventListen(CW::EventType::WINDOW_RESIZE);
@@ -28,7 +28,7 @@ namespace CWEditor {
     }
 
     void ApplicationView::Update() {
-        R3D_Clear(Vec4 {0,0,0,1} );
+        CW::R3D_Clear(Vec4 {0,0,0,1} );
 
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplWin32_NewFrame();
@@ -42,7 +42,7 @@ namespace CWEditor {
 
             framebuffer_game_view->Bind();
 
-            R3D_Clear(Vec4 {0,0,0,1} );
+            CW::R3D_Clear(Vec4 {0,0,0,1} );
             
             CW::Scene& active_scene = cogwheel->GetSceneManager()->GetActiveScene();
 
@@ -51,12 +51,12 @@ namespace CWEditor {
                 //CW::Transform& transform = game_object.GetComponent<CW::Transform>();
             }
             for (CW::GameObject game_object : active_scene.game_objects) {
-                if (game_object.HasComponent<CW::ModelRenderer>()) {
+                if (game_object.HasComponent<CW::MeshRenderer>()) {
                     CW::Transform& transform = game_object.GetComponent<CW::Transform>();
-                    CW::ModelRenderer& model_renderer = game_object.GetComponent<CW::ModelRenderer>();
+                    CW::MeshRenderer& mesh_renderer = game_object.GetComponent<CW::MeshRenderer>();
 
                     Quaternion quat = QuatEuler(transform.rotation);
-                    R3D_RenderModel(model_renderer.model, transform.position, transform.scale, model_renderer.tint, quat);
+                    CW::R3D_RenderMesh(mesh_renderer.mesh, mesh_renderer.material, transform.position, transform.scale, quat);
                 }
             }
 
@@ -64,7 +64,7 @@ namespace CWEditor {
 
             float width = ImGui::GetWindowContentRegionMax().x - ImGui::GetWindowContentRegionMin().x;
             float height = width * aspect_ratio;
-
+            
             ImGui::Image((ImTextureID)framebuffer_game_view->GetTexture().id, ImVec2 {width, height });
             
             ImGui::End();
@@ -73,19 +73,25 @@ namespace CWEditor {
         ImGui::Begin("Debug View");
 
         if (ImGui::Button("Save project")) {
-            cogwheel->GetProjectManager()->SaveProject("Editor/res/projects/");
+            cogwheel->GetProjectManager()->SaveProject();
         }
         if (ImGui::Button("Load project 1")) {
-            cogwheel->GetProjectManager()->LoadProject("Editor/res/projects/Unnamed Project.proj");
+            cogwheel->GetProjectManager()->LoadProject("Editor/res/projects/Project1/Unnamed Project.proj");
         }
         if (ImGui::Button("Load project 2")) {
-            cogwheel->GetProjectManager()->LoadProject("Editor/res/projects/TestProject.proj");
+            cogwheel->GetProjectManager()->LoadProject("Editor/res/projects/Project2/Unnamed Project.proj");
         }
         if (ImGui::Button("Create Random Cube")) {
             CW::GameObject obj = CW::GameObject::Instantiate(Vec3 {(float) (CW::Random()*2.0f-1)*5, (float) (CW::Random()*2.0f-1)*5, -5-(float) CW::Random()*5.0f });
-            CW::ModelRenderer& model_renderer = obj.AddComponent<CW::ModelRenderer>();
-            model_renderer.model = R3D_GetDefaultCubeModel();
-            model_renderer.tint = Vec3 { (float) CW::Random(), (float) CW::Random(), (float) CW::Random() };
+            CW::MeshRenderer& mesh_renderer = obj.AddComponent<CW::MeshRenderer>();
+            //mesh_renderer.mesh = CW::R3D_GetDefaultCubeModel();
+            mesh_renderer.material = CW::AssetManager::Get()->GetMaterialIndex("Material2.mat");
+        }
+        if (ImGui::Button("Create And Load Material")) {
+            CW::Material mat = {};
+            mat.albedo_color = Vec3 { 1.0f, 1.0f, 1.0f };
+            mat.albedo = CW::AssetManager::Get()->GetTextureIndex("BrickTexture.png");
+            CW::AssetManager::Get()->CreateAndLoadMaterialAsset("Material2.mat", mat);
         }
         ImGui::End();
 
@@ -106,7 +112,7 @@ namespace CWEditor {
                 int height = (int) (data->width * aspect_ratio);
 
                 framebuffer_game_view->ReCreate(width, height);
-                R3D_Resize(width, height);
+                CW::R3D_Resize(width, height);
             } break;
         }
     }
@@ -151,7 +157,11 @@ namespace CWEditor {
         if (ImGui::BeginMenuBar())
         {
             if (ImGui::BeginMenu("File"))
-            {
+            {   
+                if (ImGui::MenuItem("New Project")){
+                    
+                }
+
                 if (ImGui::MenuItem("Close"))
                     ImGui::CloseCurrentPopup();
 

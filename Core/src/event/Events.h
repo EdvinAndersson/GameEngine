@@ -1,7 +1,8 @@
 #pragma once
-#include "Utility/Window.h"
-#include "../ecs/GameObject.h"
-#include "../project/Project.h"
+
+#include "Window.h"
+#include "ecs/GameObject.h"
+#include "project/Project.h"
 
 namespace CW {
 
@@ -13,6 +14,7 @@ namespace CW {
         WINDOW_KEYPRESSED,
 
         PROJECT_LOAD,
+        PROJECT_CREATE,
 
         ECS_INSTANTIATE_GAMEOBJECT,
         ECS_DESTROY_GAMEOBJECT
@@ -24,6 +26,9 @@ namespace CW {
     };
 
     struct EventData_PROJECT_LOAD {
+        Project *project;
+    };
+    struct EventData_PROJECT_CREATE {
         Project *project;
     };
     struct EventData_WINDOW_RESIZE {

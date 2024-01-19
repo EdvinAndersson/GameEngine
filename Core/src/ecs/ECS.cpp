@@ -15,11 +15,11 @@ namespace CW {
 
     ECS::ECS() {
         component_manager->RegisterComponent<Transform>();
-        component_manager->RegisterComponent<ModelRenderer>();
+        component_manager->RegisterComponent<MeshRenderer>();
 
         EventListen(PROJECT_LOAD);
 
-        ComponentType t = component_manager->GetComponentType<ModelRenderer>();
+        ComponentType t = component_manager->GetComponentType<MeshRenderer>();
         printf("%i\n", t);
 
         auto a = component_manager->GetComponentValue(t);

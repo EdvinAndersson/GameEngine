@@ -4,6 +4,7 @@
 #include "ecs/ECS.h"
 #include "scene/SceneManager.h"
 #include "project/ProjectManager.h"
+#include "assets/AssetManager.h"
 
 namespace CW {
 
@@ -22,9 +23,10 @@ namespace CW {
 
             void OnEvent(Event event) override;
         private:
-            CW::ECS *ecs;
-            CW::SceneManager *scene_manager;
-            CW::ProjectManager *project_manager;
+            ECS *ecs;
+            SceneManager *scene_manager;
+            ProjectManager *project_manager;
+            AssetManager *asset_manager;
             bool running;
     };
 }

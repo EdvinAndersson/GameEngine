@@ -14,12 +14,25 @@ namespace CW {
     void Serialize::SubmitInt(int data) {
         int digits = CW::NumDigits(data);
         if (data < 0) digits++;
-        char *b = (char*) calloc(1, digits);
-        sprintf(b, "%ld", data);
-
-        memcpy(data_buffer + buffer_pos, b, digits);
+        sprintf(data_buffer + buffer_pos, "%ld", data);
         buffer_pos += digits;
-        delete b;
+
+        SubmitSeperator();
+    }
+
+    void Serialize::SubmitSize_t(size_t data) {
+        int digits = CW::NumDigits(data);
+        sprintf(data_buffer + buffer_pos, "%zu", data);
+        buffer_pos += digits;
+
+        SubmitSeperator();
+    }
+
+    void Serialize::SubmitFloat(float data) {
+        int digits = CW::NumDigits((int) data) + 8;
+        if (data < 0) digits++;
+        sprintf(data_buffer + buffer_pos, "%.7f", data);
+        buffer_pos += digits;
 
         SubmitSeperator();
     }
@@ -31,7 +44,16 @@ namespace CW {
         
         SubmitSeperator();
     }
-    
+    void Serialize::SubmitVec3(Vec3 data) {
+        SubmitFloat(data.x);
+        SubmitFloat(data.y);
+        SubmitFloat(data.z);
+    }
+    void Serialize::SubmitVec2(Vec2 data) {
+        SubmitFloat(data.x);
+        SubmitFloat(data.y);
+    }
+
     void Serialize::SubmitSeperator() {
         *(data_buffer + buffer_pos) = seperator;
         buffer_pos++;

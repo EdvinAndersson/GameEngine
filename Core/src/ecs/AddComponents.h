@@ -2,6 +2,6 @@
 #include "GameObject.h"
 namespace CW {
   void AddC(GameObject obj) {
-      obj.AddComponent<ModelRenderer>();
+      obj.AddComponent<MeshRenderer>();
   }
 }

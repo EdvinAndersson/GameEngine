@@ -1,7 +1,8 @@
 #pragma once
 
-#include "Utility/GLMath.h"
-#include "Utility/Rendering/Model.h"
+#include "GLMath.h"
+#include "Rendering/Model.h"
+#include "Rendering/Material.h"
 
 namespace CW {
 
@@ -10,8 +11,8 @@ namespace CW {
         Vec3 scale;
         Vec3 rotation;
     };
-    struct ModelRenderer {
-        Model *model;
-        Vec3 tint = { 1.0f, 1.0f, 1.0f };
+    struct MeshRenderer {
+        Mesh *mesh;
+        MaterialIndex material;
     };
 }
