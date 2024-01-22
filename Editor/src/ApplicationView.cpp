@@ -81,16 +81,29 @@ namespace CWEditor {
         if (ImGui::Button("Load project 2")) {
             cogwheel->GetProjectManager()->LoadProject("Editor/res/projects/Project2/Unnamed Project.proj");
         }
+        static CW::MaterialIndex material;
         if (ImGui::Button("Create Random Cube")) {
             CW::GameObject obj = CW::GameObject::Instantiate(Vec3 {(float) (CW::Random()*2.0f-1)*5, (float) (CW::Random()*2.0f-1)*5, -5-(float) CW::Random()*5.0f });
             CW::MeshRenderer& mesh_renderer = obj.AddComponent<CW::MeshRenderer>();
             mesh_renderer.mesh = CW::AssetManager::Get()->GetDefaultMeshIndex();
-            mesh_renderer.material = CW::AssetManager::Get()->GetMaterialIndex("Material2.mat");
+            mesh_renderer.material = material;
         }
-        if (ImGui::Button("Create And Load Material")) {
+        if (ImGui::Button("Material 1")) {
+            material = CW::AssetManager::Get()->GetMaterialIndex("Material1.mat");
+        }
+        if (ImGui::Button("Material 2")) {
+            material = CW::AssetManager::Get()->GetMaterialIndex("Material2.mat");
+        }
+        if (ImGui::Button("Create And Load Material 1")) {
             CW::Material mat = {};
             mat.albedo_color = Vec3 { 1.0f, 1.0f, 1.0f };
-            mat.albedo = CW::AssetManager::Get()->GetTextureIndex("BrickTexture.png");
+            mat.albedo = CW::AssetManager::Get()->GetTextureIndex("images/BrickTexture.png");
+            CW::AssetManager::Get()->CreateAndLoadMaterialAsset("Material1.mat", mat);
+        }
+        if (ImGui::Button("Create And Load Material 2")) {
+            CW::Material mat = {};
+            mat.albedo_color = Vec3 { 0.0f, 0.0f, 1.0f };
+            mat.albedo = CW::AssetManager::Get()->GetDefaultTextureIndex();
             CW::AssetManager::Get()->CreateAndLoadMaterialAsset("Material2.mat", mat);
         }
         ImGui::End();
