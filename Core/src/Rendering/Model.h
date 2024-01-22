@@ -12,13 +12,13 @@ namespace CW {
 
 	class Model {
 		public:
-			//void Draw(Shader *shader);
-			//void DrawInstanced(Shader *shader, int instance_count);
+			Model();
+			void Draw(Shader *shader);
+			void DrawInstanced(Shader *shader, int instance_count);
 
 			void Load(const char *path);
-			void LoadFromMemory(const char *data, int data_size);
 			
-			Mesh mesh;
+			MeshIndex mesh_index;
 			char *directory;
 			std::vector<Texture> textures_loaded;
 	};

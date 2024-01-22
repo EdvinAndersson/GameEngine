@@ -3,7 +3,7 @@
 #include "../vendor/stb_image/stb_image.h"
 #include "Shaders.h"
 #include "Models.h"
-#include "raw_cube.h"
+//#include "raw_cube.h"
 
 namespace CW {
 
@@ -24,8 +24,6 @@ namespace CW {
 
         const unsigned int shadow_width = 1024, shadow_height = 1024;
         unsigned int depth_map_fbo, depth_map;
-
-        Model *cube;
     };
 
     static R3D_Data *g_r3d_data;
@@ -61,7 +59,7 @@ namespace CW {
         g_r3d_data->skybox_shader = CreateShader(vertex_shader_skybox, fragment_shader_skybox);
         g_r3d_data->instance_shader = CreateShader(vertex_shader_instanced, fragment_shader);
 
-        g_r3d_data->defualt_texture = AssetManager::Get()->GetTexture("default");
+        g_r3d_data->defualt_texture = AssetManager::Get()->GetTexture("default_texture");
 
         R3D_Resize(window->GetWidth(), window->GetHeight());
         R3D_SetViewModel(Mat4Identity());
@@ -90,9 +88,6 @@ namespace CW {
         }
         g_r3d_data->active_shader = g_r3d_data->default_shader;
         g_r3d_data->active_shader.Use();
-
-        g_r3d_data->cube = new Model();
-        g_r3d_data->cube->LoadFromMemory((const char*)g_cube_model, sizeof(g_cube_model));
 
         R3D__CreateInstanceSSBO();
     }
@@ -156,37 +151,12 @@ namespace CW {
 
         skybox_texture.Use(0);
 
-        g_r3d_data->cube->Draw(&g_r3d_data->skybox_shader);
+        //TODO: Render skybox
+        //g_r3d_data->cube->Draw(&g_r3d_data->skybox_shader);
 
         glDepthMask(GL_TRUE);
     }
-
-    void R3D_RenderModel(Model *model, Vec3 position, Vec3 scale) {
-        R3D_RenderModel(model, position, scale, Vec3{ 1.0f, 1.0f, 1.0f }, QuatIdentity());
-    }
-    void R3D_RenderModel(Model *model, Vec3 position, Vec3 scale, Vec3 color) {
-        R3D_RenderModel(model, position, scale, color, QuatIdentity());
-    }
-    void R3D_RenderModel(Model *model, Vec3 position, Vec3 scale, Quaternion quaternion) {
-        R3D_RenderModel(model, position, scale, Vec3{ 1.0f, 1.0f, 1.0f }, quaternion);
-    }
-    void R3D_RenderModel(Model *model, Vec3 position, Vec3 scale, Vec3 color, Quaternion quaternion) {
-        g_r3d_data->active_shader.Use();
-
-        Mat4 transform = Mat4Identity();
-
-        transform = Mat4TranslateV3(transform, position);
-        transform = QuatToMat4(quaternion) * transform;
-        transform = Mat4ScaleV3(transform, scale);
-
-        g_r3d_data->active_shader.SetMat4f("model", &transform);
-        g_r3d_data->active_shader.SetV4("objectColor", color.r, color.g, color.b, 1.0f);
-        
-        g_r3d_data->defualt_texture.Use(0);
-
-        model->Draw(&g_r3d_data->active_shader);
-    }
-    void R3D_RenderMesh(Mesh *mesh, MaterialIndex material_index, Vec3 position, Vec3 scale, Quaternion quaternion) {
+    void R3D_RenderMesh(MeshIndex mesh_index, MaterialIndex material_index, Vec3 position, Vec3 scale, Quaternion quaternion) {
         g_r3d_data->active_shader.Use();
 
         Mat4 transform = Mat4Identity();
@@ -203,34 +173,10 @@ namespace CW {
         Texture albedo = AssetManager::Get()->GetTexture(material->albedo);
         albedo.Use(0);
 
-        g_r3d_data->cube->meshes[0].DrawMesh(&g_r3d_data->active_shader);
-        //mesh->DrawMesh(&g_r3d_data->active_shader);
+        Mesh *mesh = AssetManager::Get()->GetMesh(mesh_index);
+        mesh->DrawMesh(&g_r3d_data->active_shader);
     }
 
-    void R3D_RenderCube(Vec3 position, Vec3 scale, Vec3 color) {
-        R3D_RenderCube(position, scale, color, g_r3d_data->defualt_texture, QuatIdentity());
-    }
-    void R3D_RenderCube(Vec3 position, Vec3 scale, Vec3 color, Texture texture) {
-        R3D_RenderCube(position, scale, color, texture, QuatIdentity());
-    }
-    void R3D_RenderCube(Vec3 position, Vec3 scale, Vec3 color, Quaternion quaternion) {
-        R3D_RenderCube(position, scale, color, g_r3d_data->defualt_texture, quaternion);
-    }
-    void R3D_RenderCube(Vec3 position, Vec3 scale, Vec3 color, Texture texture, Quaternion quaternion) {
-        g_r3d_data->active_shader.Use();
-        Mat4 model = Mat4Identity();
-
-        model = Mat4TranslateV3(model, position);
-        model = QuatToMat4(quaternion) * model;
-        model = Mat4ScaleV3(model, scale);
-
-        g_r3d_data->active_shader.SetMat4f("model", &model);
-        g_r3d_data->active_shader.SetV4("objectColor", color.r, color.g, color.b, 1.0f);
-
-        texture.Use(0);
-
-        g_r3d_data->cube->Draw(&g_r3d_data->active_shader);
-    }
     void R3D__CreateInstanceSSBO() {
         g_r3d_data->matrices = new Mat4[g_r3d_data->max_instance_count];
 
@@ -248,6 +194,7 @@ namespace CW {
         R3D_RenderInstancedModel(position, scale, QuatIdentity());
     }
     void R3D_RenderInstancedModel(Vec3 position, Vec3 scale, Quaternion quaternion) {
+        #if 0
         Mat4 model = Mat4Identity();
 
         model = Mat4TranslateV3(model, position);
@@ -257,8 +204,10 @@ namespace CW {
         g_r3d_data->matrices[g_r3d_data->instance_count] = model;
 
         g_r3d_data->instance_count++;
+        #endif
     }
     void R3D_RenderInstanced() {
+        #if 0
         if (g_r3d_data->instance_count <= 0) return;
 
         g_r3d_data->instance_shader.Use();
@@ -270,6 +219,7 @@ namespace CW {
         g_r3d_data->instance_model->DrawInstanced(&g_r3d_data->instance_shader, g_r3d_data->instance_count);
 
         g_r3d_data->instance_count = 0;
+        #endif
     }
 
     void R3D_SetDirectionalLight(Vec3 direction, Vec3 ambient, Vec3 diffuse, Vec3 specular) {
@@ -302,9 +252,6 @@ namespace CW {
 
         g_r3d_data->point_lights++;
         g_r3d_data->active_shader.SetInt("number_of_point_lights", g_r3d_data->point_lights);
-    }
-    Model* R3D_GetDefaultCubeModel() {
-        return g_r3d_data->cube;
     }
     void R3D_UseShader(Shader *shader) {
         shader->Use();

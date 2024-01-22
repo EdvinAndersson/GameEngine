@@ -12,7 +12,7 @@ namespace CW {
         Vec3 rotation;
     };
     struct MeshRenderer {
-        Mesh *mesh;
+        MeshIndex mesh;
         MaterialIndex material;
     };
 }

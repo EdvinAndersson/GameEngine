@@ -35,19 +35,28 @@ namespace CW {
             Material* GetMaterial(MaterialIndex material_index);
             MaterialIndex GetMaterialIndex(char *path);
 
+            void LoadMesh(char *path);
+            Mesh* GetMesh(MeshIndex mesh_index);
+
+            void LoadModel(char *path);
+
             inline TextureIndex GetDefaultTextureIndex() { return default_texture_index; }
             inline MaterialIndex GetDefaultMaterialIndex() { return default_material_index; }
+            inline MeshIndex GetDefaultMeshIndex() { return default_mesh_index; }
 
             static AssetManager* Get();
         private:
             void GetAllAssetPaths(DIR *dir, char file_paths[MAX_ASSETS][256], unsigned int *count, char base_dir[256]);
 
             std::unordered_map<TextureIndex, TextureData *> loaded_textures = {};
-            std::unordered_map<ModelIndex, Model *> loaded_models = {};
             std::unordered_map<MaterialIndex, Material *> loaded_materials = {};
+
+            std::unordered_map<ModelIndex, Model *> loaded_models = {};
+            std::unordered_map<MeshIndex, Mesh *> loaded_meshes = {};
 
             TextureIndex default_texture_index;
             MaterialIndex default_material_index;
+            MeshIndex default_mesh_index;
             char assets_path[1024];
     };
 }

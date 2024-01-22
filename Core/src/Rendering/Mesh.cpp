@@ -6,20 +6,13 @@
 
 namespace CW {
 
-    Mesh::Mesh(Vertex *_vertices, unsigned int *_indices, Texture *_textures, unsigned int vertex_count, unsigned int index_count, unsigned int texture_count)
-        :vertices(_vertices), indices(_indices), textures(_textures), vertex_count(vertex_count), index_count(index_count), texture_count(texture_count) {
-
+    Mesh::Mesh() {
         glGenVertexArrays(1, &VAO);
         glGenBuffers(1, &VBO);
         glGenBuffers(1, &EBO);
 
         glBindVertexArray(VAO);
         glBindBuffer(GL_ARRAY_BUFFER, VBO);
-
-        glBufferData(GL_ARRAY_BUFFER, vertex_count * sizeof(Vertex), &vertices[0], GL_STATIC_DRAW);
-
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, index_count * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
 
         // vertex positions
         glEnableVertexAttribArray(0);
@@ -37,11 +30,36 @@ namespace CW {
         glBindVertexArray(0);
     }
     Mesh::~Mesh() {
-        //delete[] vertices;
-        //delete[] indices;
+        delete[] vertices;
+        delete[] indices;
         //delete[] textures;
+
+        for (Mesh *m : submeshes) {
+            delete m;
+        }
+        submeshes.clear();
+    }
+    void Mesh::Load(char *path) {
+        const aiScene *scene = aiImportFile(path, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
+
+		if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
+			printf("ERROR::ASSIMP::%s", aiGetErrorString());
+			return;
+		}
+
+		
     }
     void Mesh::LoadMesh(const aiScene *scene) {
+        ProcessNode(this, scene->mRootNode, scene);
+    }
+    void Mesh::LoadMeshFromData(const char *data, int data_size) {
+        const struct aiScene *scene = aiImportFileFromMemory(data, data_size, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace, 0);
+
+		if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
+			printf("ERROR::ASSIMP::%s", aiGetErrorString());
+			return;
+		}
+
         ProcessNode(this, scene->mRootNode, scene);
     }
     void Mesh::ProcessNode(Mesh *m, aiNode *node, const aiScene *scene) {
@@ -50,7 +68,7 @@ namespace CW {
 		{
 			struct aiMesh *ai_mesh = scene->mMeshes[node->mMeshes[i]];
 
-			m->submeshes.push_back(CreateMesh(ai_mesh, scene));
+			m->submeshes.push_back(CreateSubMesh(ai_mesh));
 		}
 		// then do the same for each of its children
 		for (unsigned int i = 0; i < node->mNumChildren; i++)
@@ -58,14 +76,14 @@ namespace CW {
 			ProcessNode(m, node->mChildren[i], scene);
 		}
 	}
-    Mesh *Mesh::CreateMesh(struct aiMesh *ai_mesh, const struct aiScene *scene) {
-		Vertex *vertices = new Vertex[ai_mesh->mNumVertices];
+    Mesh *Mesh::CreateSubMesh(struct aiMesh *ai_mesh) {
+		Vertex *sub_vertices = new Vertex[ai_mesh->mNumVertices];
 
-		unsigned int index_count = 0;
+		unsigned int sub_index_count = 0;
 		for (unsigned int i = 0; i < ai_mesh->mNumFaces; i++) {
-			index_count += ai_mesh->mFaces[i].mNumIndices;
+			sub_index_count += ai_mesh->mFaces[i].mNumIndices;
 		}
-		unsigned int* indices = new unsigned int[index_count];
+		unsigned int* sub_indices = new unsigned int[sub_index_count];
 		
 		for (unsigned int i = 0; i < ai_mesh->mNumVertices; i++)
 		{
@@ -106,7 +124,7 @@ namespace CW {
 			bitangent.z = ai_mesh->mBitangents[i].z;
 			vertex.bitangent = bitangent;
 			
-			vertices[i] = vertex;
+			sub_vertices[i] = vertex;
 		}
 
 		// process indices
@@ -114,12 +132,32 @@ namespace CW {
 		for (unsigned int i = 0; i < ai_mesh->mNumFaces; i++) {
 			struct aiFace face = ai_mesh->mFaces[i];
 			for (unsigned int j = 0; j < face.mNumIndices; j++) {
-				indices[index++] = face.mIndices[j];
+				sub_indices[index++] = face.mIndices[j];
 			}
 		}
 
-        return new Mesh(vertices, indices, textures, vertex_count, index_count, texture_count);
+        Mesh *submesh = new Mesh();
+        submesh->SubmitMeshData(sub_vertices, sub_indices, ai_mesh->mNumVertices, sub_index_count);
+        return submesh;
 	}
+
+    void Mesh::SubmitMeshData(Vertex *vertices, unsigned int *indices, unsigned int vertex_count, unsigned int index_count) {
+        this->vertices = vertices;
+        this->indices = indices;
+        this->vertex_count = vertex_count;
+        this->index_count = index_count;
+
+        glBindVertexArray(VAO);
+        glBindBuffer(GL_ARRAY_BUFFER, VBO);
+
+        glBufferData(GL_ARRAY_BUFFER, vertex_count * sizeof(Vertex), &vertices[0], GL_STATIC_DRAW);
+
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, index_count * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
+
+        glBindVertexArray(0);
+    }
+
     void Mesh::MakeInstanced() {
         glBindVertexArray(VAO);
 
@@ -143,7 +181,12 @@ namespace CW {
         glBindVertexArray(0);
     }
     void Mesh::DrawMesh(Shader *shader) {
-        BindMeshTextures(shader);
+        for (Mesh* submesh : submeshes) {
+            submesh->DrawSubmesh(shader);
+        }
+    }
+    void Mesh::DrawSubmesh(Shader *shader) {
+        //BindMeshTextures(shader);
 
         glBindVertexArray(VAO);
         glDrawElements(GL_TRIANGLES, (GLsizei) index_count, GL_UNSIGNED_INT, 0);

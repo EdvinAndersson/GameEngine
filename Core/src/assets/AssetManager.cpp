@@ -1,5 +1,7 @@
 #include "AssetManager.h"
 
+#include "Rendering/raw_cube.h"
+
 namespace CW {
 
     AssetManager *g_asset_manager;
@@ -11,7 +13,7 @@ namespace CW {
         EventListen(EventType::PROJECT_LOAD);
 
         //Load default white texuture
-        default_texture_index = HashString("default");
+        default_texture_index = HashString("default_texture");
         Texture_Format format = { GL_RGBA, TEXTURE_NEAREST_NEIGHBOR };
         TextureData *texture_data = CreateBlankTexture(format);
         loaded_textures.insert({ default_texture_index, texture_data });
@@ -22,8 +24,14 @@ namespace CW {
         material->albedo_color = Vec3{ 1.0f, 1.0f, 1.0f };
         material->albedo = default_texture_index;
         loaded_materials.insert({ default_material_index, material });
-        int a;
+
+        //Load default cube mesh
+        default_mesh_index = HashString("default_mesh");
+        Mesh *mesh = new Mesh();
+        mesh->LoadMeshFromData((const char*) g_cube_model, sizeof(g_cube_model));
+        loaded_meshes.insert({ default_mesh_index, mesh });
     }
+
     AssetManager* AssetManager::Get() {
         return g_asset_manager;
     }
@@ -92,7 +100,6 @@ namespace CW {
 
     }
     void AssetManager::UnloadAssets() {
-
         //Unload textures
         for (auto& it : loaded_textures) {
             if (it.first == default_texture_index)
@@ -113,6 +120,16 @@ namespace CW {
         CW::Material *default_material = loaded_materials[default_material_index];
         loaded_materials.clear();
         loaded_materials.insert({ default_material_index, default_material });
+
+        //Unload meshes
+        for (auto& it : loaded_meshes) {
+            if (it.first == default_mesh_index)
+                continue;
+            delete it.second;
+        }
+        Mesh *default_mesh = loaded_meshes[default_mesh_index];
+        loaded_meshes.clear();
+        loaded_meshes.insert({ default_mesh_index, default_mesh });
     }
 
     void AssetManager::LoadTexture(char *path) {
@@ -212,6 +229,47 @@ namespace CW {
 
     MaterialIndex AssetManager::GetMaterialIndex(char *path) {
         return HashString(path);
+    }
+
+    void AssetManager::LoadMesh(char *path) {
+        size_t hashed_path = HashString(path);
+
+        if (loaded_meshes.find(hashed_path) != loaded_meshes.end()){
+            printf("Mesh is already loaded! %s\n", path);
+            return;
+        }
+        char full_path[1024] = {};
+        strcpy(full_path, assets_path);
+        strcat(full_path, "/");
+        strcat(full_path, path);
+
+        Mesh *mesh = new Mesh();
+        //mesh.L
+    }
+
+    Mesh* AssetManager::GetMesh(MeshIndex mesh_index) {
+        return loaded_meshes[mesh_index];
+    }
+
+    void AssetManager::LoadModel(char *path) {
+        size_t hashed_path = HashString(path);
+
+        if (loaded_models.find(hashed_path) != loaded_models.end()){
+            printf("Model is already loaded! %s\n", path);
+            return;
+        }
+        char full_path[1024] = {};
+        strcpy(full_path, assets_path);
+        strcat(full_path, "/");
+        strcat(full_path, path);
+
+        Model *model = new Model();
+        model->Load(path);
+        loaded_models.insert({ hashed_path, model });
+
+        Mesh *mesh = new Mesh();
+        mesh->Load(path);
+        loaded_meshes.insert({ hashed_path, mesh });
     }
 
     void AssetManager::GetAllAssetPaths(DIR *dir, char file_paths[MAX_ASSETS][256], unsigned int *count, char base_dir[256]) {

@@ -109,7 +109,7 @@ namespace CW {
 
                 if (signature.test(1)) {
                     CW::MeshRenderer& mesh_renderer = obj.AddComponent<CW::MeshRenderer>();
-                    //mesh_renderer.mesh = R3D_GetDefaultCubeModel();
+                    mesh_renderer.mesh = deserialized.GetSize_t();
                     mesh_renderer.material = deserialized.GetSize_t();
                 }
             }
@@ -176,6 +176,7 @@ namespace CW {
 
                 if (obj.HasComponent<CW::MeshRenderer>()) {
                     CW::MeshRenderer& mesh_renderer = obj.GetComponent<CW::MeshRenderer>();
+                    serialized.SubmitSize_t(mesh_renderer.mesh);
                     serialized.SubmitSize_t(mesh_renderer.material);
                 }
             }

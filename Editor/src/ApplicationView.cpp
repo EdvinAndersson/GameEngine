@@ -84,7 +84,7 @@ namespace CWEditor {
         if (ImGui::Button("Create Random Cube")) {
             CW::GameObject obj = CW::GameObject::Instantiate(Vec3 {(float) (CW::Random()*2.0f-1)*5, (float) (CW::Random()*2.0f-1)*5, -5-(float) CW::Random()*5.0f });
             CW::MeshRenderer& mesh_renderer = obj.AddComponent<CW::MeshRenderer>();
-            //mesh_renderer.mesh = CW::R3D_GetDefaultCubeModel();
+            mesh_renderer.mesh = CW::AssetManager::Get()->GetDefaultMeshIndex();
             mesh_renderer.material = CW::AssetManager::Get()->GetMaterialIndex("Material2.mat");
         }
         if (ImGui::Button("Create And Load Material")) {
