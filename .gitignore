@@ -1,5 +1,4 @@
 *.obj
-*.lib
 *.exe
 *.exp
 *.pdb
