@@ -1,4 +1,4 @@
-*.obj
+*/build/*.obj
 *.exe
 *.exp
 *.pdb
