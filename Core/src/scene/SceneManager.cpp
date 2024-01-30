@@ -1,4 +1,5 @@
 #include "SceneManager.h"
+#include "CWAssert.h"
 
 namespace CW {
 
@@ -10,12 +11,12 @@ namespace CW {
     }
 
     void SceneManager::CreateNewScene(char* name) {
-        Assert(current_project != 0);
+        CW_ASSERT(current_project != 0, "");
 
         CreateNewScene(current_project, name);
     }
     void SceneManager::CreateNewScene(Project *project, char* name) {
-        Assert(project->scene_count < MAX_SCENES);
+        CW_ASSERT(project->scene_count < MAX_SCENES, "");
 
         Scene scene;
         strcpy(scene.name, name);
@@ -24,7 +25,7 @@ namespace CW {
     }
 
     void SceneManager::SetActiveScene(char* scene_name) {
-        Assert(current_project != 0);
+        CW_ASSERT(current_project != 0, "");
 
         for (unsigned int i = 0; i < current_project->scene_count; i++) {
             if (strcmp(current_project->scenes[i].name, scene_name) == 0) {
@@ -33,7 +34,7 @@ namespace CW {
                 return;
             }
         }
-        Assert(false);
+        CW_ASSERT(false, "");
     }
 
     void SceneManager::OnEvent(Event event) {
@@ -46,7 +47,7 @@ namespace CW {
             } break;
             case EventType::ECS_INSTANTIATE_GAMEOBJECT:
             {
-                Assert(current_project != 0);
+                CW_ASSERT(current_project != 0, "");
 
                 EventData_ECS_INSTANTIATE_GAMEOBJECT *e = (EventData_ECS_INSTANTIATE_GAMEOBJECT*) event.data;
 
@@ -54,7 +55,7 @@ namespace CW {
             } break;
             case EventType::ECS_DESTROY_GAMEOBJECT:
             {
-                Assert(current_project != 0);
+                CW_ASSERT(current_project != 0, "");
 
                 EventData_ECS_DESTROY_GAMEOBJECT *e = (EventData_ECS_DESTROY_GAMEOBJECT*) event.data;
                 current_project->scenes[current_scene_id].game_objects.erase(e->game_object);
@@ -62,17 +63,17 @@ namespace CW {
         }
     }
     Scene& SceneManager::GetActiveScene() {
-        Assert(current_project != 0);
+        CW_ASSERT(current_project != 0, "");
         
         return current_project->scenes[current_scene_id]; 
     }
     Scene* SceneManager::GetScenes() { 
-        Assert(current_project != 0);
+        CW_ASSERT(current_project != 0, "");
 
         return current_project->scenes; 
     }
     unsigned int SceneManager::GetSceneCount() { 
-        Assert(current_project != 0);
+        CW_ASSERT(current_project != 0, "");
 
         return current_project->scene_count; 
     }

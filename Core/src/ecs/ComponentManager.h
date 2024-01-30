@@ -5,6 +5,7 @@
 #include "Entity.h"
 #include "Component.h"
 #include "ComponentArray.h"
+#include "CWAssert.h"
 
 namespace CW {
 
@@ -16,7 +17,7 @@ namespace CW {
 		{
 			const char *typeName = typeid(T).name();
 
-			assert(mComponentTypes.find(typeName) == mComponentTypes.end() && "Registering component type more than once.");
+			CW_ASSERT(mComponentTypes.find(typeName) == mComponentTypes.end(), "Registering component type more than once.");
 
 			// Add this component type to the component type map
 			mComponentTypes.insert({ typeName, mNextComponentType });
@@ -33,7 +34,7 @@ namespace CW {
 		{
 			const char *typeName = typeid(T).name();
 
-			assert(mComponentTypes.find(typeName) != mComponentTypes.end() && "Component not registered before use.");
+			CW_ASSERT(mComponentTypes.find(typeName) != mComponentTypes.end(), "Component not registered before use.");
 
 			// Return this component's type - used for creating signatures
 			return mComponentTypes[typeName];
@@ -77,7 +78,7 @@ namespace CW {
 		{
 			const char *typeName = typeid(T).name();
 
-			assert(mComponentTypes.find(typeName) != mComponentTypes.end() && "Component not registered before use.");
+			CW_ASSERT(mComponentTypes.find(typeName) != mComponentTypes.end(), "Component not registered before use.");
 
 			return std::static_pointer_cast<ComponentArray<T>>(mComponentArrays[typeName]);
 		}

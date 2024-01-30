@@ -86,7 +86,7 @@ namespace CWEditor {
             CW::GameObject obj = CW::GameObject::Instantiate(Vec3 {(float) (CW::Random()*2.0f-1)*5, (float) (CW::Random()*2.0f-1)*5, -5-(float) CW::Random()*5.0f });
             CW::MeshRenderer& mesh_renderer = obj.AddComponent<CW::MeshRenderer>();
             mesh_renderer.mesh = CW::AssetManager::Get()->GetDefaultMeshIndex();
-            mesh_renderer.material = material;
+            mesh_renderer.material = CW::AssetManager::Get()->GetDefaultMaterialIndex();
         }
         if (ImGui::Button("Material 1")) {
             material = CW::AssetManager::Get()->GetMaterialIndex("Material1.mat");
@@ -105,6 +105,13 @@ namespace CWEditor {
             mat.albedo_color = Vec3 { 0.0f, 0.0f, 1.0f };
             mat.albedo = CW::AssetManager::Get()->GetDefaultTextureIndex();
             CW::AssetManager::Get()->CreateAndLoadMaterialAsset("Material2.mat", mat);
+        }
+        if (ImGui::Button("Build Game")) {
+            STARTUPINFOA si = {};
+            PROCESS_INFORMATION pi = {};
+            bool success = CreateProcessA(NULL, "Core\\export\\export.bat", NULL, NULL, false, 0, NULL, NULL, &si, &pi);
+            
+            CW_ASSERT(success != 0, "Could not build the game!");
         }
         ImGui::End();
 

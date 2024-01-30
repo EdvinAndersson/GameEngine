@@ -1,4 +1,5 @@
 #include "Window.h"
+#include "CWAssert.h"
 
 #pragma comment (lib, "opengl32.lib")
 
@@ -268,7 +269,7 @@ namespace CW {
 			PIXELFORMATDESCRIPTOR desc;
 			desc.nSize = sizeof(desc);
 			int ok = DescribePixelFormat(hdc, format, sizeof(desc), &desc);
-			Assert(ok && "Failed to describe OpenGL pixel format");
+			CW_ASSERT(ok, "Failed to describe OpenGL pixel format");
 
 			if (!SetPixelFormat(hdc, format, &desc))
 			{
@@ -297,7 +298,7 @@ namespace CW {
 		}
 
 		BOOL ok = wglMakeCurrent(hdc, rc);
-		Assert(ok && "Failed to make current OpenGL context");
+		CW_ASSERT(ok, "Failed to make current OpenGL context");
 
 		printf("OPENGL VERSION: %s\n", (char *)glGetString(GL_VERSION));
 	}
@@ -315,10 +316,10 @@ namespace CW {
 			0, L"STATIC", L"DummyWindow", WS_OVERLAPPED,
 			CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
 			NULL, NULL, NULL, NULL);
-		Assert(dummy && "Failed to create dummy window");
+		CW_ASSERT(dummy, "Failed to create dummy window");
 
 		HDC dc = GetDC(dummy);
-		Assert(dc && "Failed to get device context for dummy window");
+		CW_ASSERT(dc, "Failed to get device context for dummy window");
 
 		PIXELFORMATDESCRIPTOR desc;
 		desc.nSize = sizeof(desc);
@@ -334,7 +335,7 @@ namespace CW {
 		}
 
 		int ok = DescribePixelFormat(dc, format, sizeof(desc), &desc);
-		Assert(ok && "Failed to describe OpenGL pixel format");
+		CW_ASSERT(ok, "Failed to describe OpenGL pixel format");
 
 		// reason to create dummy window is that SetPixelFormat can be called only once for the window
 		if (!SetPixelFormat(dc, format, &desc))
@@ -343,10 +344,10 @@ namespace CW {
 		}
 
 		HGLRC rc = wglCreateContext(dc);
-		Assert(rc && "Failed to create OpenGL context for dummy window");
+		CW_ASSERT(rc, "Failed to create OpenGL context for dummy window");
 
 		ok = wglMakeCurrent(dc, rc);
-		Assert(ok && "Failed to make current OpenGL context for dummy window");
+		CW_ASSERT(ok, "Failed to make current OpenGL context for dummy window");
 
 		// https://www.khronos.org/registry/OpenGL/extensions/ARB/WGL_ARB_extensions_string.txt
 		PFNWGLGETEXTENSIONSSTRINGARBPROC wglGetExtensionsStringARB = (PFNWGLGETEXTENSIONSSTRINGARBPROC) wglGetProcAddress("wglGetExtensionsStringARB");
@@ -356,7 +357,7 @@ namespace CW {
 		}
 
 		const char* ext = wglGetExtensionsStringARB(dc);
-		Assert(ext && "Failed to get OpenGL WGL extension string");
+		CW_ASSERT(ext, "Failed to get OpenGL WGL extension string");
 
 		const char* start = ext;
 		for (;;)

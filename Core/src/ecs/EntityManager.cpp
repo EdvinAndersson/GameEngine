@@ -1,5 +1,5 @@
 #include "EntityManager.h"
-
+#include "CWAssert.h"
 
 namespace CW {
 	EntityManager::EntityManager()
@@ -9,7 +9,7 @@ namespace CW {
 
 	Entity EntityManager::CreateEntity()
 	{
-		assert(mLivingEntityCount < MAX_ENTITIES && "Too many entities in existence.");
+		CW_ASSERT(mLivingEntityCount < MAX_ENTITIES, "Too many entities in existence.");
 
 		// Take an ID from the front of the queue
 		Entity entity = mAvailableEntities.front();
@@ -21,7 +21,7 @@ namespace CW {
 
 	void EntityManager::DestroyEntity(Entity entity)
 	{
-		assert(entity < MAX_ENTITIES && "Entity out of range.");
+		CW_ASSERT(entity < MAX_ENTITIES, "Entity out of range.");
 
 		// Invalidate the destroyed entity's signature
 		mSignatures[entity].reset();
@@ -33,7 +33,7 @@ namespace CW {
 
 	void EntityManager::SetSignature(Entity entity, Signature signature)
 	{
-		assert(entity < MAX_ENTITIES && "Entity out of range.");
+		CW_ASSERT(entity < MAX_ENTITIES, "Entity out of range.");
 
 		// Put this entity's signature into the array
 		mSignatures[entity] = signature;
@@ -41,7 +41,7 @@ namespace CW {
 
 	Signature EntityManager::GetSignature(Entity entity)
 	{
-		assert(entity < MAX_ENTITIES && "Entity out of range.");
+		CW_ASSERT(entity < MAX_ENTITIES, "Entity out of range.");
 
 		// Get this entity's signature from the array
 		return mSignatures[entity];

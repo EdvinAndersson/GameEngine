@@ -10,6 +10,8 @@
 #include "vendor/imgui/backends/imgui_impl_opengl3.h"
 #include "vendor/imgui/backends/imgui_impl_win32.h"
 
+#include <cstdlib>
+
 namespace CWEditor {
 
     class ApplicationView : CW::IEventListener {

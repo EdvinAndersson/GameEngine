@@ -1,14 +1,9 @@
 #include "Cogwheel.h"
+#include "CWAssert.h"
 #include "event/EventManager.h"
 #include "ecs/GameObject.h"
 
 namespace CW {
-
-    #ifdef DEBUG
-    #define Assert(expr) if (!expr) { *(int *)0 = 0; }
-    #else
-    #define Assert(expr)
-    #endif
 
     Cogwheel::Cogwheel() {}
 
@@ -51,7 +46,7 @@ namespace CW {
             } break;
             default:
             {
-                Assert(false);
+                CW_ASSERT(false, "");
             }
         }
     }

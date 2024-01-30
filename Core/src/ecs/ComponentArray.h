@@ -1,4 +1,5 @@
 #pragma once
+#include "CWAssert.h"
 
 namespace CW {
 	// The one instance of virtual inheritance in the entire implementation.
@@ -19,7 +20,7 @@ namespace CW {
 	{
 	public:
 		void InsertData(Entity entity, T component) {
-			assert(mEntityToIndexMap.find(entity) == mEntityToIndexMap.end() && "Component added to same entity more than once.");
+			CW_ASSERT(mEntityToIndexMap.find(entity) == mEntityToIndexMap.end(), "Component added to same entity more than once.");
 
 			// Put new entry at end and update the maps
 			size_t newIndex = mSize;
@@ -30,7 +31,7 @@ namespace CW {
 		}
 
 		void RemoveData(Entity entity) {
-			assert(mEntityToIndexMap.find(entity) != mEntityToIndexMap.end() && "Removing non-existent component.");
+			CW_ASSERT(mEntityToIndexMap.find(entity) != mEntityToIndexMap.end(), "Removing non-existent component.");
 
 			// Copy element at end into deleted element's place to maintain density
 			size_t indexOfRemovedEntity = mEntityToIndexMap[entity];
@@ -49,7 +50,7 @@ namespace CW {
 		}
 
 		T &GetData(Entity entity) {
-			assert(mEntityToIndexMap.find(entity) != mEntityToIndexMap.end() && "Retrieving non-existent component.");
+			CW_ASSERT(mEntityToIndexMap.find(entity) != mEntityToIndexMap.end(), "Retrieving non-existent component.");
 
 			// Return a reference to the entity's component
 			return mComponentArray[mEntityToIndexMap[entity]];

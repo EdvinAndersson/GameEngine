@@ -86,8 +86,6 @@ namespace CW {
 		F12 = 0x7B,
 	};
 
-	#define Assert(cond) do { if (!(cond)) __debugbreak(); } while (0)
-
 	typedef LRESULT (ImGUIWindowsProcHandler)(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 	enum WindowEventType {

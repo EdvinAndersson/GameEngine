@@ -1,4 +1,5 @@
 #include "Application.h"
+#include "CWAssert.h"
 
 namespace CWEditor {
     
@@ -94,7 +95,7 @@ namespace CWEditor {
             } break;
             default:
             {
-                Assert(false);
+                CW_ASSERT(false, "");
             }
         }
     }

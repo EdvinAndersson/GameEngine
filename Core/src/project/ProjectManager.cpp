@@ -1,4 +1,5 @@
 #include "ProjectManager.h"
+#include "CWAssert.h"
 #include "Utility.h"
 #include <stdlib.h>
 #include <stdio.h>
@@ -19,10 +20,7 @@ namespace CW {
         if (!FolderExists(project_folder_path)) {
             int result = FolderCreate(project_folder_path);
 
-            if (result == -1) {
-                printf("Project folder could not be created. %s\n", project_folder_path);
-                return 0;
-            }
+            CW_ASSERT(result == 0, "Project folder could not be created.");
         }
 
         EventData_PROJECT_CREATE e = { project };
@@ -34,7 +32,7 @@ namespace CW {
         char *begin = strchr(data, b) + 1;
         char *end = strchr(data, e);
 
-        Assert(end > begin);
+        CW_ASSERT(end > begin, "");
 
         char *str = (char *) calloc(end - begin + 1, 1);
         strncpy(str, begin, end - begin);

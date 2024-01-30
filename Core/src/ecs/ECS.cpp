@@ -19,6 +19,7 @@ namespace CW {
 
         EventListen(PROJECT_LOAD);
 
+#if 0
         ComponentType t = component_manager->GetComponentType<MeshRenderer>();
         printf("%i\n", t);
 
@@ -38,7 +39,7 @@ namespace CW {
         fprintf(file_output, "  }\n");
         fprintf(file_output, "}\n");
         fclose(file_output);
-
+#endif
         //
         //AddC(obj);
 
