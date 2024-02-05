@@ -78,7 +78,7 @@ namespace CW {
             shader.SetFloat("material.shininess", 0.078125f * 128.0f);
 
             shader.SetV3("dirLight.direction", vec3s{ 1, -2, 1 });
-            shader.SetV3("dirLight.ambient", vec3s{ 0.3f, 0.3f, 0.3f });
+            shader.SetV3("dirLight.ambient", vec3s{ 0.4f, 0.4f, 0.4f });
             shader.SetV3("dirLight.diffuse", vec3s{ 1.0f, 1.0f, 1.0f });
             shader.SetV3("dirLight.specular", vec3s { 0.0f, 0.0f, 0.0f });
 

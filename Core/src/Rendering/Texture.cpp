@@ -9,6 +9,7 @@ namespace CW {
 
     TextureData* CreateTexture(const char *path) {
         Texture_Format texture_format;
+
         texture_format.color_format = GL_RGBA;
         texture_format.texture_filtering = TEXTURE_NEAREST_NEIGHBOR;
 
@@ -17,7 +18,16 @@ namespace CW {
     TextureData* CreateTexture(const char *path, Texture_Format texture_format) {
         TextureData *texture_data = GetTextureData(path);
         texture_data->texture_format = texture_format;
-        texture_data->texture = CreateTextureFromData(texture_data->data, texture_data->width, texture_data->height, texture_format);
+
+        switch (texture_data->nr_channels) {
+            case 3: {
+                texture_data->texture_format.color_format = GL_RGB;
+            } break;
+            case 4: {
+                texture_data->texture_format.color_format = GL_RGBA;
+            } break;
+        }
+        texture_data->texture = CreateTextureFromData(texture_data->data, texture_data->width, texture_data->height, texture_data->texture_format);
 
         return texture_data;
     }
@@ -31,7 +41,6 @@ namespace CW {
         unsigned int data = 0xFFFFFFFF;
         texture_data->data = (unsigned char*) &data;
 
-        //texture_data->texture = CreateTextureFromData(texture_data->data, 1, 1, texture_format);
         texture_data->texture = CreateTextureFromData((unsigned char*) &data, 1, 1, texture_format);
 
         return texture_data;
@@ -57,7 +66,7 @@ namespace CW {
         }
 
         if (data) {
-            glTexImage2D(GL_TEXTURE_2D, 0, texture_format.color_format, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+            glTexImage2D(GL_TEXTURE_2D, 0, texture_format.color_format, width, height, 0, texture_format.color_format, GL_UNSIGNED_BYTE, data);
             glGenerateMipmap(GL_TEXTURE_2D);
         }
         else {
@@ -68,8 +77,7 @@ namespace CW {
     }
     TextureData* GetTextureData(const char *path) {
         TextureData *texture_data = new TextureData();
-        int nr_channels;
-        texture_data->data = stbi_load(path, &texture_data->width, &texture_data->height, &nr_channels, 0);
+        texture_data->data = stbi_load(path, &texture_data->width, &texture_data->height, &texture_data->nr_channels, 0);
 
         return texture_data;
     }

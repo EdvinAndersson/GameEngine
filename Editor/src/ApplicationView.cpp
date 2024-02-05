@@ -166,7 +166,7 @@ namespace CWEditor {
             float height = width * aspect_ratio;
             
             ImGui::Image((ImTextureID)framebuffer_game_view->GetTexture().id, ImVec2 {width, height });
-            ImGui::Image((ImTextureID)framebuffer_depth_view->GetTexture().id, ImVec2 {width, height });
+            //ImGui::Image((ImTextureID)framebuffer_depth_view->GetTexture().id, ImVec2 {width, height });
             
             ImGui::End();
         }
@@ -187,7 +187,7 @@ namespace CWEditor {
             CW::GameObject obj = CW::GameObject::Instantiate(vec3s {(float) (CW::Random()*2.0f-1)*5, (float) (CW::Random()*2.0f-1)*5, -5-(float) CW::Random()*5.0f });
             CW::MeshRenderer& mesh_renderer = obj.AddComponent<CW::MeshRenderer>();
             mesh_renderer.mesh = CW::AssetManager::Get()->GetDefaultMeshIndex();
-            mesh_renderer.material = CW::AssetManager::Get()->GetDefaultMaterialIndex();
+            mesh_renderer.material = material;//CW::AssetManager::Get()->GetDefaultMaterialIndex();
         }
         if (ImGui::Button("Material 1")) {
             material = CW::AssetManager::Get()->GetMaterialIndex("Material1.mat");

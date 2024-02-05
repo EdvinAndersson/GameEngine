@@ -144,7 +144,10 @@ void main()
 	if(color.a < 0.5)
         discard;
 
-	FragColor = vec4(pow(color.rgb,vec3(1/2.2f)),color.a);
+    //gamma correction
+    //vec4 gamma_corrected = vec4(pow(color.rgb,vec3(1/2.2f)),color.a);
+    
+    FragColor = color;
 }
 float ShadowCalculation(vec4 fragPosLightSpace)
 {
@@ -271,7 +274,7 @@ layout (location = 3) in vec3 aTangent;
 
 layout (std430, binding = 0) buffer Model
 {
-	mat4 models[100000];
+	mat4 models[1000];
 };
 
 out VS_OUT {
@@ -288,6 +291,7 @@ uniform mat4 view;
 uniform mat4 projection;
 
 uniform vec3 viewPos;
+uniform mat4 lightSpaceMatrix;
 
 void main()
 {
@@ -297,6 +301,7 @@ void main()
 	vs_out.FragPos = vec3(model * vec4(aPos, 1.0));
 	vs_out.TexCoords = aTexCoords;
     vs_out.Normal = mat3(transpose(inverse(model))) * aNormal;
+    vs_out.FragPosLightSpace = lightSpaceMatrix * vec4(vs_out.FragPos, 1.0);
 
     mat3 normalMatrix = transpose(inverse(mat3(model)));
     vec3 T = normalize(normalMatrix * aTangent);

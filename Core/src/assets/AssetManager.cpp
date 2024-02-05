@@ -289,15 +289,16 @@ namespace CW {
                 continue;
 
             if (ent->d_type == DT_DIR) {
-                char new_path[256] = {};
-                strcpy(new_path, assets_path);
-                strcat(new_path, "/");
-                strcat(new_path, ent->d_name);
 
                 char next_base_dir[256];
                 strcpy(next_base_dir, base_dir);
                 strcat(next_base_dir, ent->d_name);
                 strcat(next_base_dir, "/");
+
+                char new_path[256] = {};
+                strcpy(new_path, assets_path);
+                strcat(new_path, "/");
+                strcat(new_path, next_base_dir);
 
                 DIR *di = opendir(new_path);
                 GetAllAssetPaths(di, file_paths, count, next_base_dir);

@@ -24,7 +24,7 @@ namespace CW {
 	struct TextureData {
 		Texture texture;
 		unsigned char *data;
-		int width, height;
+		int width, height, nr_channels;
 
 		const char *type;
 		char path[256];
