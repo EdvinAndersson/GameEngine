@@ -5,7 +5,7 @@
 #include "string"
 
 #include "Utility.h"
-#include "GLMath.h"
+#include "cglm/struct.h"
 
 namespace CW {
 
@@ -18,8 +18,8 @@ namespace CW {
             void SubmitSize_t(size_t data);
             void SubmitFloat(float data);
             void SubmitString(char *data);
-            void SubmitVec3(Vec3 data);
-            void SubmitVec2(Vec2 data);
+            void SubmitVec3(vec3s data);
+            void SubmitVec2(vec2s data);
 
             inline char *GetData() { return data_buffer; }
         private:

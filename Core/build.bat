@@ -5,6 +5,7 @@ pushd build
 
 set compile_flags=/W4 /Zi /c /MTd /MP /Od /FC /wd4201 /fsanitize=address -D_CRT_SECURE_NO_WARNINGS -D UNICODE -DDEBUG ^
 -I../src/vendor/assimp/include ^
+-I../src/vendor/cglm-master/include ^
 -I../src
 
 set linker_flags=gdi32.lib user32.lib kernel32.lib shell32.lib ^
@@ -12,9 +13,9 @@ set linker_flags=gdi32.lib user32.lib kernel32.lib shell32.lib ^
 ../src/vendor/assimp/lib/assimp-vc142-mtd.lib
 
 set source_files=^
+../src/*.cpp ^
 ../src/Rendering/*.cpp ^
 ../src/vendor/stb_image/*.c ^
-../src/*.cpp ^
 ../src/event/*.cpp ^
 ../src/ecs/*.cpp ^
 ../src/project/*.cpp ^

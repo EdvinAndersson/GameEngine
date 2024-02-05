@@ -7,6 +7,7 @@
 #include "EntityManager.h"
 #include "ComponentManager.h"
 #include "Components.h"
+#include "cglm/struct.h"
 
 namespace CW {
 
@@ -16,7 +17,7 @@ namespace CW {
 	struct GameObject {
 	public:
 		static GameObject Instantiate();
-		static GameObject Instantiate(Vec3 position);
+		static GameObject Instantiate(vec3s position);
 		static void Destory(GameObject &gameObject);
 		
 		bool operator<(const GameObject &rhs) const noexcept {

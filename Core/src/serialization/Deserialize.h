@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <math.h>
 
-#include "GLMath.h"
+#include "cglm/struct.h"
 
 namespace CW {
 
@@ -17,8 +17,8 @@ namespace CW {
             size_t GetSize_t();
             float GetFloat();
             char *GetString();
-            Vec3 GetVec3();
-            Vec2 GetVec2();
+            vec3s GetVec3();
+            vec2s GetVec2();
         private:
             size_t GetLength();
             size_t GetLength(char seperator);

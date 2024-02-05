@@ -43,8 +43,12 @@ namespace CW {
             {
                 EventData_PROJECT_LOAD *data = (EventData_PROJECT_LOAD *) e.data;
 
-                strcpy(assets_path, data->project->project_folder_path);
-                strcat(assets_path, "/Assets");
+                if (data->project->project_folder_path[0] != '\0') {
+                    strcpy(assets_path, data->project->project_folder_path);
+                    strcat(assets_path, "/Assets");
+                } else {
+                    strcpy(assets_path, "Assets");
+                }
 
                 if (!FolderExists(assets_path)) {
                     int result = FolderCreate(assets_path);
@@ -59,8 +63,12 @@ namespace CW {
             {
                 EventData_PROJECT_LOAD *data = (EventData_PROJECT_LOAD *) e.data;
 
-                strcpy(assets_path, data->project->project_folder_path);
-                strcat(assets_path, "/Assets");
+                if (data->project->project_folder_path[0] != '\0') {
+                    strcpy(assets_path, data->project->project_folder_path);
+                    strcat(assets_path, "/Assets");
+                } else {
+                    strcpy(assets_path, "Assets");
+                }
 
                 UnloadAssets();
                 LoadAssets();
@@ -280,7 +288,6 @@ namespace CW {
                 continue;
 
             if (ent->d_type == DT_DIR) {
-                
                 char new_path[256] = {};
                 strcpy(new_path, assets_path);
                 strcat(new_path, "/");

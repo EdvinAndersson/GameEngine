@@ -1,15 +1,15 @@
 #pragma once
 
-#include "GLMath.h"
+#include "cglm/struct.h"
 #include "Rendering/Model.h"
 #include "Rendering/Material.h"
 
 namespace CW {
 
     struct Transform {
-        Vec3 position;
-        Vec3 scale;
-        Vec3 rotation;
+        vec3s position;
+        vec3s scale;
+        vec3s rotation;
     };
     struct MeshRenderer {
         MeshIndex mesh;

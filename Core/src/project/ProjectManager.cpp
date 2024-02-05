@@ -17,7 +17,7 @@ namespace CW {
         project->specification = spec;
         strcpy(project->project_folder_path, project_folder_path);
 
-        if (!FolderExists(project_folder_path)) {
+        if (!project_folder_path && !FolderExists(project_folder_path)) {
             int result = FolderCreate(project_folder_path);
 
             CW_ASSERT(result == 0, "Project folder could not be created.");
@@ -70,14 +70,16 @@ namespace CW {
         project_specification.project_name = deserialized.GetString();
         project_specification.resolution_mode = (CW::ResolutionMode) deserialized.GetInt();
         project_specification.vsync = deserialized.GetInt();
-        project_specification.windowed_size = Vec2 { (float) deserialized.GetInt(), (float) deserialized.GetInt() };
+        project_specification.windowed_size = vec2s { (float) deserialized.GetInt(), (float) deserialized.GetInt() };
         int scene_count = deserialized.GetInt();
 
         // Get the project folder path
         char *last_occurrence_of_slash = strrchr(project_file_path, '/');
-        int project_folder_path_lenght = last_occurrence_of_slash - project_file_path;
         char project_folder_path[1024] = {};
-        strncpy(project_folder_path, project_file_path, project_folder_path_lenght);
+        if (last_occurrence_of_slash != 0) {
+            int project_folder_path_lenght = last_occurrence_of_slash - project_file_path;
+            strncpy(project_folder_path, project_file_path, project_folder_path_lenght);
+        }
 
         current_project = CreateProject(project_folder_path, project_specification); 
         
@@ -96,9 +98,9 @@ namespace CW {
                 for (int i = 0; i < MAX_COMPONENTS; i++)
                     signature.set(i, (int) (str_signature[i] - '0'));
 
-                Vec3 pos = deserialized.GetVec3();
-                Vec3 rotation = deserialized.GetVec3();
-                Vec3 scale = deserialized.GetVec3();
+                vec3s pos = deserialized.GetVec3();
+                vec3s rotation = deserialized.GetVec3();
+                vec3s scale = deserialized.GetVec3();
 
                 GameObject obj = GameObject::Instantiate(pos);
                 CW::Transform& transform = obj.GetComponent<CW::Transform>();

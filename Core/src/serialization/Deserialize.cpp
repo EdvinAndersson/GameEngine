@@ -77,11 +77,11 @@ namespace CW {
         buffer_pos += size + 1;
         return result;
     }
-    Vec3 Deserialize::GetVec3() {
-        return Vec3 { GetFloat(), GetFloat(), GetFloat() };
+    vec3s Deserialize::GetVec3() {
+        return vec3s { GetFloat(), GetFloat(), GetFloat() };
     }
-    Vec2 Deserialize::GetVec2() {
-        return Vec2 { GetFloat(), GetFloat() };
+    vec2s Deserialize::GetVec2() {
+        return vec2s { GetFloat(), GetFloat() };
     }
 
     size_t Deserialize::GetLength() {

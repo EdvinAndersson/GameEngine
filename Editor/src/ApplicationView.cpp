@@ -1,5 +1,7 @@
 #include "ApplicationView.h"
 
+#include "cglm/struct.h"
+
 namespace CWEditor {
 
     ApplicationView::ApplicationView() {}
@@ -25,6 +27,9 @@ namespace CWEditor {
         ImGui::StyleColorsDark();
         ImGui_ImplWin32_InitForOpenGL(window->GetHandle());
         ImGui_ImplOpenGL3_Init();
+
+        mat4s m = GLMS_MAT4_IDENTITY_INIT;
+        m = glms_translate(m, vec3s{1,0,0});
     }
 
     void ApplicationView::Update() {

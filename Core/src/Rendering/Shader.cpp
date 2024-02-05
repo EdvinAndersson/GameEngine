@@ -1,4 +1,4 @@
-#include "shader.h"
+#include "Shader.h"
 
 namespace CW {
 
@@ -12,7 +12,7 @@ namespace CW {
         unsigned int loc = glGetUniformLocation(id, name);
         glUniform4f(loc, x, y, z, w);
     }
-    void Shader::SetV4(const char* name, Vec4 vec4) {
+    void Shader::SetV4(const char* name, vec4s vec4) {
         unsigned int loc = glGetUniformLocation(id, name);
         glUniform4f(loc, vec4.x, vec4.y, vec4.z, vec4.w);
     }
@@ -20,7 +20,7 @@ namespace CW {
         unsigned int loc = glGetUniformLocation(id, name);
         glUniform3f(loc, x, y, z);
     }
-    void Shader::SetV3(const char *name, Vec3 vec3) {
+    void Shader::SetV3(const char *name, vec3s vec3) {
         unsigned int loc = glGetUniformLocation(id, name);
         glUniform3f(loc, vec3.x, vec3.y, vec3.z);
     }
@@ -28,7 +28,7 @@ namespace CW {
         unsigned int loc = glGetUniformLocation(id, name);
         glUniform2f(loc, x, y);
     }
-    void Shader::SetMat4f(const char* name, Mat4* mat) {
+    void Shader::SetMat4f(const char* name, mat4s* mat) {
         unsigned int loc = glGetUniformLocation(id, name);
         glUniformMatrix4fv(loc, 1, GL_FALSE, (const GLfloat*)mat);
     }

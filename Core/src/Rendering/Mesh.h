@@ -1,5 +1,5 @@
 #pragma once
-#include "../GLMath.h"
+#include "cglm/struct.h"
 #include "Texture.h"
 #include "Shader.h"
 #include <vector>
@@ -11,11 +11,11 @@
 namespace CW {
 
 	typedef struct {
-		Vec3 position;
-		Vec3 normal;
-		Vec2 texCoords;
-		Vec3 tangent;
-		Vec3 bitangent;
+		vec3s position;
+		vec3s normal;
+		vec2s texCoords;
+		vec3s tangent;
+		vec3s bitangent;
 	} Vertex;
 
 	using MeshIndex = size_t;

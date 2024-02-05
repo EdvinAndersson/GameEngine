@@ -1,6 +1,6 @@
 #pragma once
 
-#include "GLMath.h"
+#include "cglm/struct.h"
 
 namespace CW {
 
@@ -13,7 +13,7 @@ namespace CW {
         char *project_name;
 
         ResolutionMode resolution_mode;
-        Vec2 windowed_size;
+        vec2s windowed_size;
 
         bool vsync;
     };

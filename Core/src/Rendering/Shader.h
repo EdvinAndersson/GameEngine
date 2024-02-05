@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../GLFunc.h"
-#include "../GLMath.h"
+#include "cglm/struct.h"
 #include <stdio.h>
 #include <fstream>
 #include <string>
@@ -13,11 +13,11 @@ namespace CW {
 
 		void Use();
 		void SetV4(const char *name, float x, float y, float z, float w);
-		void SetV4(const char* name, Vec4 vec4);
+		void SetV4(const char* name, vec4s vec4);
 		void SetV3(const char *name, float x, float y, float z);
-		void SetV3(const char *name, Vec3 vec3);
+		void SetV3(const char *name, vec3s vec3);
 		void SetV2(const char *name, float x, float y);
-		void SetMat4f(const char *name, Mat4 *mat);
+		void SetMat4f(const char *name, mat4s *mat);
 		void SetFloat(const char *name, float a);
 		void SetInt(const char *name, int a);
 	};

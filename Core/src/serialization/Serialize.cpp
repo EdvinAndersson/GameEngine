@@ -44,12 +44,12 @@ namespace CW {
         
         SubmitSeperator();
     }
-    void Serialize::SubmitVec3(Vec3 data) {
+    void Serialize::SubmitVec3(vec3s data) {
         SubmitFloat(data.x);
         SubmitFloat(data.y);
         SubmitFloat(data.z);
     }
-    void Serialize::SubmitVec2(Vec2 data) {
+    void Serialize::SubmitVec2(vec2s data) {
         SubmitFloat(data.x);
         SubmitFloat(data.y);
     }

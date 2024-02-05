@@ -1,7 +1,6 @@
 #pragma once
 
 #include <Windows.h>
-#include "GLMath.h"
 #include <windowsx.h>
 #include <stdio.h>
 #include <GL/GL.h>

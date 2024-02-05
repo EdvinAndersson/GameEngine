@@ -90,35 +90,35 @@ namespace CW {
 			// process vertex positions, normals and texture coordinates
 			Vertex vertex;
 
-			Vec3 position;
+			vec3s position;
 			position.x = ai_mesh->mVertices[i].x;
 			position.y = ai_mesh->mVertices[i].y;
 			position.z = ai_mesh->mVertices[i].z;
 			vertex.position = position;
 
-			Vec3 normal;
+			vec3s normal;
 			normal.x = ai_mesh->mNormals[i].x;
 			normal.y = ai_mesh->mNormals[i].y;
 			normal.z = ai_mesh->mNormals[i].z;
 			vertex.normal = normal;
 
 			if (ai_mesh->mTextureCoords[0]) { // does the mesh contain texture coordinates?
-				Vec2 vec;
+				vec2s vec;
 				vec.x = ai_mesh->mTextureCoords[0][i].x;
 				vec.y = ai_mesh->mTextureCoords[0][i].y;
 				vertex.texCoords = vec;
 			}
 			else {
-				vertex.texCoords = Vec2{ 0.0f, 0.0f };
+				vertex.texCoords = vec2s { 0.0f, 0.0f };
 			}
 
-			Vec3 tangent;
+			vec3s tangent;
 			tangent.x = ai_mesh->mTangents[i].x;
 			tangent.y = ai_mesh->mTangents[i].y;
 			tangent.z = ai_mesh->mTangents[i].z;
 			vertex.tangent = tangent;
 
-			Vec3 bitangent;
+			vec3s bitangent;
 			bitangent.x = ai_mesh->mBitangents[i].x;
 			bitangent.y = ai_mesh->mBitangents[i].y;
 			bitangent.z = ai_mesh->mBitangents[i].z;
@@ -162,16 +162,16 @@ namespace CW {
         glBindVertexArray(VAO);
 
         glEnableVertexAttribArray(3);
-        glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(Vec4), (void *)0);
+        glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(vec4s), (void *)0);
 
         glEnableVertexAttribArray(4);
-        glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(Vec4), (void *)(1 * sizeof(Vec4)));
+        glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(vec4s), (void *)(1 * sizeof(vec4s)));
 
         glEnableVertexAttribArray(5);
-        glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(Vec4), (void *)(2 * sizeof(Vec4)));
+        glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(vec4s), (void *)(2 * sizeof(vec4s)));
 
         glEnableVertexAttribArray(6);
-        glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(Vec4), (void *)(3 * sizeof(Vec4)));
+        glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(vec4s), (void *)(3 * sizeof(vec4s)));
 
         glVertexAttribDivisor(3, 1);
         glVertexAttribDivisor(4, 1);
