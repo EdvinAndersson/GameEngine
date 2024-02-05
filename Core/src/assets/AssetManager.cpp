@@ -1,6 +1,7 @@
 #include "AssetManager.h"
 
 #include "Rendering/raw_cube.h"
+#include "cglm/struct.h"
 
 namespace CW {
 
@@ -21,7 +22,7 @@ namespace CW {
         //Load default material
         default_material_index = HashString("default_material");
         Material *material = new Material();
-        material->albedo_color = Vec3{ 1.0f, 1.0f, 1.0f };
+        material->albedo_color = vec3s{ 1.0f, 1.0f, 1.0f };
         material->albedo = default_texture_index;
         loaded_materials.insert({ default_material_index, material });
 

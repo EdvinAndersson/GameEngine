@@ -27,13 +27,10 @@ namespace CWEditor {
         ImGui::StyleColorsDark();
         ImGui_ImplWin32_InitForOpenGL(window->GetHandle());
         ImGui_ImplOpenGL3_Init();
-
-        mat4s m = GLMS_MAT4_IDENTITY_INIT;
-        m = glms_translate(m, vec3s{1,0,0});
     }
 
     void ApplicationView::Update() {
-        CW::R3D_Clear(Vec4 {0,0,0,1} );
+        CW::R3D_Clear(vec4s {0,0,0,1} );
 
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplWin32_NewFrame();
@@ -47,7 +44,7 @@ namespace CWEditor {
 
             framebuffer_game_view->Bind();
 
-            CW::R3D_Clear(Vec4 {0,0,0,1} );
+            CW::R3D_Clear(vec4s {0,0,0,1} );
             
             CW::Scene& active_scene = cogwheel->GetSceneManager()->GetActiveScene();
 
@@ -60,7 +57,7 @@ namespace CWEditor {
                     CW::Transform& transform = game_object.GetComponent<CW::Transform>();
                     CW::MeshRenderer& mesh_renderer = game_object.GetComponent<CW::MeshRenderer>();
 
-                    Quaternion quat = QuatEuler(transform.rotation);
+                    versors quat = GLMS_QUAT_IDENTITY_INIT;//QuatEuler(transform.rotation);
                     CW::R3D_RenderMesh(mesh_renderer.mesh, mesh_renderer.material, transform.position, transform.scale, quat);
                 }
             }
@@ -88,7 +85,7 @@ namespace CWEditor {
         }
         static CW::MaterialIndex material;
         if (ImGui::Button("Create Random Cube")) {
-            CW::GameObject obj = CW::GameObject::Instantiate(Vec3 {(float) (CW::Random()*2.0f-1)*5, (float) (CW::Random()*2.0f-1)*5, -5-(float) CW::Random()*5.0f });
+            CW::GameObject obj = CW::GameObject::Instantiate(vec3s {(float) (CW::Random()*2.0f-1)*5, (float) (CW::Random()*2.0f-1)*5, -5-(float) CW::Random()*5.0f });
             CW::MeshRenderer& mesh_renderer = obj.AddComponent<CW::MeshRenderer>();
             mesh_renderer.mesh = CW::AssetManager::Get()->GetDefaultMeshIndex();
             mesh_renderer.material = CW::AssetManager::Get()->GetDefaultMaterialIndex();
@@ -101,13 +98,13 @@ namespace CWEditor {
         }
         if (ImGui::Button("Create And Load Material 1")) {
             CW::Material mat = {};
-            mat.albedo_color = Vec3 { 1.0f, 1.0f, 1.0f };
+            mat.albedo_color = vec3s { 1.0f, 1.0f, 1.0f };
             mat.albedo = CW::AssetManager::Get()->GetTextureIndex("images/BrickTexture.png");
             CW::AssetManager::Get()->CreateAndLoadMaterialAsset("Material1.mat", mat);
         }
         if (ImGui::Button("Create And Load Material 2")) {
             CW::Material mat = {};
-            mat.albedo_color = Vec3 { 0.0f, 0.0f, 1.0f };
+            mat.albedo_color = vec3s { 0.0f, 0.0f, 1.0f };
             mat.albedo = CW::AssetManager::Get()->GetDefaultTextureIndex();
             CW::AssetManager::Get()->CreateAndLoadMaterialAsset("Material2.mat", mat);
         }

@@ -33,7 +33,7 @@ namespace CWEditor {
             spec.project_name = "Unnamed Project";
             spec.vsync = true;
             spec.resolution_mode = CW::ResolutionMode::WINDOWED;
-            spec.windowed_size = Vec2 { 1920, 1080 };
+            spec.windowed_size = vec2s { 1920, 1080 };
 
             CW::Project *project = cogwheel->GetProjectManager()->CreateProject("Editor/res/projects/Project1", spec);
             cogwheel->GetProjectManager()->LoadProject(project);
