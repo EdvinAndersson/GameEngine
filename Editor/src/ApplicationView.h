@@ -24,9 +24,12 @@ namespace CWEditor {
             void OnEvent(CW::Event event) override;
             void RenderDockspace();
 
-            CW::Framebuffer *framebuffer_game_view;
+            CW::Framebuffer *framebuffer_game_view, *framebuffer_depth_view;
             CW::Cogwheel *cogwheel;
             CW::Window *window;
+
+            vec3s pos = {0,0,0};
+            CW::Shader simple_depth_shader; 
 
             float aspect_ratio = 1080 / 1920.0f; // TODO: Create an enum with different aspect ratios
     };

@@ -28,6 +28,7 @@ out VS_OUT {
     vec3 TangentFragPos;
     vec3 TangentViewPos;
     vec3 Normal;
+    vec4 FragPosLightSpace;
 } vs_out;
 
 uniform mat4 model;
@@ -35,6 +36,7 @@ uniform mat4 view;
 uniform mat4 projection;
 
 uniform vec3 viewPos;
+uniform mat4 lightSpaceMatrix;
 
 void main()
 {
@@ -43,6 +45,7 @@ void main()
 	vs_out.FragPos = vec3(model * vec4(aPos, 1.0));
 	vs_out.TexCoords = aTexCoords;
     vs_out.Normal = mat3(transpose(inverse(model))) * aNormal;
+    vs_out.FragPosLightSpace = lightSpaceMatrix * vec4(vs_out.FragPos, 1.0);
 
     mat3 normalMatrix = transpose(inverse(mat3(model)));
     vec3 T = normalize(normalMatrix * aTangent);
@@ -96,19 +99,22 @@ in VS_OUT {
     vec3 TangentFragPos;
     vec3 TangentViewPos;
     vec3 Normal;
+    vec4 FragPosLightSpace;
 } fs_in;  
 
 uniform vec4 objectColor;
 uniform vec3 viewPos;
 uniform Material material;
+uniform sampler2D shadowMap;
 
 uniform DirLight dirLight;
 //#define NR_POINT_LIGHTS 4
 uniform int number_of_point_lights;
 uniform PointLight pointLights[100];
 
-vec4 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir);
+vec4 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir, float shadow);
 vec4 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir);
+float ShadowCalculation(vec4 fragPosLightSpace);
 
 void main()
 {
@@ -119,8 +125,11 @@ void main()
 
     vec3 viewDir = normalize(fs_in.TangentViewPos - fs_in.TangentFragPos);
 
+    // calculate shadow
+    float shadow = ShadowCalculation(fs_in.FragPosLightSpace); 
+
     // phase 1: Directional lighting
-    vec4 result = CalcDirLight(dirLight, normalize(fs_in.Normal), normalize(viewPos - fs_in.FragPos));
+    vec4 result = CalcDirLight(dirLight, normalize(fs_in.Normal), normalize(viewPos - fs_in.FragPos), shadow);
     
     // phase 2: Point lights
     for (int i = 0; i < number_of_point_lights; i++){
@@ -136,8 +145,24 @@ void main()
 
 	FragColor = vec4(pow(color.rgb,vec3(1/2.2f)),color.a);
 }
+float ShadowCalculation(vec4 fragPosLightSpace)
+{
+    // perform perspective divide
+    vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
+    // transform to [0,1] range
+    projCoords = projCoords * 0.5 + 0.5;
+    // get closest depth value from light's perspective (using [0,1] range fragPosLight as coords)
+    float closestDepth = texture(shadowMap, projCoords.xy).r; 
+    // get depth of current fragment from light's perspective
+    float currentDepth = projCoords.z;
+    // check whether current frag pos is in shadow
+    float bias = max(0.05 * (1.0 - dot(normal, lightDir)), 0.005);
+    float shadow = currentDepth - bias > closestDepth  ? 1.0 : 0.0;
 
-vec4 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir) {
+    return shadow;
+}  
+
+vec4 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir, float shadow) {
     //vec3 lightDir = normalize(fs_in.TBN*-light.direction * fs_in.TangentFragPos - fs_in.TangentFragPos);
 	vec3 lightDir = normalize(-light.direction);
 
@@ -153,7 +178,7 @@ vec4 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir) {
 	vec4 diffuse  = vec4(light.diffuse, 1.0)  * diff * texture(material.texture_diffuse1, fs_in.TexCoords);
 	vec4 specular = vec4(0.0,0.0,0.0, 0.0);//vec4(light.specular, 1.0) * spec * texture(material.texture_specular1, fs_in.TexCoords);
 
-	return (ambient + diffuse + specular);
+	return ambient + (shadow - 1.0) * (diffuse + specular);
 }
 
 vec4 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir) {
@@ -237,6 +262,7 @@ out VS_OUT {
     vec3 TangentFragPos;
     vec3 TangentViewPos;
     vec3 Normal;
+    vec4 FragPosLightSpace;
 } vs_out;
 
 uniform mat4 view;

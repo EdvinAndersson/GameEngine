@@ -35,6 +35,7 @@ namespace CW {
 
 	void R3D_UseShader(Shader *shader);
 	void R3D_UseDefaultShader();
+	Shader R3D_GetDefaultShader();
 	void R3D_Resize(int screen_width, int screen_height);
 
 }

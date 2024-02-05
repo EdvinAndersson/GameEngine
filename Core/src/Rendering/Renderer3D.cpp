@@ -261,6 +261,10 @@ namespace CW {
         R3D_UseShader(&g_r3d_data->default_shader);
     }
 
+    Shader R3D_GetDefaultShader() {
+        return g_r3d_data->default_shader;
+    }
+
     void APIENTRY glDebugOutput(GLenum source, GLenum type, unsigned int id, GLenum severity, GLsizei length, const char *message, const void *userParam) {
         // ignore non-significant error/warning codes
         if(id == 131169 || id == 131185 || id == 131218 || id == 131204) return; 

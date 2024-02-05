@@ -2,15 +2,37 @@
 
 #include "cglm/struct.h"
 
-namespace CWEditor {
+std::string vertex_simple_depth_shader = R"(
+#version 330 core
+layout (location = 0) in vec3 aPos;
 
+uniform mat4 lightSpaceMatrix;
+uniform mat4 model;
+
+void main()
+{
+    gl_Position = lightSpaceMatrix * model * vec4(aPos, 1.0);
+}  
+)";
+std::string fragment_simple_depth_shader = R"(
+#version 330 core
+
+void main()
+{             
+    // gl_FragDepth = gl_FragCoord.z;
+}  
+)";
+
+namespace CWEditor {
     ApplicationView::ApplicationView() {}
 
     void ApplicationView::Init(CW::Cogwheel *_cogwheel, CW::Window *_window) {
         cogwheel = _cogwheel;
         window = _window;
 
-        framebuffer_game_view = new CW::Framebuffer(window->GetWidth(), window->GetHeight());
+        framebuffer_game_view = new CW::Framebuffer(CW::FramebufferType::DEFUALT, window->GetWidth(), window->GetHeight());
+        framebuffer_depth_view = new CW::Framebuffer(CW::FramebufferType::DEPTH, window->GetWidth(), window->GetHeight());
+
 
         EventListen(CW::EventType::WINDOW_CLOSE);
         EventListen(CW::EventType::WINDOW_RESIZE);
@@ -27,6 +49,8 @@ namespace CWEditor {
         ImGui::StyleColorsDark();
         ImGui_ImplWin32_InitForOpenGL(window->GetHandle());
         ImGui_ImplOpenGL3_Init();
+
+        simple_depth_shader = CW::CreateShader(vertex_simple_depth_shader, fragment_simple_depth_shader);
     }
 
     void ApplicationView::Update() {
@@ -38,20 +62,49 @@ namespace CWEditor {
         ImGui::NewFrame();
 
         RenderDockspace();
+
+        if (window->GetInputState(CW::W)) {
+            pos.z += 0.1f;
+        }
+        if (window->GetInputState(CW::A)) {
+            pos.x += 0.1f;
+        }
+        if (window->GetInputState(CW::S)) {
+            pos.z -= 0.1f;
+        }
+        if (window->GetInputState(CW::D)) {
+            pos.x -= 0.1f;
+        }
+        if (window->GetInputState(CW::SPACE)) {
+            pos.y += 0.1f;
+        }
+        if (window->GetInputState(CW::SHIFT)) {
+            pos.y -= 0.1f;
+        }
+
+        mat4s view = GLMS_MAT4_IDENTITY_INIT;
+        view = glms_translate(view, pos);
+
+        CW::R3D_SetViewModel(view);
         
         {
             ImGui::Begin("Game View");
 
-            framebuffer_game_view->Bind();
-
-            CW::R3D_Clear(vec4s {0,0,0,1} );
+            framebuffer_depth_view->Bind();
+            glClear(GL_DEPTH_BUFFER_BIT);
             
+            float near_plane = 1.0f, far_plane = 7.5f;
+            mat4s lightProjection = glms_ortho(-10.0f, 10.0f, -10.0f, 10.0f, near_plane, far_plane);
+            mat4s lightView = glms_lookat(vec3s{-2.0f, 4.0f, -1.0f}, 
+                                  vec3s{ 0.0f, 0.0f,  0.0f}, 
+                                  vec3s{ 0.0f, 1.0f,  0.0f});
+            mat4s lightSpaceMatrix = glms_mat4_mul(lightProjection, lightView);
+
+            CW::R3D_UseShader(&simple_depth_shader);
+            simple_depth_shader.SetMat4f("lightSpaceMatrix", &lightSpaceMatrix);
+
             CW::Scene& active_scene = cogwheel->GetSceneManager()->GetActiveScene();
 
-
-            for (CW::GameObject game_object : active_scene.game_objects) {
-                //CW::Transform& transform = game_object.GetComponent<CW::Transform>();
-            }
             for (CW::GameObject game_object : active_scene.game_objects) {
                 if (game_object.HasComponent<CW::MeshRenderer>()) {
                     CW::Transform& transform = game_object.GetComponent<CW::Transform>();
@@ -61,13 +114,35 @@ namespace CWEditor {
                     CW::R3D_RenderMesh(mesh_renderer.mesh, mesh_renderer.material, transform.position, transform.scale, quat);
                 }
             }
+            framebuffer_depth_view->UnBind();
 
+            framebuffer_game_view->Bind();
+            CW::R3D_UseDefaultShader();
+            CW::R3D_GetDefaultShader().SetMat4f("lightSpaceMatrix", &lightSpaceMatrix);
+            CW::R3D_GetDefaultShader().SetInt("shadowMap", 5);
+            framebuffer_depth_view->GetTexture().Use(5);
+            
+            CW::R3D_Clear(vec4s {0,0,0,1} );
+
+            
+            //CW::Scene& active_scene = cogwheel->GetSceneManager()->GetActiveScene();
+
+            for (CW::GameObject game_object : active_scene.game_objects) {
+                if (game_object.HasComponent<CW::MeshRenderer>()) {
+                    CW::Transform& transform = game_object.GetComponent<CW::Transform>();
+                    CW::MeshRenderer& mesh_renderer = game_object.GetComponent<CW::MeshRenderer>();
+
+                    versors quat = GLMS_QUAT_IDENTITY_INIT;//QuatEuler(transform.rotation);
+                    CW::R3D_RenderMesh(mesh_renderer.mesh, mesh_renderer.material, transform.position, transform.scale, quat);
+                }
+            }
             framebuffer_game_view->UnBind();
 
             float width = ImGui::GetWindowContentRegionMax().x - ImGui::GetWindowContentRegionMin().x;
             float height = width * aspect_ratio;
             
             ImGui::Image((ImTextureID)framebuffer_game_view->GetTexture().id, ImVec2 {width, height });
+            ImGui::Image((ImTextureID)framebuffer_depth_view->GetTexture().id, ImVec2 {width, height });
             
             ImGui::End();
         }
