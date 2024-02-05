@@ -106,6 +106,7 @@ uniform vec4 objectColor;
 uniform vec3 viewPos;
 uniform Material material;
 uniform sampler2D shadowMap;
+uniform vec3 tempLightPos;
 
 uniform DirLight dirLight;
 //#define NR_POINT_LIGHTS 4
@@ -155,9 +156,27 @@ float ShadowCalculation(vec4 fragPosLightSpace)
     float closestDepth = texture(shadowMap, projCoords.xy).r; 
     // get depth of current fragment from light's perspective
     float currentDepth = projCoords.z;
+    
     // check whether current frag pos is in shadow
+    vec3 normal = normalize(fs_in.Normal);
+    vec3 lightDir = normalize(tempLightPos - fs_in.FragPos);
     float bias = max(0.05 * (1.0 - dot(normal, lightDir)), 0.005);
-    float shadow = currentDepth - bias > closestDepth  ? 1.0 : 0.0;
+    
+    //PCF
+    float shadow = 0.0;
+    vec2 texelSize = 1.0 / textureSize(shadowMap, 0);
+    for(int x = -1; x <= 1; ++x)
+    {
+        for(int y = -1; y <= 1; ++y)
+        {
+            float pcfDepth = texture(shadowMap, projCoords.xy + vec2(x, y) * texelSize).r; 
+            shadow += currentDepth - bias > pcfDepth ? 1.0 : 0.0;        
+        }    
+    }
+    shadow /= 9.0;
+
+    if(projCoords.z > 1.0)
+        shadow = 0.0;
 
     return shadow;
 }  
@@ -178,7 +197,7 @@ vec4 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir, float shadow) {
 	vec4 diffuse  = vec4(light.diffuse, 1.0)  * diff * texture(material.texture_diffuse1, fs_in.TexCoords);
 	vec4 specular = vec4(0.0,0.0,0.0, 0.0);//vec4(light.specular, 1.0) * spec * texture(material.texture_specular1, fs_in.TexCoords);
 
-	return ambient + (shadow - 1.0) * (diffuse + specular);
+	return ambient + (1.0 - shadow) * (diffuse + specular);
 }
 
 vec4 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir) {

@@ -31,8 +31,7 @@ namespace CWEditor {
         window = _window;
 
         framebuffer_game_view = new CW::Framebuffer(CW::FramebufferType::DEFUALT, window->GetWidth(), window->GetHeight());
-        framebuffer_depth_view = new CW::Framebuffer(CW::FramebufferType::DEPTH, window->GetWidth(), window->GetHeight());
-
+        framebuffer_depth_view = new CW::Framebuffer(CW::FramebufferType::DEPTH, depth_buffer_size.x, depth_buffer_size.y);
 
         EventListen(CW::EventType::WINDOW_CLOSE);
         EventListen(CW::EventType::WINDOW_RESIZE);
@@ -51,6 +50,12 @@ namespace CWEditor {
         ImGui_ImplOpenGL3_Init();
 
         simple_depth_shader = CW::CreateShader(vertex_simple_depth_shader, fragment_simple_depth_shader);
+
+        CW::GameObject obj = CW::GameObject::Instantiate(vec3s {0, 4, 0 });
+        obj.GetComponent<CW::Transform>().scale = vec3s {40, 1, 40};
+        CW::MeshRenderer& mesh_renderer = obj.AddComponent<CW::MeshRenderer>();
+        mesh_renderer.mesh = CW::AssetManager::Get()->GetDefaultMeshIndex();
+        mesh_renderer.material = CW::AssetManager::Get()->GetDefaultMaterialIndex();
     }
 
     void ApplicationView::Update() {
@@ -82,6 +87,19 @@ namespace CWEditor {
             pos.y -= 0.1f;
         }
 
+        if (window->GetInputState(CW::UP)) {
+            light_pos.z += 0.1f;
+        }
+        if (window->GetInputState(CW::DOWN)) {
+            light_pos.z -= 0.1f;
+        }
+        if (window->GetInputState(CW::LEFT)) {
+            light_pos.x += 0.1f;
+        }
+        if (window->GetInputState(CW::RIGHT)) {
+            light_pos.x -= 0.1f;
+        }
+
         mat4s view = GLMS_MAT4_IDENTITY_INIT;
         view = glms_translate(view, pos);
 
@@ -91,11 +109,12 @@ namespace CWEditor {
             ImGui::Begin("Game View");
 
             framebuffer_depth_view->Bind();
+            glViewport(0, 0, depth_buffer_size.x, depth_buffer_size.y);
             glClear(GL_DEPTH_BUFFER_BIT);
             
-            float near_plane = 1.0f, far_plane = 7.5f;
+            float near_plane = 1.0f, far_plane = 60.f;
             mat4s lightProjection = glms_ortho(-10.0f, 10.0f, -10.0f, 10.0f, near_plane, far_plane);
-            mat4s lightView = glms_lookat(vec3s{-2.0f, 4.0f, -1.0f}, 
+            mat4s lightView = glms_lookat(light_pos, 
                                   vec3s{ 0.0f, 0.0f,  0.0f}, 
                                   vec3s{ 0.0f, 1.0f,  0.0f});
             mat4s lightSpaceMatrix = glms_mat4_mul(lightProjection, lightView);
@@ -117,14 +136,19 @@ namespace CWEditor {
             framebuffer_depth_view->UnBind();
 
             framebuffer_game_view->Bind();
+            glViewport(0, 0, window->GetWidth(), window->GetHeight());
             CW::R3D_UseDefaultShader();
             CW::R3D_GetDefaultShader().SetMat4f("lightSpaceMatrix", &lightSpaceMatrix);
             CW::R3D_GetDefaultShader().SetInt("shadowMap", 5);
+            CW::R3D_GetDefaultShader().SetV3("tempLightPos", light_pos);
+            CW::R3D_GetDefaultShader().SetV3("dirLight.direction", vec3s {-light_pos.x,-light_pos.y,-light_pos.z});
             framebuffer_depth_view->GetTexture().Use(5);
             
             CW::R3D_Clear(vec4s {0,0,0,1} );
 
             
+            CW::R3D_RenderMesh(CW::AssetManager::Get()->GetDefaultMeshIndex(), CW::AssetManager::Get()->GetDefaultMaterialIndex(), light_pos, vec3s {0.2f, 0.2f, 0.2f}, GLMS_QUAT_IDENTITY_INIT);
+
             //CW::Scene& active_scene = cogwheel->GetSceneManager()->GetActiveScene();
 
             for (CW::GameObject game_object : active_scene.game_objects) {
