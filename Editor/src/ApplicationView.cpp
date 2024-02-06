@@ -78,7 +78,6 @@ namespace CWEditor {
 
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplWin32_NewFrame();
-
         ImGui::NewFrame();
 
         RenderDockspace();
@@ -109,10 +108,10 @@ namespace CWEditor {
             light_pos.z -= 0.1f;
         }
         if (window->GetInputState(CW::LEFT)) {
-            light_pos.x += 0.1f;
+            light_pos.x -= 0.1f;
         }
         if (window->GetInputState(CW::RIGHT)) {
-            light_pos.x -= 0.1f;
+            light_pos.x += 0.1f;
         }
 
         mat4s view = GLMS_MAT4_IDENTITY_INIT;
@@ -214,7 +213,7 @@ namespace CWEditor {
         }
         if (ImGui::Button("Create And Load Material 1")) {
             CW::Material mat = {};
-            mat.albedo_color = vec3s { 1.0f, 1.0f, 1.0f };
+            mat.albedo_color = vec3s { 0.0f, 0.0f, 1.0f };
             mat.albedo = CW::AssetManager::Get()->GetTextureIndex("images/BrickTexture.png");
             CW::AssetManager::Get()->CreateAndLoadMaterialAsset("Material1.mat", mat);
         }

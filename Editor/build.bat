@@ -3,7 +3,7 @@
 if not exist build mkdir build
 pushd build
 
-set compile_flags=/W4 /Zi /MP /Od /FC /wd4201 /fsanitize=address /Fe:CogwheelEditor.exe /MTd -D UNICODE ^
+set compile_flags=/W4 /Zi /MP /Od /FC /wd4201 /Fe:CogwheelEditor.exe /MTd -D UNICODE ^
 -I../.. ^
 -I../../Core/src ^
 -I../../Core/src/vendor/assimp/include ^

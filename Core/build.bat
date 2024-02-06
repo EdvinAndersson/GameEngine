@@ -3,7 +3,7 @@
 if not exist build mkdir build
 pushd build
 
-set compile_flags=/W4 /Zi /c /MTd /MP /Od /FC /wd4201 /fsanitize=address -D_CRT_SECURE_NO_WARNINGS -D UNICODE -DDEBUG ^
+set compile_flags=/W4 /Zi /c /MTd /MP /Od /FC /wd4201 -D_CRT_SECURE_NO_WARNINGS -D UNICODE -DDEBUG ^
 -I../src/vendor/assimp/include ^
 -I../src/vendor/cglm-master/include ^
 -I../src

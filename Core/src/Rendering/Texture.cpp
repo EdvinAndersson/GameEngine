@@ -81,9 +81,8 @@ namespace CW {
 
         return texture_data;
     }
-    Texture CreateCubemapTexture(const char *right, const char *left, const char *top, const char *bottom, const char *front, const char *back) {
+    TextureData* CreateCubemapTexture(const char *right, const char *left, const char *top, const char *bottom, const char *front, const char *back) {
         unsigned int texture_id;
-
         glGenTextures(1, &texture_id);
         glBindTexture(GL_TEXTURE_CUBE_MAP, texture_id);
 
@@ -102,10 +101,14 @@ namespace CW {
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 
-        Texture texture;
-        texture.id = texture_id;
+        TextureData *texture_data = new TextureData();
+        texture_data->texture = Texture { texture_id };
+        texture_data->data = 0;
+        texture_data->width = 1;
+        texture_data->height = 1;
+        //texture_data->texture_format = Te
 
-        return texture;
+        return texture_data;
     }
 
     void _LoadFace(const char *face, unsigned int i) {
