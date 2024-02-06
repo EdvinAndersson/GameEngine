@@ -113,7 +113,7 @@ namespace CWEditor {
             glViewport(0, 0, window->GetWidth(), window->GetHeight());
             CW::R3D_Clear(vec4s {0,0,0,1} );
 
-            CW::R3D_RenderSkybox(skybox_texture->texture, view);
+            //CW::R3D_RenderSkybox(skybox_texture->texture, view);
 
             CW::R3D_UseDefaultShader();
             CW::R3D_GetDefaultShader().SetV3("dirLight.direction", vec3s {-light_pos.x,-light_pos.y,-light_pos.z});
