@@ -141,6 +141,7 @@ namespace CW {
         g_r3d_data->skybox_shader.Use();
 
         mat4s m = view;
+        
         /*m.m[0 * 4 + 3] = 0;
         m.m[1 * 4 + 3] = 0;
         m.m[2 * 4 + 3] = 0;
@@ -150,13 +151,15 @@ namespace CW {
         m.m[3 * 4 + 1] = 0;
         m.m[3 * 4 + 2] = 0;*/
 
-        g_r3d_data->skybox_shader.Use();
-        g_r3d_data->skybox_shader.SetMat4f("view", &m);
+        //g_r3d_data->skybox_shader.Use();
+        //g_r3d_data->skybox_shader.SetMat4f("view", &m);
 
         skybox_texture.Use(0);
 
         //TODO: Render skybox
-        //g_r3d_data->cube->Draw(&g_r3d_data->skybox_shader);
+
+        //Mesh *mesh = AssetManager::Get()->GetMesh(AssetManager::Get()->GetDefaultMeshIndex());
+        //mesh->DrawMesh(&g_r3d_data->skybox_shader);
 
         glDepthMask(GL_TRUE);
     }

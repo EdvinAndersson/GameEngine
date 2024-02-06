@@ -2,5 +2,6 @@
 *.exe
 *.exp
 *.pdb
+CogwheelCore.lib
 
 !vswhere.exe
