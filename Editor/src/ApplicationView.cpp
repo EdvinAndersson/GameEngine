@@ -65,7 +65,7 @@ namespace CWEditor {
         double delta_time = time - previous_time;
         double fps = 1 / delta_time;
 
-        static float second_timer = 0;
+        static double second_timer = 0;
 
         second_timer += delta_time;
         if (second_timer >= 1) {

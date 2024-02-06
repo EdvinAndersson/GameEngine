@@ -31,7 +31,7 @@ namespace CWEditor {
             vec3s pos = {0,0,0};
             vec3s light_pos = {-12.0f, -12.0f, -12.0f};
             CW::Shader simple_depth_shader; 
-            double time = 0, previous_time = 0;
+            double previous_time = 0;
 
             vec2s depth_buffer_size = {2048, 2048};
             float aspect_ratio = 1080 / 1920.0f; // TODO: Create an enum with different aspect ratios
