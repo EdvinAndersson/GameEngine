@@ -81,19 +81,19 @@ namespace CW {
 
         return texture_data;
     }
-    TextureData* CreateCubemapTexture(const char *right, const char *left, const char *top, const char *bottom, const char *front, const char *back) {
+    Texture CreateCubemapTexture(const char *right, const char *left, const char *top, const char *bottom, const char *front, const char *back) {
         unsigned int texture_id;
         glGenTextures(1, &texture_id);
         glBindTexture(GL_TEXTURE_CUBE_MAP, texture_id);
 
-        stbi_set_flip_vertically_on_load(false);
+        stbi_set_flip_vertically_on_load(true);
         _LoadFace(right, 0);
         _LoadFace(left, 1);
         _LoadFace(top, 2);
         _LoadFace(bottom, 3);
         _LoadFace(front, 4);
         _LoadFace(back, 5);
-        stbi_set_flip_vertically_on_load(true);
+        stbi_set_flip_vertically_on_load(false);
 
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -101,14 +101,7 @@ namespace CW {
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 
-        TextureData *texture_data = new TextureData();
-        texture_data->texture = Texture { texture_id };
-        texture_data->data = 0;
-        texture_data->width = 1;
-        texture_data->height = 1;
-        //texture_data->texture_format = Te
-
-        return texture_data;
+        return Texture { texture_id };;
     }
 
     void _LoadFace(const char *face, unsigned int i) {

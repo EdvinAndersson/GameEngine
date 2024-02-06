@@ -41,5 +41,5 @@ namespace CW {
 
 	void _LoadFace(const char *face, unsigned int i);
 
-	TextureData* CreateCubemapTexture(const char *right, const char *left, const char *top, const char *bottom, const char *front, const char *back);
+	Texture CreateCubemapTexture(const char *right, const char *left, const char *top, const char *bottom, const char *front, const char *back);
 }

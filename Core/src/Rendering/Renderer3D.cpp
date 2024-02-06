@@ -137,31 +137,30 @@ namespace CW {
     }
 
     void R3D_RenderSkybox(Texture skybox_texture, mat4s view) {
-        glDepthMask(GL_FALSE);
-        g_r3d_data->skybox_shader.Use();
+        glDepthFunc(GL_LEQUAL);
 
         mat4s m = view;
-        
-        /*m.m[0 * 4 + 3] = 0;
-        m.m[1 * 4 + 3] = 0;
-        m.m[2 * 4 + 3] = 0;
-        m.m[3 * 4 + 3] = 1;
+        m.m03 = 0;
+        m.m13 = 0;
+        m.m23 = 0;
+        m.m33 = 1;
 
-        m.m[3 * 4 + 0] = 0;
-        m.m[3 * 4 + 1] = 0;
-        m.m[3 * 4 + 2] = 0;*/
+        m.m30 = 0;
+        m.m31 = 0;
+        m.m32 = 0;
 
-        //g_r3d_data->skybox_shader.Use();
-        //g_r3d_data->skybox_shader.SetMat4f("view", &m);
+        g_r3d_data->skybox_shader.Use();
+        g_r3d_data->skybox_shader.SetMat4f("view", &m);
+        g_r3d_data->skybox_shader.SetInt("skybox", 5);
 
-        skybox_texture.Use(0);
+        glActiveTexture(GL_TEXTURE0 + 5);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, skybox_texture.id);
 
         //TODO: Render skybox
+        Mesh *mesh = AssetManager::Get()->GetMesh(AssetManager::Get()->GetDefaultMeshIndex());
+        mesh->DrawMesh(&g_r3d_data->skybox_shader);
 
-        //Mesh *mesh = AssetManager::Get()->GetMesh(AssetManager::Get()->GetDefaultMeshIndex());
-        //mesh->DrawMesh(&g_r3d_data->skybox_shader);
-
-        glDepthMask(GL_TRUE);
+        glDepthFunc(GL_LESS);
     }
     void R3D_RenderMesh(MeshIndex mesh_index, MaterialIndex material_index, vec3s position, vec3s scale, versors quaternion) {
         g_r3d_data->active_shader.Use();
