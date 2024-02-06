@@ -59,7 +59,22 @@ namespace CWEditor {
     }
 
     void ApplicationView::Update() {
-        CW::R3D_Clear(vec4s {0,0,0,1} );
+        
+        double time = window->GetTime();
+
+        double delta_time = time - previous_time;
+        double fps = 1 / delta_time;
+
+        static float second_timer = 0;
+
+        second_timer += delta_time;
+        if (second_timer >= 1) {
+            second_timer = 0;
+            printf("FPS: %f\n", fps);
+        }
+
+
+        previous_time = time;
 
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplWin32_NewFrame();
