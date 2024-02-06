@@ -10,11 +10,6 @@
 
 namespace CW {
 
-	struct R3D_RenderObject {
-		unsigned int vao;
-		unsigned int vertex_count, index_count;
-	};
-
 	void R3D_Init(Window *window);
 	void R3D_Clear(vec4s color);
 
@@ -29,6 +24,9 @@ namespace CW {
 	void R3D_RenderInstancedModel(vec3s position, vec3s scale);
 	void R3D_RenderInstancedModel(vec3s position, vec3s scale, versors quaternion);
 	void R3D_RenderInstanced();
+
+	void R3D_BeginShadowPass(vec3s light_pos);
+	void R3D_EndShadowPass();
 
 	void R3D_SetDirectionalLight(vec3s direction, vec3s ambient, vec3s diffuse, vec3s specular);
 	void R3D_SetPointLight(vec3s position, vec3s ambient, vec3s diffuse, vec3s specular, float constant, float linear, float quadratic);

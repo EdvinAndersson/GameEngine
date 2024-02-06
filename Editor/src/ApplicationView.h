@@ -21,16 +21,17 @@ namespace CWEditor {
             void Init(CW::Cogwheel *cogwheel, CW::Window *window);
             void Update();
         private:
+            void RenderScene(); 
             void OnEvent(CW::Event event) override;
             void RenderDockspace();
 
-            CW::Framebuffer *framebuffer_game_view, *framebuffer_depth_view;
+            CW::Framebuffer *framebuffer_game_view;
             CW::Cogwheel *cogwheel;
             CW::Window *window;
 
             vec3s pos = {0,0,0};
-            vec3s light_pos = {-12.0f, -12.0f, -12.0f};
-            CW::Shader simple_depth_shader; 
+            vec3s light_pos = {-12.0f, -12.0f, 12.0f};
+            
             double previous_time = 0;
 
             vec2s depth_buffer_size = {2048, 2048};

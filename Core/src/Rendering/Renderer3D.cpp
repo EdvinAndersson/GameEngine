@@ -3,6 +3,7 @@
 #include "../vendor/stb_image/stb_image.h"
 #include "Shaders.h"
 #include "Models.h"
+#include "Framebuffer.h"
 //#include "raw_cube.h"
 
 namespace CW {
@@ -12,8 +13,12 @@ namespace CW {
     struct R3D_Data {
         Window *window;
 
-        Shader default_shader, active_shader, skybox_shader, instance_shader;
+        Shader default_shader, active_shader, skybox_shader, instance_shader, depth_shader;
         Texture defualt_texture;
+
+        const unsigned int frame_buffer_depth_width = 1024, frame_buffer_depth_height = 1024;
+        Framebuffer framebuffer_depth = Framebuffer(FramebufferType::DEPTH, frame_buffer_depth_width, frame_buffer_depth_height);
+        mat4s light_space_matrix;
 
         int point_lights = 0;
 
@@ -22,7 +27,6 @@ namespace CW {
         int max_instance_count = 100000, instance_count = 0;
         unsigned int instance_ssbo;
 
-        const unsigned int shadow_width = 1024, shadow_height = 1024;
         unsigned int depth_map_fbo, depth_map;
     };
 
@@ -58,6 +62,7 @@ namespace CW {
         g_r3d_data->default_shader = CreateShader(vertex_shader, fragment_shader);
         g_r3d_data->skybox_shader = CreateShader(vertex_shader_skybox, fragment_shader_skybox);
         g_r3d_data->instance_shader = CreateShader(vertex_shader_instanced, fragment_shader);
+        g_r3d_data->depth_shader = CreateShader(vertex_shader_depth, fragment_shader_depth);
 
         g_r3d_data->defualt_texture = AssetManager::Get()->GetTexture("default_texture");
 
@@ -220,7 +225,32 @@ namespace CW {
         g_r3d_data->instance_count = 0;
         #endif
     }
+    void R3D_BeginShadowPass(vec3s light_pos) {
+        g_r3d_data->framebuffer_depth.Bind();
+        glViewport(0, 0, g_r3d_data->frame_buffer_depth_width, g_r3d_data->frame_buffer_depth_height);
+        glClear(GL_DEPTH_BUFFER_BIT);
+        glCullFace(GL_FRONT);
+        
+        float near_plane = 1.0f, far_plane = 60.f;
+        mat4s lightProjection = glms_ortho(-10.0f, 10.0f, -10.0f, 10.0f, near_plane, far_plane);
+        mat4s lightView = glms_lookat(light_pos, vec3s{ 0.0f, 0.0f,  0.0f}, vec3s{ 0.0f, 1.0f,  0.0f});
+        g_r3d_data->light_space_matrix = glms_mat4_mul(lightProjection, lightView);
 
+        CW::R3D_UseDefaultShader();
+        g_r3d_data->default_shader.SetV3("tempLightPos", light_pos);
+
+        CW::R3D_UseShader(&g_r3d_data->depth_shader);
+        g_r3d_data->depth_shader.SetMat4f("lightSpaceMatrix", &g_r3d_data->light_space_matrix);
+    }
+    void R3D_EndShadowPass() {
+        glCullFace(GL_BACK);
+        g_r3d_data->framebuffer_depth.UnBind();
+
+        CW::R3D_UseDefaultShader();
+        g_r3d_data->default_shader.SetMat4f("lightSpaceMatrix", &g_r3d_data->light_space_matrix);
+        g_r3d_data->default_shader.SetInt("shadowMap", 5);
+        g_r3d_data->framebuffer_depth.GetTexture().Use(5);
+    }
     void R3D_SetDirectionalLight(vec3s direction, vec3s ambient, vec3s diffuse, vec3s specular) {
         g_r3d_data->active_shader.Use();
         g_r3d_data->active_shader.SetV3("dirLight.direction", direction);
