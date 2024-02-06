@@ -111,6 +111,7 @@ namespace CWEditor {
             framebuffer_depth_view->Bind();
             glViewport(0, 0, depth_buffer_size.x, depth_buffer_size.y);
             glClear(GL_DEPTH_BUFFER_BIT);
+            glCullFace(GL_FRONT);
             
             float near_plane = 1.0f, far_plane = 60.f;
             mat4s lightProjection = glms_ortho(-10.0f, 10.0f, -10.0f, 10.0f, near_plane, far_plane);
@@ -133,6 +134,7 @@ namespace CWEditor {
                     CW::R3D_RenderMesh(mesh_renderer.mesh, mesh_renderer.material, transform.position, transform.scale, quat);
                 }
             }
+            glCullFace(GL_BACK);
             framebuffer_depth_view->UnBind();
 
             framebuffer_game_view->Bind();
@@ -182,7 +184,7 @@ namespace CWEditor {
         if (ImGui::Button("Load project 2")) {
             cogwheel->GetProjectManager()->LoadProject("Editor/res/projects/Project2/Unnamed Project.proj");
         }
-        static CW::MaterialIndex material;
+        static CW::MaterialIndex material = CW::AssetManager::Get()->GetDefaultMaterialIndex();
         if (ImGui::Button("Create Random Cube")) {
             CW::GameObject obj = CW::GameObject::Instantiate(vec3s {(float) (CW::Random()*2.0f-1)*5, (float) (CW::Random()*2.0f-1)*5, -5-(float) CW::Random()*5.0f });
             CW::MeshRenderer& mesh_renderer = obj.AddComponent<CW::MeshRenderer>();
