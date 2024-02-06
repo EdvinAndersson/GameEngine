@@ -27,6 +27,14 @@ namespace CWEditor {
         ImGui_ImplWin32_InitForOpenGL(window->GetHandle());
         ImGui_ImplOpenGL3_Init();
 
+        skybox_texture = CW::CreateCubemapTexture(
+            "Editor/res/projects/Project1/Assets/images/skybox/right.jpg",
+            "Editor/res/projects/Project1/Assets/images/skybox/left.jpg",
+            "Editor/res/projects/Project1/Assets/images/skybox/top.jpg",
+            "Editor/res/projects/Project1/Assets/images/skybox/bottom.jpg",
+            "Editor/res/projects/Project1/Assets/images/skybox/front.jpg",
+            "Editor/res/projects/Project1/Assets/images/skybox/back.jpg");
+
         CW::GameObject obj = CW::GameObject::Instantiate(vec3s {0, 4, 0 });
         obj.GetComponent<CW::Transform>().scale = vec3s {40, 1, 40};
         CW::MeshRenderer& mesh_renderer = obj.AddComponent<CW::MeshRenderer>();
@@ -104,6 +112,8 @@ namespace CWEditor {
             framebuffer_game_view->Bind();
             glViewport(0, 0, window->GetWidth(), window->GetHeight());
             CW::R3D_Clear(vec4s {0,0,0,1} );
+
+            //CW::R3D_RenderSkybox(skybox_texture->texture, view);
 
             CW::R3D_UseDefaultShader();
             CW::R3D_GetDefaultShader().SetV3("dirLight.direction", vec3s {-light_pos.x,-light_pos.y,-light_pos.z});
