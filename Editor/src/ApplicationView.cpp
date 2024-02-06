@@ -121,7 +121,8 @@ namespace CWEditor {
         }
 
         ImGui::Begin("Debug View");
-
+        ImGui::SetWindowFontScale(1.3);
+        ImGui::Text("Project options");
         if (ImGui::Button("Save project")) {
             cogwheel->GetProjectManager()->SaveProject();
         }
@@ -131,6 +132,9 @@ namespace CWEditor {
         if (ImGui::Button("Load project 2")) {
             cogwheel->GetProjectManager()->LoadProject("Editor/res/projects/Project2/Unnamed Project.proj");
         }
+        ImGui::Spacing();
+        ImGui::Spacing();
+        ImGui::Text("Scene changes");
         static CW::MaterialIndex material = CW::AssetManager::Get()->GetDefaultMaterialIndex();
         if (ImGui::Button("Create Random Cube")) {
             CW::GameObject obj = CW::GameObject::Instantiate(vec3s {(float) (CW::Random()*2.0f-1)*5, (float) (CW::Random()*2.0f-1)*5, -5-(float) CW::Random()*5.0f });
@@ -138,24 +142,45 @@ namespace CWEditor {
             mesh_renderer.mesh = CW::AssetManager::Get()->GetDefaultMeshIndex();
             mesh_renderer.material = material;//CW::AssetManager::Get()->GetDefaultMaterialIndex();
         }
+        if(ImGui::IsItemHovered(ImGuiHoveredFlags_DelayNormal)){
+                ImGui::SetTooltip("Creates a random cube guess were XD");
+            }
+        ImGui::Spacing();
+        ImGui::Spacing();
+        ImGui::Text("Material options");
         if (ImGui::Button("Material 1")) {
             material = CW::AssetManager::Get()->GetMaterialIndex("Material1.mat");
         }
+        if(ImGui::IsItemHovered(ImGuiHoveredFlags_DelayNormal)){
+                ImGui::SetTooltip("Applies material to cube");
+            }
         if (ImGui::Button("Material 2")) {
             material = CW::AssetManager::Get()->GetMaterialIndex("Material2.mat");
         }
+        if(ImGui::IsItemHovered(ImGuiHoveredFlags_DelayNormal)){
+                ImGui::SetTooltip("Applies material to cube");
+            }
         if (ImGui::Button("Create And Load Material 1")) {
             CW::Material mat = {};
             mat.albedo_color = vec3s { 0.0f, 0.0f, 1.0f };
             mat.albedo = CW::AssetManager::Get()->GetTextureIndex("images/BrickTexture.png");
             CW::AssetManager::Get()->CreateAndLoadMaterialAsset("Material1.mat", mat);
         }
+        if(ImGui::IsItemHovered(ImGuiHoveredFlags_DelayNormal)){
+                ImGui::SetTooltip("Creates a new material loads it so it can be applied");
+            }
         if (ImGui::Button("Create And Load Material 2")) {
             CW::Material mat = {};
             mat.albedo_color = vec3s { 0.0f, 0.0f, 1.0f };
             mat.albedo = CW::AssetManager::Get()->GetDefaultTextureIndex();
             CW::AssetManager::Get()->CreateAndLoadMaterialAsset("Material2.mat", mat);
         }
+        if(ImGui::IsItemHovered(ImGuiHoveredFlags_DelayNormal)){
+                ImGui::SetTooltip("Creates a new material loads it so it can be applied");
+            }
+        ImGui::Spacing();
+        ImGui::Spacing();
+        ImGui::Text("Game options");
         if (ImGui::Button("Build Game")) {
             STARTUPINFOA si = {};
             PROCESS_INFORMATION pi = {};
@@ -163,6 +188,9 @@ namespace CWEditor {
             
             CW_ASSERT(success != 0, "Could not build the game!");
         }
+        if(ImGui::IsItemHovered(ImGuiHoveredFlags_DelayNormal)){
+                ImGui::SetTooltip("Exports a game so it can be played");
+            }
         ImGui::End();
 
         ImGui::Render();
