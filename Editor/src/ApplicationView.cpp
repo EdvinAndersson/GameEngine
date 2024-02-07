@@ -131,8 +131,43 @@ namespace CWEditor {
             ImGui::End();
         }
         {
+            //ImGui::ShowDemoWindow();
             ImGui::Begin("Scene objects");
+            CW::Scene& active_scene = cogwheel->GetSceneManager()->GetActiveScene();
+            
+            static ImGuiTreeNodeFlags base_flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_SpanAvailWidth;
+            static int selection_mask = (1 << 2);
+            int node_clicked = -1;
+            for (int i = 0; i < active_scene.game_objects.size(); i++){
+                CW::GameObject game_object = *std::next(active_scene.game_objects.begin(), i); 
 
+                if (game_object.HasComponent<CW::MeshRenderer>()) {
+                    ImGuiTreeNodeFlags node_flags = base_flags;
+                    const bool is_selected = (selection_mask & (1 << i)) != 0;
+                    if (is_selected)
+                        node_flags |= ImGuiTreeNodeFlags_Selected;
+                
+                    bool node_open = ImGui::TreeNodeEx((void*)(intptr_t)i, node_flags, "Selectable Node %d", i);
+                    if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen())
+                        node_clicked = i;
+
+                    if (node_open) {
+                        ImGui::BulletText("Blah blah\nBlah Blah");
+                        ImGui::TreePop();
+                    }   
+                }
+
+                if (node_clicked != -1) {
+                    
+                    if (ImGui::GetIO().KeyCtrl)
+                        selection_mask ^= (1 << node_clicked);         
+                    else 
+                        selection_mask = (1 << node_clicked);           
+            
+                }
+                
+            }
+                
             ImGui::End();
         }
         {
