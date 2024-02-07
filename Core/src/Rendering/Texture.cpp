@@ -91,7 +91,7 @@ namespace CW {
         int width = AssetManager::Get()->GetTextureData(right)->width;
         int height = AssetManager::Get()->GetTextureData(right)->width;
 
-        stbi_set_flip_vertically_on_load(false);
+        stbi_set_flip_vertically_on_load(true);
         glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + 0,
             0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, AssetManager::Get()->GetTextureData(right)->data
         );
@@ -110,7 +110,7 @@ namespace CW {
         glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + 5,
             0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, AssetManager::Get()->GetTextureData(back)->data
         );
-        stbi_set_flip_vertically_on_load(true);
+        stbi_set_flip_vertically_on_load(false);
 
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);

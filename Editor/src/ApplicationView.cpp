@@ -69,8 +69,6 @@ namespace CWEditor {
         ImGui_ImplWin32_NewFrame();
         ImGui::NewFrame();
 
-        ImGui::ShowDemoWindow();
-
         RenderDockspace();
 
         if (window->GetInputState(CW::W)) {
