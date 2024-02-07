@@ -27,13 +27,20 @@ namespace CWEditor {
         ImGui_ImplWin32_InitForOpenGL(window->GetHandle());
         ImGui_ImplOpenGL3_Init();
 
-        skybox_texture = CW::CreateCubemapTexture(
+        /*skybox_texture = CW::CreateCubemapTexture(
             "Editor/res/projects/Project1/Assets/images/skybox/right.jpg",
             "Editor/res/projects/Project1/Assets/images/skybox/left.jpg",
             "Editor/res/projects/Project1/Assets/images/skybox/top.jpg",
             "Editor/res/projects/Project1/Assets/images/skybox/bottom.jpg",
             "Editor/res/projects/Project1/Assets/images/skybox/front.jpg",
-            "Editor/res/projects/Project1/Assets/images/skybox/back.jpg");
+            "Editor/res/projects/Project1/Assets/images/skybox/back.jpg");*/
+        skybox_texture = CW::CreateCubemapTexture(
+            CW::AssetManager::Get()->GetTextureIndex("images/skybox/right.jpg"),
+            CW::AssetManager::Get()->GetTextureIndex("images/skybox/left.jpg"),
+            CW::AssetManager::Get()->GetTextureIndex("images/skybox/top.jpg"),
+            CW::AssetManager::Get()->GetTextureIndex("images/skybox/bottom.jpg"),
+            CW::AssetManager::Get()->GetTextureIndex("images/skybox/front.jpg"),
+            CW::AssetManager::Get()->GetTextureIndex("images/skybox/back.jpg"));
 
         CW::GameObject obj = CW::GameObject::Instantiate(vec3s {0, 4, 0 });
         obj.GetComponent<CW::Transform>().scale = vec3s {40, 1, 40};
@@ -61,6 +68,8 @@ namespace CWEditor {
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplWin32_NewFrame();
         ImGui::NewFrame();
+
+        ImGui::ShowDemoWindow();
 
         RenderDockspace();
 
@@ -119,7 +128,7 @@ namespace CWEditor {
             CW::R3D_RenderMesh(CW::AssetManager::Get()->GetDefaultMeshIndex(), CW::AssetManager::Get()->GetDefaultMaterialIndex(), light_pos, vec3s {0.2f, 0.2f, 0.2f}, GLMS_QUAT_IDENTITY_INIT);
             RenderScene();
 
-            CW::R3D_RenderSkybox(skybox_texture, view);
+            CW::R3D_RenderSkybox(skybox_texture->texture, view);
             
             framebuffer_game_view->UnBind();
 

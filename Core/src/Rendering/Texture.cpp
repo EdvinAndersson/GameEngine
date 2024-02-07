@@ -1,5 +1,6 @@
 #include "texture.h"
 #include "../vendor/stb_image/stb_image.h"
+#include "assets/AssetManager.h"
 
 namespace CW {
     void Texture::Use(int textureSlot) {
@@ -81,7 +82,50 @@ namespace CW {
 
         return texture_data;
     }
-    Texture CreateCubemapTexture(const char *right, const char *left, const char *top, const char *bottom, const char *front, const char *back) {
+
+    TextureData* CreateCubemapTexture(TextureIndex right, TextureIndex left, TextureIndex top, TextureIndex bottom, TextureIndex front, TextureIndex back) {        
+        unsigned int texture_id;
+        glGenTextures(1, &texture_id);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, texture_id);
+
+        int width = AssetManager::Get()->GetTextureData(right)->width;
+        int height = AssetManager::Get()->GetTextureData(right)->width;
+
+        stbi_set_flip_vertically_on_load(false);
+        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + 0,
+            0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, AssetManager::Get()->GetTextureData(right)->data
+        );
+        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + 1,
+            0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, AssetManager::Get()->GetTextureData(left)->data
+        );
+        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + 2,
+            0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, AssetManager::Get()->GetTextureData(top)->data
+        );
+        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + 3,
+            0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, AssetManager::Get()->GetTextureData(bottom)->data
+        );
+        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + 4,
+            0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, AssetManager::Get()->GetTextureData(front)->data
+        );
+        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + 5,
+            0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, AssetManager::Get()->GetTextureData(back)->data
+        );
+        stbi_set_flip_vertically_on_load(true);
+
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+        TextureData *texture_data = new TextureData();
+        texture_data->width = width;
+        texture_data->height = height;
+        texture_data->texture.id = texture_id;
+        return texture_data;
+    }
+
+    Texture CreateCubemapTextureOld(const char *right, const char *left, const char *top, const char *bottom, const char *front, const char *back) {
         unsigned int texture_id;
         glGenTextures(1, &texture_id);
         glBindTexture(GL_TEXTURE_CUBE_MAP, texture_id);

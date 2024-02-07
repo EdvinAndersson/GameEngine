@@ -26,9 +26,10 @@ namespace CW {
             void OnEvent(Event e) override;
 
             void LoadTexture(char *path);
-            Texture GetTexture(TextureIndex texture);
             Texture GetTexture(char *path);
             TextureIndex GetTextureIndex(char *path);
+            inline Texture GetTexture(TextureIndex texture) { return loaded_textures[texture]->texture; }
+            inline TextureData* GetTextureData(TextureIndex texture) { return loaded_textures[texture]; }
 
             void LoadMaterial(char *path);
             void CreateAndLoadMaterialAsset(char *path, Material material);

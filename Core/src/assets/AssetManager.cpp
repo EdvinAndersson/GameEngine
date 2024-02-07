@@ -13,11 +13,20 @@ namespace CW {
         EventListen(EventType::PROJECT_CREATE);
         EventListen(EventType::PROJECT_LOAD);
 
+        //CW::ConvertToRawData("Editor/res/projects/Project1/Assets/images/skybox/right.jpg", "skybox_right", "Core/src/assets/skybox.h");
+
         //Load default white texuture
         default_texture_index = HashString("default_texture");
         Texture_Format format = { GL_RGBA, TEXTURE_NEAREST_NEIGHBOR };
         TextureData *texture_data = CreateBlankTexture(format);
         loaded_textures.insert({ default_texture_index, texture_data });
+
+        //Load default white texuture
+        //default_texture_index = HashString("skybox_right");
+        //Texture_Format format = { GL_RGB, TEXTURE_LINEAR_MIPMAP };
+        //TextureData *texture_data = new TextureData();
+        //texture_data->texture = CreateTextureFromData(skybox_right, 1000, 1000, format);
+        //loaded_textures.insert({ default_texture_index, texture_data });
 
         //Load default material
         default_material_index = HashString("default_material");
@@ -155,10 +164,6 @@ namespace CW {
 
         TextureData *texture_data = CreateTexture(full_path);
         loaded_textures.insert({ hashed_path, texture_data });
-    }
-
-    Texture AssetManager::GetTexture(TextureIndex texture) {
-        return loaded_textures[texture]->texture;
     }
 
     Texture AssetManager::GetTexture(char *path) {

@@ -32,7 +32,7 @@ namespace CWEditor {
             vec3s pos = {0,0,0};
             vec3s light_pos = {-12.0f, -12.0f, 12.0f};
 
-            CW::Texture skybox_texture;
+            CW::TextureData *skybox_texture;
             
             double previous_time = 0;
 
