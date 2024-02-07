@@ -41,7 +41,7 @@ namespace CWEditor {
         mesh_renderer.mesh = CW::AssetManager::Get()->GetDefaultMeshIndex();
         mesh_renderer.material = CW::AssetManager::Get()->GetDefaultMaterialIndex();
     }
-
+    
     void ApplicationView::Update() {
         
         double time = window->GetTime();
@@ -130,80 +130,91 @@ namespace CWEditor {
             
             ImGui::End();
         }
+        {
+            ImGui::Begin("Scene objects");
 
-        ImGui::Begin("Debug View");
-        ImGui::SetWindowFontScale(1.3);
-        ImGui::Text("Project options");
-        if (ImGui::Button("Save project")) {
-            cogwheel->GetProjectManager()->SaveProject();
+            ImGui::End();
         }
-        if (ImGui::Button("Load project 1")) {
-            cogwheel->GetProjectManager()->LoadProject("Editor/res/projects/Project1/Unnamed Project.proj");
-        }
-        if (ImGui::Button("Load project 2")) {
-            cogwheel->GetProjectManager()->LoadProject("Editor/res/projects/Project2/Unnamed Project.proj");
-        }
-        ImGui::Spacing();
-        ImGui::Spacing();
-        ImGui::Text("Scene changes");
-        static CW::MaterialIndex material = CW::AssetManager::Get()->GetDefaultMaterialIndex();
-        if (ImGui::Button("Create Random Cube")) {
-            CW::GameObject obj = CW::GameObject::Instantiate(vec3s {(float) (CW::Random()*2.0f-1)*5, (float) (CW::Random()*2.0f-1)*5, -5-(float) CW::Random()*5.0f });
-            CW::MeshRenderer& mesh_renderer = obj.AddComponent<CW::MeshRenderer>();
-            mesh_renderer.mesh = CW::AssetManager::Get()->GetDefaultMeshIndex();
-            mesh_renderer.material = material;//CW::AssetManager::Get()->GetDefaultMaterialIndex();
-        }
-        if(ImGui::IsItemHovered(ImGuiHoveredFlags_DelayNormal)){
-                ImGui::SetTooltip("Creates a random cube guess were XD");
-            }
-        ImGui::Spacing();
-        ImGui::Spacing();
-        ImGui::Text("Material options");
-        if (ImGui::Button("Material 1")) {
-            material = CW::AssetManager::Get()->GetMaterialIndex("Material1.mat");
-        }
-        if(ImGui::IsItemHovered(ImGuiHoveredFlags_DelayNormal)){
-                ImGui::SetTooltip("Applies material to cube");
-            }
-        if (ImGui::Button("Material 2")) {
-            material = CW::AssetManager::Get()->GetMaterialIndex("Material2.mat");
-        }
-        if(ImGui::IsItemHovered(ImGuiHoveredFlags_DelayNormal)){
-                ImGui::SetTooltip("Applies material to cube");
-            }
-        if (ImGui::Button("Create And Load Material 1")) {
-            CW::Material mat = {};
-            mat.albedo_color = vec3s { 0.0f, 0.0f, 1.0f };
-            mat.albedo = CW::AssetManager::Get()->GetTextureIndex("images/BrickTexture.png");
-            CW::AssetManager::Get()->CreateAndLoadMaterialAsset("Material1.mat", mat);
-        }
-        if(ImGui::IsItemHovered(ImGuiHoveredFlags_DelayNormal)){
-                ImGui::SetTooltip("Creates a new material loads it so it can be applied");
-            }
-        if (ImGui::Button("Create And Load Material 2")) {
-            CW::Material mat = {};
-            mat.albedo_color = vec3s { 0.0f, 0.0f, 1.0f };
-            mat.albedo = CW::AssetManager::Get()->GetDefaultTextureIndex();
-            CW::AssetManager::Get()->CreateAndLoadMaterialAsset("Material2.mat", mat);
-        }
-        if(ImGui::IsItemHovered(ImGuiHoveredFlags_DelayNormal)){
-                ImGui::SetTooltip("Creates a new material loads it so it can be applied");
-            }
-        ImGui::Spacing();
-        ImGui::Spacing();
-        ImGui::Text("Game options");
-        if (ImGui::Button("Build Game")) {
-            STARTUPINFOA si = {};
-            PROCESS_INFORMATION pi = {};
-            bool success = CreateProcessA(NULL, "Core\\export\\export.bat", NULL, NULL, false, 0, NULL, NULL, &si, &pi);
+        {
+            ImGui::Begin("Console");
             
-            CW_ASSERT(success != 0, "Could not build the game!");
+            ImGui::End();
         }
-        if(ImGui::IsItemHovered(ImGuiHoveredFlags_DelayNormal)){
-                ImGui::SetTooltip("Exports a game so it can be played");
+        {
+        ImGui::Begin("Debug View");
+            ImGui::SetWindowFontScale(1.3);
+            ImGui::Text("Project options");
+            if (ImGui::Button("Save project")) {
+                cogwheel->GetProjectManager()->SaveProject();
             }
-        ImGui::End();
-
+            if (ImGui::Button("Load project 1")) {
+                cogwheel->GetProjectManager()->LoadProject("Editor/res/projects/Project1/Unnamed Project.proj");
+            }
+            if (ImGui::Button("Load project 2")) {
+                cogwheel->GetProjectManager()->LoadProject("Editor/res/projects/Project2/Unnamed Project.proj");
+            }
+            ImGui::Spacing();
+            ImGui::Spacing();
+            ImGui::Text("Scene changes");
+            static CW::MaterialIndex material = CW::AssetManager::Get()->GetDefaultMaterialIndex();
+            if (ImGui::Button("Create Random Cube")) {
+                CW::GameObject obj = CW::GameObject::Instantiate(vec3s {(float) (CW::Random()*2.0f-1)*5, (float) (CW::Random()*2.0f-1)*5, -5-(float) CW::Random()*5.0f });
+                CW::MeshRenderer& mesh_renderer = obj.AddComponent<CW::MeshRenderer>();
+                mesh_renderer.mesh = CW::AssetManager::Get()->GetDefaultMeshIndex();
+                mesh_renderer.material = material;//CW::AssetManager::Get()->GetDefaultMaterialIndex();
+            }
+            if(ImGui::IsItemHovered(ImGuiHoveredFlags_DelayNormal)){
+                    ImGui::SetTooltip("Creates a random cube guess were XD");
+                }
+            ImGui::Spacing();
+            ImGui::Spacing();
+            ImGui::Text("Material options");
+            if (ImGui::Button("Material 1")) {
+                material = CW::AssetManager::Get()->GetMaterialIndex("Material1.mat");
+            }
+            if(ImGui::IsItemHovered(ImGuiHoveredFlags_DelayNormal)){
+                    ImGui::SetTooltip("Applies material to cube");
+                }
+            if (ImGui::Button("Material 2")) {
+                material = CW::AssetManager::Get()->GetMaterialIndex("Material2.mat");
+            }
+            if(ImGui::IsItemHovered(ImGuiHoveredFlags_DelayNormal)){
+                    ImGui::SetTooltip("Applies material to cube");
+                }
+            if (ImGui::Button("Create And Load Material 1")) {
+                CW::Material mat = {};
+                mat.albedo_color = vec3s { 0.0f, 0.0f, 1.0f };
+                mat.albedo = CW::AssetManager::Get()->GetTextureIndex("images/BrickTexture.png");
+                CW::AssetManager::Get()->CreateAndLoadMaterialAsset("Material1.mat", mat);
+            }
+            if(ImGui::IsItemHovered(ImGuiHoveredFlags_DelayNormal)){
+                    ImGui::SetTooltip("Creates a new material loads it so it can be applied");
+                }
+            if (ImGui::Button("Create And Load Material 2")) {
+                CW::Material mat = {};
+                mat.albedo_color = vec3s { 0.0f, 0.0f, 1.0f };
+                mat.albedo = CW::AssetManager::Get()->GetDefaultTextureIndex();
+                CW::AssetManager::Get()->CreateAndLoadMaterialAsset("Material2.mat", mat);
+            }
+            if(ImGui::IsItemHovered(ImGuiHoveredFlags_DelayNormal)){
+                    ImGui::SetTooltip("Creates a new material loads it so it can be applied");
+                }
+            ImGui::Spacing();
+            ImGui::Spacing();
+            ImGui::Text("Game options");
+            if (ImGui::Button("Build Game")) {
+                STARTUPINFOA si = {};
+                PROCESS_INFORMATION pi = {};
+                bool success = CreateProcessA(NULL, "Core\\export\\export.bat", NULL, NULL, false, 0, NULL, NULL, &si, &pi);
+                
+                CW_ASSERT(success != 0, "Could not build the game!");
+            }
+            if(ImGui::IsItemHovered(ImGuiHoveredFlags_DelayNormal)){
+                    ImGui::SetTooltip("Exports a game so it can be played");
+                }
+            ImGui::End();
+        }
+        
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
     }
