@@ -69,6 +69,8 @@ namespace CWEditor {
         ImGui_ImplWin32_NewFrame();
         ImGui::NewFrame();
 
+       
+
         RenderDockspace();
 
         if (window->GetInputState(CW::W)) {
@@ -138,7 +140,7 @@ namespace CWEditor {
             ImGui::End();
         }
         {
-            //ImGui::ShowDemoWindow();
+    
             ImGui::Begin("Scene objects");
             CW::Scene& active_scene = cogwheel->GetSceneManager()->GetActiveScene();
             
