@@ -52,6 +52,16 @@ namespace CW {
                 EventData_ECS_INSTANTIATE_GAMEOBJECT *e = (EventData_ECS_INSTANTIATE_GAMEOBJECT*) event.data;
 
                 current_project->scenes[current_scene_id].game_objects.insert(e->game_object);
+
+                Transform& transform = e->game_object.GetComponent<Transform>();
+
+                Scene& scene = current_project->scenes[current_scene_id];
+                int game_objects_count = scene.game_objects.size();
+
+                char n[128] = {};
+                sprintf(n, "Game Object %i", game_objects_count);
+
+                strcpy(transform.name, n);
             } break;
             case EventType::ECS_DESTROY_GAMEOBJECT:
             {

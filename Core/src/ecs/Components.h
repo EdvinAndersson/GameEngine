@@ -10,6 +10,7 @@ namespace CW {
         vec3s position;
         vec3s scale;
         vec3s rotation;
+        char name[128] = {};
     };
     struct MeshRenderer {
         MeshIndex mesh;
