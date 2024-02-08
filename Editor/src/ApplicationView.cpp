@@ -147,28 +147,23 @@ namespace CWEditor {
 
             for (int i = 0; i < active_scene.game_objects.size(); i++){
                 CW::GameObject game_object = *std::next(active_scene.game_objects.begin(), i); 
+                char* game_object_name = game_object.GetComponent<CW::Transform>().name;
 
                 ImGuiTreeNodeFlags node_flags = base_flags;
                 const bool is_selected = (selection_mask & (1 << i)) != 0;
                 if (is_selected)
                     node_flags |= ImGuiTreeNodeFlags_Selected;
             
-                bool node_open = ImGui::TreeNodeEx((void*)(intptr_t)i, node_flags, game_object.GetComponent<CW::Transform>().name);
-                if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen())
+                bool node_open = ImGui::TreeNodeEx((void*)(intptr_t)i, node_flags, game_object_name);
+                if (ImGui::IsItemClicked())
                     node_clicked = i;
 
-                if (node_open) {
-                    ImGui::BulletText("Blah blah\nBlah Blah");
-                    ImGui::TreePop();  
-                }
-                
-                if (ImGui::BeginPopupContextItem("obej")){
+                if (ImGui::BeginPopupContextItem(game_object_name)) {
                     node_clicked = i;
-                    ImGui::Text("This a popup for \"%s\"!", game_object.GetComponent<CW::Transform>().name);
                     if (ImGui::BeginPopupContextItem("New_Name_Popup")){
-                            static char buf1[32] = ""; 
-                            ImGui::InputText("default", buf1, 32);
-                            ImGui::EndPopup();
+                        static char buf1[32] = ""; 
+                        ImGui::InputText("default", buf1, 32);
+                        ImGui::EndPopup();
                     }
                     if (ImGui::Button("New Name")){
                         ImGui::OpenPopup("New_Name_Popup");
@@ -185,8 +180,10 @@ namespace CWEditor {
                         selection_mask = (1 << node_clicked);           
             
                 }
-                
-                
+                if (node_open) {
+                    ImGui::BulletText("Blah blah\nBlah Blah");
+                    ImGui::TreePop();  
+                }
             }
                 
             ImGui::End();
