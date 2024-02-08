@@ -198,7 +198,8 @@ vec4 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir, float shadow) {
 	// combine results
 	vec4 ambient  = vec4(light.ambient, 1.0)  * texture(material.texture_diffuse1, fs_in.TexCoords);
 	vec4 diffuse  = vec4(light.diffuse, 1.0)  * diff * texture(material.texture_diffuse1, fs_in.TexCoords);
-	vec4 specular = vec4(0.0,0.0,0.0, 0.0);//vec4(light.specular, 1.0) * spec * texture(material.texture_specular1, fs_in.TexCoords);
+	vec4 specular = vec4(light.specular, 1.0) * spec * vec4(1,1,1,1);// texture(material.texture_specular1, fs_in.TexCoords);
+	//vec4 specular = vec4(light.specular, 1.0) * spec * vec4(0,0,0,0);//* texture(material.texture_specular1, fs_in.TexCoords);
 
 	return ambient + (1.0 - shadow) * (diffuse + specular);
 }

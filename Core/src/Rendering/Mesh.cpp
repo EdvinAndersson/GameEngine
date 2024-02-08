@@ -188,8 +188,15 @@ namespace CW {
     void Mesh::DrawSubmesh(Shader *shader, Material *material) {
         shader->SetV4("objectColor", material->albedo_color.r, material->albedo_color.g, material->albedo_color.b, 1.0f);
 
+        shader->SetInt("material.texture_diffuse1", 0);
         Texture albedo = AssetManager::Get()->GetTexture(material->albedo);
         albedo.Use(0);
+
+        if(material->normal_map != 0) {
+            shader->SetInt("material.texture_normal1", 1);
+            Texture normal = AssetManager::Get()->GetTexture(material->normal_map);
+            normal.Use(1);
+        }
 
         DrawSubmesh(shader);
     }

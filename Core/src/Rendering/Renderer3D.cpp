@@ -78,14 +78,13 @@ namespace CW {
             shader.SetInt("material.texture_normal1", 0);
             shader.SetInt("number_of_point_lights", 0);
 
-            shader.SetInt("material.diffuse", 0);
-            shader.SetInt("material.specular", 0);
-            shader.SetFloat("material.shininess", 0.078125f * 128.0f);
+            //shader.SetFloat("material.shininess", 0.078125f * 128.0f);
+            shader.SetFloat("material.shininess", 0.078125f * 200.0f);
 
             shader.SetV3("dirLight.direction", vec3s{ 1, -2, 1 });
             shader.SetV3("dirLight.ambient", vec3s{ 0.4f, 0.4f, 0.4f });
-            shader.SetV3("dirLight.diffuse", vec3s{ 1.0f, 1.0f, 1.0f });
-            shader.SetV3("dirLight.specular", vec3s { 0.0f, 0.0f, 0.0f });
+            shader.SetV3("dirLight.diffuse", vec3s{ 0.9f, 0.9f, 0.9f });
+            shader.SetV3("dirLight.specular", vec3s { 0.5f, 0.5f, 0.5f });
 
             mat4s view = GLMS_MAT4_IDENTITY_INIT;
             shader.SetMat4f("view", &view);
