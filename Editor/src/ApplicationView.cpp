@@ -169,6 +169,10 @@ namespace CWEditor {
             ImGui::End();
         }
         {
+            ImGui::Begin("Assets");
+            ImGui::End();
+        }
+        {
             ImGui::Begin("Console");
             
             ImGui::End();
