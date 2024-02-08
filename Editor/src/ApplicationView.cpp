@@ -132,15 +132,16 @@ namespace CWEditor {
             ImGui::End();
         }
         {
+            ImGui::ShowDemoWindow();
             ImGui::Begin("Scene objects");
             CW::Scene& active_scene = cogwheel->GetSceneManager()->GetActiveScene();
             static ImGuiTreeNodeFlags base_flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_SpanAvailWidth;
             static int selection_mask = (1 << 2);
             int node_clicked = -1;
+
             for (int i = 0; i < active_scene.game_objects.size(); i++){
                 CW::GameObject game_object = *std::next(active_scene.game_objects.begin(), i); 
 
-                
                 ImGuiTreeNodeFlags node_flags = base_flags;
                 const bool is_selected = (selection_mask & (1 << i)) != 0;
                 if (is_selected)
@@ -154,7 +155,22 @@ namespace CWEditor {
                     ImGui::BulletText("Blah blah\nBlah Blah");
                     ImGui::TreePop();  
                 }
-
+                
+                if (ImGui::BeginPopupContextItem("obej")){
+                    node_clicked = i;
+                    ImGui::Text("This a popup for \"%s\"!", game_object.GetComponent<CW::Transform>().name);
+                    if (ImGui::BeginPopupContextItem("New_Name_Popup")){
+                            static char buf1[32] = ""; 
+                            ImGui::InputText("default", buf1, 32);
+                            ImGui::EndPopup();
+                    }
+                    if (ImGui::Button("New Name")){
+                        ImGui::OpenPopup("New_Name_Popup");
+                    }
+                    if (ImGui::Button("Close"))
+                        ImGui::CloseCurrentPopup();
+                    ImGui::EndPopup();
+                }
                 if (node_clicked != -1) {
                     
                     if (ImGui::GetIO().KeyCtrl)
@@ -163,6 +179,7 @@ namespace CWEditor {
                         selection_mask = (1 << node_clicked);           
             
                 }
+                
                 
             }
                 
