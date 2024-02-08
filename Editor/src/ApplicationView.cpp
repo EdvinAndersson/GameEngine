@@ -148,20 +148,19 @@ namespace CWEditor {
             for (int i = 0; i < active_scene.game_objects.size(); i++){
                 CW::GameObject game_object = *std::next(active_scene.game_objects.begin(), i); 
 
-                if (game_object.HasComponent<CW::MeshRenderer>()) {
-                    ImGuiTreeNodeFlags node_flags = base_flags;
-                    const bool is_selected = (selection_mask & (1 << i)) != 0;
-                    if (is_selected)
-                        node_flags |= ImGuiTreeNodeFlags_Selected;
                 
-                    bool node_open = ImGui::TreeNodeEx((void*)(intptr_t)i, node_flags, game_object.GetComponent<CW::Transform>().name);
-                    if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen())
-                        node_clicked = i;
+                ImGuiTreeNodeFlags node_flags = base_flags;
+                const bool is_selected = (selection_mask & (1 << i)) != 0;
+                if (is_selected)
+                    node_flags |= ImGuiTreeNodeFlags_Selected;
+            
+                bool node_open = ImGui::TreeNodeEx((void*)(intptr_t)i, node_flags, game_object.GetComponent<CW::Transform>().name);
+                if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen())
+                    node_clicked = i;
 
-                    if (node_open) {
-                        ImGui::BulletText("Blah blah\nBlah Blah");
-                        ImGui::TreePop();
-                    }   
+                if (node_open) {
+                    ImGui::BulletText("Blah blah\nBlah Blah");
+                    ImGui::TreePop();  
                 }
 
                 if (node_clicked != -1) {

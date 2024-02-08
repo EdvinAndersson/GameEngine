@@ -59,7 +59,10 @@ namespace CW {
                 int game_objects_count = scene.game_objects.size();
 
                 char n[128] = {};
-                sprintf(n, "Game Object %i", game_objects_count);
+                if(game_objects_count == 1)
+                    sprintf(n, "Game Object");
+                else
+                    sprintf(n, "Game Object (%i)", game_objects_count - 1);
 
                 strcpy(transform.name, n);
             } break;
