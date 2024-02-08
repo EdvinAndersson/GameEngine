@@ -1,6 +1,6 @@
 #pragma once
 #include "cglm/struct.h"
-#include "Texture.h"
+#include "Material.h"
 #include "Shader.h"
 #include <vector>
 
@@ -26,10 +26,10 @@ namespace CW {
 			~Mesh();
 
 			void DrawMesh(Shader *shader);
+			void DrawMesh(Shader *shader, MaterialIndex* material_indexes);
 			void DrawMeshInstanced(Shader *shader, int instance_count);
 
-			void Load(char *path);
-			void LoadMesh(const aiScene *scene);
+			void Load(const aiScene *scene);
 			void LoadMeshFromData(const char *data, int data_size);
 
 			void ProcessNode(Mesh *mesh, aiNode *node, const aiScene *scene);
@@ -38,7 +38,7 @@ namespace CW {
 
 			Vertex *vertices = 0;
 			unsigned int *indices = 0;
-			Texture *textures = 0;
+			unsigned int material_used = 0;
 
 			unsigned int VAO = 0, VBO = 0, EBO = 0;
 			unsigned int vertex_count = 0, index_count = 0, texture_count = 0;
@@ -46,6 +46,7 @@ namespace CW {
 			std::vector<Mesh*> submeshes;
 		private:
 			void DrawSubmesh(Shader *shader);
+			void DrawSubmesh(Shader *shader, Material *material);
 			void MakeInstanced();
 			void BindMeshTextures(Shader *shader);
 	};

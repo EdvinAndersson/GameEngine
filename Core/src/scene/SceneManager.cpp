@@ -50,7 +50,7 @@ namespace CW {
                 CW_ASSERT(current_project != 0, "");
 
                 EventData_ECS_INSTANTIATE_GAMEOBJECT *e = (EventData_ECS_INSTANTIATE_GAMEOBJECT*) event.data;
-
+                
                 current_project->scenes[current_scene_id].game_objects.insert(e->game_object);
             } break;
             case EventType::ECS_DESTROY_GAMEOBJECT:

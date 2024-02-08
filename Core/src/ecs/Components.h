@@ -13,6 +13,7 @@ namespace CW {
     };
     struct MeshRenderer {
         MeshIndex mesh;
-        MaterialIndex material;
+        MaterialIndex materials[MAX_MATERIALS];
+        unsigned int material_count = 0;
     };
 }

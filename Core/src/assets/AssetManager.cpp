@@ -13,20 +13,11 @@ namespace CW {
         EventListen(EventType::PROJECT_CREATE);
         EventListen(EventType::PROJECT_LOAD);
 
-        //CW::ConvertToRawData("Editor/res/projects/Project1/Assets/images/skybox/right.jpg", "skybox_right", "Core/src/assets/skybox.h");
-
         //Load default white texuture
         default_texture_index = HashString("default_texture");
         Texture_Format format = { GL_RGBA, TEXTURE_NEAREST_NEIGHBOR };
         TextureData *texture_data = CreateBlankTexture(format);
         loaded_textures.insert({ default_texture_index, texture_data });
-
-        //Load default white texuture
-        //default_texture_index = HashString("skybox_right");
-        //Texture_Format format = { GL_RGB, TEXTURE_LINEAR_MIPMAP };
-        //TextureData *texture_data = new TextureData();
-        //texture_data->texture = CreateTextureFromData(skybox_right, 1000, 1000, format);
-        //loaded_textures.insert({ default_texture_index, texture_data });
 
         //Load default material
         default_material_index = HashString("default_material");
@@ -114,6 +105,10 @@ namespace CW {
                 LoadMaterial(file_paths[i]);
                 continue;
             }
+            if (strcmp(file_type, "obj") == 0) {
+                LoadModel(file_paths[i]);
+                continue;
+            }
         }
 
     }
@@ -148,6 +143,12 @@ namespace CW {
         Mesh *default_mesh = loaded_meshes[default_mesh_index];
         loaded_meshes.clear();
         loaded_meshes.insert({ default_mesh_index, default_mesh });
+
+        //Unload models
+        for (auto& it : loaded_models) {
+            delete it.second;
+        }
+        loaded_models.clear();
     }
 
     void AssetManager::LoadTexture(char *path) {
@@ -278,12 +279,14 @@ namespace CW {
         strcat(full_path, path);
 
         Model *model = new Model();
-        model->Load(path);
+        model->Load(full_path, path);
         loaded_models.insert({ hashed_path, model });
 
         Mesh *mesh = new Mesh();
-        mesh->Load(path);
+        mesh->Load(model->GetAiScene());
         loaded_meshes.insert({ hashed_path, mesh });
+
+        model->mesh_index = hashed_path;
     }
 
     void AssetManager::GetAllAssetPaths(DIR *dir, char file_paths[MAX_ASSETS][256], unsigned int *count, char base_dir[256]) {

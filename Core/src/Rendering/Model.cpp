@@ -1,5 +1,6 @@
 #include "Model.h"
 #include "../GLFunc.h"
+#include "assets/AssetManager.h"
 
 #include "assimp/cimport.h"
 #include "assimp/scene.h"
@@ -7,32 +8,46 @@
 
 namespace CW {
 
-	void GetSubStringByLastFoundChar(char *destStr, const char *str, char a);
-	std::vector<Texture> LoadMaterialTextures(Model *model, struct aiMaterial *mat, enum aiTextureType type, const char *typeName);
+	void GetSubStringByLastFoundChar(char *destStr, char *str, char a);
 
 	Model::Model() {
 
 	}
 
-	void Model::Load(const char *path) {
-		const aiScene *scene = aiImportFile(path, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
+	void Model::Load(char *full_path, char *path) {
+		ai_scene = aiImportFile(full_path, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
 
-		if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
-			printf("ERROR::ASSIMP::%s", aiGetErrorString());
+		if (!ai_scene || ai_scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !ai_scene->mRootNode) {
+			printf("ERROR::ASSIMP::%s\n", aiGetErrorString());
 			return;
 		}
+		strcpy(this->path, path);
+		GetSubStringByLastFoundChar(this->asset_path_dir, path, '/');
+		GetSubStringByLastFoundChar(this->path_dir, full_path, '/');
 
-		char directory[200] = { 0 };
-		GetSubStringByLastFoundChar(directory, path, '/');
-		this->directory = directory;
-
-		//TODO: Load mesh
-		//Mesh *mesh = new Mesh();
-		//mesh->LoadMesh(scene);
+		ProcessNode(ai_scene->mRootNode, ai_scene);
 	}
-	/*
-	Mesh ProcessMesh(Model *model, struct aiMesh *mesh, const struct aiScene *scene)
-	{
+	void Model::ProcessNode(aiNode *node, const aiScene *scene) {
+		material_count = scene->mNumMaterials;
+
+		for (int i = 0; i < scene->mNumMaterials; i++)
+			material_indexes[i] = 0;
+
+		// process all the node's meshes (if any)
+		for (unsigned int i = 0; i < node->mNumMeshes; i++)
+		{
+			struct aiMesh *ai_mesh = scene->mMeshes[node->mMeshes[i]];
+
+			ProcessMesh(ai_mesh, scene);
+		}
+		// then do the same for each of its children
+		for (unsigned int i = 0; i < node->mNumChildren; i++)
+		{
+			ProcessNode(node->mChildren[i], scene);
+		}
+	}
+	
+	void Model::ProcessMesh(struct aiMesh *mesh, const struct aiScene *scene) {
 		// process material
 		unsigned int texture_count = 0;
 
@@ -40,33 +55,48 @@ namespace CW {
 		{
 			struct aiMaterial *material = scene->mMaterials[mesh->mMaterialIndex];
 			
-			std::vector<Texture> diffuseMaps = LoadMaterialTextures(model, material, aiTextureType_DIFFUSE, "texture_diffuse");
+			std::vector<TextureIndex> diffuseMaps = LoadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
 
-			std::vector<Texture> specularMaps = LoadMaterialTextures(model, material, aiTextureType_SPECULAR, "texture_specular");
+			std::vector<TextureIndex> specularMaps = LoadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
 
-			std::vector<Texture> normalMaps = LoadMaterialTextures(model, material, aiTextureType_NORMALS, "texture_normal");
+			std::vector<TextureIndex> normalMaps = LoadMaterialTextures(material, aiTextureType_NORMALS, "texture_normal");
 
 			size_t diffuseMaps_size = diffuseMaps.size();
 			size_t specularMaps_size = specularMaps.size();
 			size_t normalMaps_size = normalMaps.size();
 			texture_count = diffuseMaps_size + specularMaps_size + normalMaps_size;
-			textures = new Texture[texture_count];
 
+			if (texture_count > 0) {
+				if (material_indexes[mesh->mMaterialIndex - 1] == 0) { //Material has not been created
+					Material mat = {};
+					mat.albedo_color = vec3s{ 1.0, 1.0, 1.0 };
+					mat.albedo = diffuseMaps[0];
+					mat.normal_map = normalMaps[0];
+
+					AssetManager::Get()->CreateAndLoadMaterialAsset((char *)material->GetName().C_Str(), mat);
+					material_indexes[mesh->mMaterialIndex - 1] = AssetManager::Get()->GetMaterialIndex((char *)material->GetName().C_Str());
+				} else {
+					CW_ASSERT(false, "?");
+					//material_indexes[mesh->mMaterialIndex - 1] = AssetManager::Get()->GetDefaultMaterialIndex();
+				}
+			} else {
+				material_indexes[mesh->mMaterialIndex - 1] = AssetManager::Get()->GetDefaultMaterialIndex();
+			}
 			for (unsigned int i = 0; i < diffuseMaps_size; i++) {
-				textures[i] = diffuseMaps[i];
+				//material_indexes[i] = diffuseMaps[i];
 			}
 			for (unsigned int i = 0; i < specularMaps_size; i++) {
-				textures[diffuseMaps_size + i] = specularMaps[i];
+				//material_indexes[diffuseMaps_size + i] = specularMaps[i];
 			}
 			for (unsigned int i = 0; i < normalMaps_size; i++) {
-				textures[diffuseMaps_size + specularMaps_size + i] = normalMaps[i];
+				//material_indexes[diffuseMaps_size + specularMaps_size + i] = normalMaps[i];
 			}
 		}
 	}
-	*/
-	std::vector<Texture> LoadMaterialTextures(Model *model, struct aiMaterial *mat, enum aiTextureType type, const char *typeName) {
+	
+	std::vector<TextureIndex> Model::LoadMaterialTextures(struct aiMaterial *mat, enum aiTextureType type, const char *typeName) {
 
-		std::vector<Texture> textures;
+		std::vector<TextureIndex> materials;
 		size_t count = aiGetMaterialTextureCount(mat, type);
 
 		for (unsigned int i = 0; i < count; i++) {
@@ -76,7 +106,7 @@ namespace CW {
 			bool skip = false;
 			
 			char tex_path[2000] = {0};
-			strcpy(tex_path, model->directory);
+			strcpy(tex_path, asset_path_dir);
 			strcat(tex_path, "/");
 			strcat(tex_path, path.data);
 
@@ -101,18 +131,28 @@ namespace CW {
 						break;
 				}
 
-				TextureData *texture_data = CreateTexture(tex_path, texture_format);
-				strcpy(texture_data->path, tex_path);
-				texture_data->type = typeName;
-				textures.push_back(texture_data->texture);
-				model->textures_loaded.push_back(texture_data->texture);
+				CW::AssetManager::Get()->LoadTexture(tex_path);
+				materials.push_back(AssetManager::Get()->GetTextureIndex(tex_path));
+
+				/*Material material = {};
+				material.albedo_color = vec3s{ 1.0, 1.0, 1.0 };
+				material.albedo = AssetManager::Get()->GetTextureIndex(tex_path);
+
+				char mat_path[256] = {};
+				GetSubStringByLastFoundChar(mat_path, this->path, '.');
+				strcat(mat_path, ".mat");
+
+				AssetManager::Get()->CreateAndLoadMaterialAsset(mat_path, material);
+				MaterialIndex i =  AssetManager::Get()->GetMaterialIndex(mat_path);
+				materials.push_back(i);*/
+				//model->textures_loaded.push_back(texture_data->texture);
 			}
 
 		}
-		return textures;
+		return materials;
 	}
 
-	void GetSubStringByLastFoundChar(char *destStr, const char *str, char a) {
+	void GetSubStringByLastFoundChar(char *destStr, char *str, char a) {
 		int lastIndex = -1;
 		size_t len = strlen(str);
 		for (unsigned int i = 0; i < len; i++) {

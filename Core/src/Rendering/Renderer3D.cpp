@@ -156,13 +156,12 @@ namespace CW {
         glActiveTexture(GL_TEXTURE0 + 5);
         glBindTexture(GL_TEXTURE_CUBE_MAP, skybox_texture.id);
 
-        //TODO: Render skybox
         Mesh *mesh = AssetManager::Get()->GetMesh(AssetManager::Get()->GetDefaultMeshIndex());
         mesh->DrawMesh(&g_r3d_data->skybox_shader);
 
         glDepthFunc(GL_LESS);
     }
-    void R3D_RenderMesh(MeshIndex mesh_index, MaterialIndex material_index, vec3s position, vec3s scale, versors quaternion) {
+    void R3D_RenderMesh(MeshIndex mesh_index, MaterialIndex *material_indexes, vec3s position, vec3s scale, versors quaternion) {
         g_r3d_data->active_shader.Use();
 
         mat4s transform = GLMS_MAT4_IDENTITY_INIT;
@@ -171,16 +170,10 @@ namespace CW {
         transform = glms_mat4_mul(glms_quat_mat4(quaternion), transform);
         transform = glms_scale(transform, scale);
 
-        Material *material = AssetManager::Get()->GetMaterial(material_index);
-
         g_r3d_data->active_shader.SetMat4f("model", &transform);
-        g_r3d_data->active_shader.SetV4("objectColor", material->albedo_color.r, material->albedo_color.g, material->albedo_color.b, 1.0f);
-        
-        Texture albedo = AssetManager::Get()->GetTexture(material->albedo);
-        albedo.Use(0);
 
         Mesh *mesh = AssetManager::Get()->GetMesh(mesh_index);
-        mesh->DrawMesh(&g_r3d_data->active_shader);
+        mesh->DrawMesh(&g_r3d_data->active_shader, material_indexes);
     }
 
     void R3D__CreateInstanceSSBO() {

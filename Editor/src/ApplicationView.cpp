@@ -27,13 +27,6 @@ namespace CWEditor {
         ImGui_ImplWin32_InitForOpenGL(window->GetHandle());
         ImGui_ImplOpenGL3_Init();
 
-        /*skybox_texture = CW::CreateCubemapTexture(
-            "Editor/res/projects/Project1/Assets/images/skybox/right.jpg",
-            "Editor/res/projects/Project1/Assets/images/skybox/left.jpg",
-            "Editor/res/projects/Project1/Assets/images/skybox/top.jpg",
-            "Editor/res/projects/Project1/Assets/images/skybox/bottom.jpg",
-            "Editor/res/projects/Project1/Assets/images/skybox/front.jpg",
-            "Editor/res/projects/Project1/Assets/images/skybox/back.jpg");*/
         skybox_texture = CW::CreateCubemapTexture(
             CW::AssetManager::Get()->GetTextureIndex("images/skybox/right.jpg"),
             CW::AssetManager::Get()->GetTextureIndex("images/skybox/left.jpg"),
@@ -46,7 +39,8 @@ namespace CWEditor {
         obj.GetComponent<CW::Transform>().scale = vec3s {40, 1, 40};
         CW::MeshRenderer& mesh_renderer = obj.AddComponent<CW::MeshRenderer>();
         mesh_renderer.mesh = CW::AssetManager::Get()->GetDefaultMeshIndex();
-        mesh_renderer.material = CW::AssetManager::Get()->GetDefaultMaterialIndex();
+        mesh_renderer.materials[0] = CW::AssetManager::Get()->GetDefaultMaterialIndex();
+        mesh_renderer.material_count++;
     }
     
     void ApplicationView::Update() {
@@ -68,8 +62,6 @@ namespace CWEditor {
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplWin32_NewFrame();
         ImGui::NewFrame();
-
-       
 
         RenderDockspace();
 
@@ -125,7 +117,7 @@ namespace CWEditor {
             CW::R3D_UseDefaultShader();
             CW::R3D_GetDefaultShader().SetV3("dirLight.direction", vec3s {-light_pos.x,-light_pos.y,-light_pos.z});
 
-            CW::R3D_RenderMesh(CW::AssetManager::Get()->GetDefaultMeshIndex(), CW::AssetManager::Get()->GetDefaultMaterialIndex(), light_pos, vec3s {0.2f, 0.2f, 0.2f}, GLMS_QUAT_IDENTITY_INIT);
+            //CW::R3D_RenderMesh(CW::AssetManager::Get()->GetMeshIndex("LowPolyTree.obj"), CW::AssetManager::Get()->GetDefaultMaterialIndex(), light_pos, vec3s {0.2f, 0.2f, 0.2f}, GLMS_QUAT_IDENTITY_INIT);
             RenderScene();
 
             CW::R3D_RenderSkybox(skybox_texture->texture, view);
@@ -203,9 +195,11 @@ namespace CWEditor {
             static CW::MaterialIndex material = CW::AssetManager::Get()->GetDefaultMaterialIndex();
             if (ImGui::Button("Create Random Cube")) {
                 CW::GameObject obj = CW::GameObject::Instantiate(vec3s {(float) (CW::Random()*2.0f-1)*5, (float) (CW::Random()*2.0f-1)*5, -5-(float) CW::Random()*5.0f });
+                obj.GetComponent<CW::Transform>().rotation = vec3s {0, glm_rad(0), 0};               
                 CW::MeshRenderer& mesh_renderer = obj.AddComponent<CW::MeshRenderer>();
                 mesh_renderer.mesh = CW::AssetManager::Get()->GetDefaultMeshIndex();
-                mesh_renderer.material = material;//CW::AssetManager::Get()->GetDefaultMaterialIndex();
+                mesh_renderer.materials[0] = material;
+                mesh_renderer.material_count++;
             }
             if(ImGui::IsItemHovered(ImGuiHoveredFlags_DelayNormal)){
                     ImGui::SetTooltip("Creates a random cube guess were XD");
@@ -217,14 +211,14 @@ namespace CWEditor {
                 material = CW::AssetManager::Get()->GetMaterialIndex("Material1.mat");
             }
             if(ImGui::IsItemHovered(ImGuiHoveredFlags_DelayNormal)){
-                    ImGui::SetTooltip("Applies material to cube");
-                }
+                ImGui::SetTooltip("Applies material to cube");
+            }
             if (ImGui::Button("Material 2")) {
                 material = CW::AssetManager::Get()->GetMaterialIndex("Material2.mat");
             }
             if(ImGui::IsItemHovered(ImGuiHoveredFlags_DelayNormal)){
-                    ImGui::SetTooltip("Applies material to cube");
-                }
+                ImGui::SetTooltip("Applies material to cube");
+            }
             if (ImGui::Button("Create And Load Material 1")) {
                 CW::Material mat = {};
                 mat.albedo_color = vec3s { 0.0f, 0.0f, 1.0f };
@@ -232,8 +226,8 @@ namespace CWEditor {
                 CW::AssetManager::Get()->CreateAndLoadMaterialAsset("Material1.mat", mat);
             }
             if(ImGui::IsItemHovered(ImGuiHoveredFlags_DelayNormal)){
-                    ImGui::SetTooltip("Creates a new material loads it so it can be applied");
-                }
+                ImGui::SetTooltip("Creates a new material loads it so it can be applied");
+            }
             if (ImGui::Button("Create And Load Material 2")) {
                 CW::Material mat = {};
                 mat.albedo_color = vec3s { 0.0f, 0.0f, 1.0f };
@@ -241,8 +235,8 @@ namespace CWEditor {
                 CW::AssetManager::Get()->CreateAndLoadMaterialAsset("Material2.mat", mat);
             }
             if(ImGui::IsItemHovered(ImGuiHoveredFlags_DelayNormal)){
-                    ImGui::SetTooltip("Creates a new material loads it so it can be applied");
-                }
+                ImGui::SetTooltip("Creates a new material loads it so it can be applied");
+            }
             ImGui::Spacing();
             ImGui::Spacing();
             ImGui::Text("Game options");
@@ -254,8 +248,8 @@ namespace CWEditor {
                 CW_ASSERT(success != 0, "Could not build the game!");
             }
             if(ImGui::IsItemHovered(ImGuiHoveredFlags_DelayNormal)){
-                    ImGui::SetTooltip("Exports a game so it can be played");
-                }
+                ImGui::SetTooltip("Exports a game so it can be played");
+            }
             ImGui::End();
         }
         
@@ -270,9 +264,9 @@ namespace CWEditor {
             if (game_object.HasComponent<CW::MeshRenderer>()) {
                 CW::Transform& transform = game_object.GetComponent<CW::Transform>();
                 CW::MeshRenderer& mesh_renderer = game_object.GetComponent<CW::MeshRenderer>();
-
-                versors quat = GLMS_QUAT_IDENTITY_INIT;//QuatEuler(transform.rotation);
-                CW::R3D_RenderMesh(mesh_renderer.mesh, mesh_renderer.material, transform.position, transform.scale, quat);
+                mat4s mat = glms_euler_xyz(transform.rotation);
+                versors quat = glms_mat4_quat(mat);
+                CW::R3D_RenderMesh(mesh_renderer.mesh, mesh_renderer.materials, transform.position, transform.scale, quat);
             }
         }
     }

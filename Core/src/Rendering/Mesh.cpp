@@ -3,6 +3,7 @@
 #include <stddef.h>
 #include <stdio.h>
 #include <string.h>
+#include "assets/AssetManager.h"
 
 namespace CW {
 
@@ -39,24 +40,14 @@ namespace CW {
         }
         submeshes.clear();
     }
-    void Mesh::Load(char *path) {
-        const aiScene *scene = aiImportFile(path, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
-
-		if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
-			printf("ERROR::ASSIMP::%s", aiGetErrorString());
-			return;
-		}
-
-		
-    }
-    void Mesh::LoadMesh(const aiScene *scene) {
-        ProcessNode(this, scene->mRootNode, scene);
+    void Mesh::Load(const aiScene *scene) {
+		ProcessNode(this, scene->mRootNode, scene);
     }
     void Mesh::LoadMeshFromData(const char *data, int data_size) {
         const struct aiScene *scene = aiImportFileFromMemory(data, data_size, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace, 0);
 
 		if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
-			printf("ERROR::ASSIMP::%s", aiGetErrorString());
+			printf("ERROR::ASSIMP::%s\n", aiGetErrorString());
 			return;
 		}
 
@@ -138,6 +129,7 @@ namespace CW {
 
         Mesh *submesh = new Mesh();
         submesh->SubmitMeshData(sub_vertices, sub_indices, ai_mesh->mNumVertices, sub_index_count);
+        submesh->material_used = ai_mesh->mMaterialIndex == 0 ? 0 : ai_mesh->mMaterialIndex - 1;
         return submesh;
 	}
 
@@ -185,9 +177,23 @@ namespace CW {
             submesh->DrawSubmesh(shader);
         }
     }
-    void Mesh::DrawSubmesh(Shader *shader) {
-        //BindMeshTextures(shader);
+    void Mesh::DrawMesh(Shader *shader, MaterialIndex* material_indexes) {
+        for (Mesh* submesh : submeshes) {
+            MaterialIndex material_index = material_indexes[submesh->material_used];
+            Material* mat = AssetManager::Get()->GetMaterial(material_index);
+            if (!mat) mat = AssetManager::Get()->GetMaterial(AssetManager::Get()->GetDefaultMaterialIndex());
+            submesh->DrawSubmesh(shader, mat);
+        }
+    }
+    void Mesh::DrawSubmesh(Shader *shader, Material *material) {
+        shader->SetV4("objectColor", material->albedo_color.r, material->albedo_color.g, material->albedo_color.b, 1.0f);
 
+        Texture albedo = AssetManager::Get()->GetTexture(material->albedo);
+        albedo.Use(0);
+
+        DrawSubmesh(shader);
+    }
+    void Mesh::DrawSubmesh(Shader *shader) {
         glBindVertexArray(VAO);
         glDrawElements(GL_TRIANGLES, (GLsizei) index_count, GL_UNSIGNED_INT, 0);
         glBindVertexArray(0);
@@ -223,7 +229,7 @@ namespace CW {
             strcat(result, number);
 
             shader->SetInt(result, i);
-            textures[i].Use(i);
+            //textures[i].Use(i);
         }
     }
 }

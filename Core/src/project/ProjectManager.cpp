@@ -110,7 +110,9 @@ namespace CW {
                 if (signature.test(1)) {
                     CW::MeshRenderer& mesh_renderer = obj.AddComponent<CW::MeshRenderer>();
                     mesh_renderer.mesh = deserialized.GetSize_t();
-                    mesh_renderer.material = deserialized.GetSize_t();
+                    mesh_renderer.material_count = deserialized.GetInt();
+                    for (int m = 0; m < mesh_renderer.material_count; m++)
+                        mesh_renderer.materials[m] = deserialized.GetSize_t();
                 }
             }
         }
@@ -177,7 +179,9 @@ namespace CW {
                 if (obj.HasComponent<CW::MeshRenderer>()) {
                     CW::MeshRenderer& mesh_renderer = obj.GetComponent<CW::MeshRenderer>();
                     serialized.SubmitSize_t(mesh_renderer.mesh);
-                    serialized.SubmitSize_t(mesh_renderer.material);
+                    serialized.SubmitSize_t(mesh_renderer.material_count);
+                    for (int m = 0; m < mesh_renderer.material_count; m++)
+                        serialized.SubmitSize_t(mesh_renderer.materials[m]);
                 }
             }
         }

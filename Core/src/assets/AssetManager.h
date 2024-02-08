@@ -38,8 +38,11 @@ namespace CW {
 
             void LoadMesh(char *path);
             Mesh* GetMesh(MeshIndex mesh_index);
+            inline MeshIndex GetMeshIndex(char *path) { return HashString(path); }
 
             void LoadModel(char *path);
+            inline ModelIndex GetModelIndex(char *path) { return HashString(path); }
+            Model* GetModel(ModelIndex model_index) { return loaded_models[model_index]; }
 
             inline TextureIndex GetDefaultTextureIndex() { return default_texture_index; }
             inline MaterialIndex GetDefaultMaterialIndex() { return default_material_index; }
