@@ -73,23 +73,14 @@ namespace CW {
 					mat.albedo = diffuseMaps[0];
 					mat.normal_map = normalMaps[0];
 
-					AssetManager::Get()->CreateAndLoadMaterialAsset((char *)material->GetName().C_Str(), mat);
-					material_indexes[mesh->mMaterialIndex - 1] = AssetManager::Get()->GetMaterialIndex((char *)material->GetName().C_Str());
-				} else {
-					CW_ASSERT(false, "?");
-					//material_indexes[mesh->mMaterialIndex - 1] = AssetManager::Get()->GetDefaultMaterialIndex();
+					char mat_path[256] = {};
+					strcpy(mat_path, material->GetName().C_Str());
+					strcat(mat_path, ".mat");
+					AssetManager::Get()->CreateAndLoadMaterialAsset(mat_path, mat);
+					material_indexes[mesh->mMaterialIndex - 1] = AssetManager::Get()->GetMaterialIndex(mat_path);
 				}
 			} else {
 				material_indexes[mesh->mMaterialIndex - 1] = AssetManager::Get()->GetDefaultMaterialIndex();
-			}
-			for (unsigned int i = 0; i < diffuseMaps_size; i++) {
-				//material_indexes[i] = diffuseMaps[i];
-			}
-			for (unsigned int i = 0; i < specularMaps_size; i++) {
-				//material_indexes[diffuseMaps_size + i] = specularMaps[i];
-			}
-			for (unsigned int i = 0; i < normalMaps_size; i++) {
-				//material_indexes[diffuseMaps_size + specularMaps_size + i] = normalMaps[i];
 			}
 		}
 	}
@@ -110,44 +101,21 @@ namespace CW {
 			strcat(tex_path, "/");
 			strcat(tex_path, path.data);
 
-			/*size_t textures_loaded_size = model->textures_loaded.size();
-			for (unsigned int j = 0; j < textures_loaded_size; j++) {
-				if (strcmp(model->textures_loaded[j].path, tex_path) == 0) {
-					textures.push_back(model->textures_loaded[j]);
-					skip = true;
+			Texture_Format texture_format;
+			texture_format.texture_filtering = TEXTURE_LINEAR_MIPMAP;
+			switch (type)
+			{
+				case aiTextureType_NORMALS:
+					texture_format.color_format = GL_RGBA;
 					break;
-				}
-			}*/
-			if (!skip) { // If texure haven't been loaded before
-				Texture_Format texture_format;
-				texture_format.texture_filtering = TEXTURE_LINEAR_MIPMAP;
-				switch (type)
-				{
-					case aiTextureType_NORMALS:
-						texture_format.color_format = GL_RGBA;
-						break;
-					default:
-						texture_format.color_format = GL_SRGB_ALPHA;
-						break;
-				}
-
-				CW::AssetManager::Get()->LoadTexture(tex_path);
-				materials.push_back(AssetManager::Get()->GetTextureIndex(tex_path));
-
-				/*Material material = {};
-				material.albedo_color = vec3s{ 1.0, 1.0, 1.0 };
-				material.albedo = AssetManager::Get()->GetTextureIndex(tex_path);
-
-				char mat_path[256] = {};
-				GetSubStringByLastFoundChar(mat_path, this->path, '.');
-				strcat(mat_path, ".mat");
-
-				AssetManager::Get()->CreateAndLoadMaterialAsset(mat_path, material);
-				MaterialIndex i =  AssetManager::Get()->GetMaterialIndex(mat_path);
-				materials.push_back(i);*/
-				//model->textures_loaded.push_back(texture_data->texture);
+				default:
+					texture_format.color_format = GL_SRGB_ALPHA;
+					break;
 			}
 
+			CW::AssetManager::Get()->LoadTexture(tex_path);
+			materials.push_back(AssetManager::Get()->GetTextureIndex(tex_path));
+			
 		}
 		return materials;
 	}
