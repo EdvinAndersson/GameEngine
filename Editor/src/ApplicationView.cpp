@@ -169,7 +169,7 @@ namespace CWEditor {
             ImGui::End();
         }
         {
-            ImGui::Begin("Assets");
+            ImGui::Begin("Components");
             ImGui::End();
         }
         {
