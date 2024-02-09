@@ -43,7 +43,7 @@ namespace CW {
 		ProcessNode(this, scene->mRootNode, scene);
     }
     void Mesh::LoadMeshFromData(const char *data, int data_size) {
-        const struct aiScene *scene = aiImportFileFromMemory(data, data_size, aiProcess_Triangulate | aiProcess_FlipUVs, 0);
+        const struct aiScene *scene = aiImportFileFromMemory(data, data_size, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace, 0);
 
 		if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
 			printf("ERROR::ASSIMP::%s\n", aiGetErrorString());
@@ -194,7 +194,7 @@ namespace CW {
         glBindVertexArray(0);
     }
     void Mesh::DrawMeshInstanced(Shader *shader, int instance_count) {
-        BindMeshTextures(shader);
+        //BindMeshTextures(shader);
 
         glBindVertexArray(VAO);
         glDrawElementsInstanced(GL_TRIANGLES, (GLsizei) index_count, GL_UNSIGNED_INT, 0, instance_count);

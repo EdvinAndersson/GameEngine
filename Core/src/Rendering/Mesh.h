@@ -47,7 +47,6 @@ namespace CW {
 			void DrawSubmesh(Shader *shader);
 			void DrawSubmesh(Shader *shader, Material *material);
 			void MakeInstanced();
-			void BindMeshTextures(Shader *shader);
 	};
 
 	typedef Mesh *Vec_Mesh;
