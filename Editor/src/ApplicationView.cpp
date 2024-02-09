@@ -160,16 +160,24 @@ namespace CWEditor {
 
                 if (ImGui::BeginPopupContextItem(game_object_name)) {
                     node_clicked = i;
+                    bool enter_pressed = false;
                     if (ImGui::BeginPopupContextItem("New_Name_Popup")){
                         static char buf1[32] = ""; 
                         ImGui::InputText("default", buf1, 32);
+                        if(window->GetInputState(CW::KeyCode::RETURN)){
+                            enter_pressed = true;
+                            if(CheckNameConflict(buf1) == false)
+                                strcpy_s(game_object.GetComponent<CW::Transform>().name, 32, buf1);
+                            strcpy_s(buf1, 1, "");
+                            ImGui::CloseCurrentPopup();
+                        }
                         ImGui::EndPopup();
                     }
-                    if (ImGui::Button("New Name")){
+                    if (ImGui::Button("New Name"))
                         ImGui::OpenPopup("New_Name_Popup");
-                    }
-                    if (ImGui::Button("Close"))
+                    if (ImGui::Button("Close") || enter_pressed)
                         ImGui::CloseCurrentPopup();
+                        
                     ImGui::EndPopup();
                 }
                 if (node_clicked != -1) {
@@ -390,5 +398,14 @@ namespace CWEditor {
         }
 
         ImGui::End();
+    }
+    bool ApplicationView::CheckNameConflict(char *name){
+        CW::Scene& active_scene = cogwheel->GetSceneManager()->GetActiveScene();
+        for(int i = 0; i < active_scene.game_objects.size(); i++){
+            CW::GameObject game_object = *std::next(active_scene.game_objects.begin(), i);
+            if(strcmp(game_object.GetComponent<CW::Transform>().name, name) == 0)
+                return true;
+        }
+        return false;
     }
 }
