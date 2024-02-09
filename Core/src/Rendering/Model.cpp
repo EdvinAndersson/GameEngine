@@ -10,9 +10,7 @@ namespace CW {
 
 	void GetSubStringByLastFoundChar(char *destStr, char *str, char a);
 
-	Model::Model() {
-
-	}
+	Model::Model() {}
 
 	void Model::Load(char *full_path, char *path) {
 		ai_scene = aiImportFile(full_path, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);

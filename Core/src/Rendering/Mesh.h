@@ -15,7 +15,6 @@ namespace CW {
 		vec3s normal;
 		vec2s texCoords;
 		vec3s tangent;
-		vec3s bitangent;
 	} Vertex;
 
 	using MeshIndex = size_t;

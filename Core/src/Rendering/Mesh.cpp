@@ -33,7 +33,6 @@ namespace CW {
     Mesh::~Mesh() {
         delete[] vertices;
         delete[] indices;
-        //delete[] textures;
 
         for (Mesh *m : submeshes) {
             delete m;
@@ -44,7 +43,7 @@ namespace CW {
 		ProcessNode(this, scene->mRootNode, scene);
     }
     void Mesh::LoadMeshFromData(const char *data, int data_size) {
-        const struct aiScene *scene = aiImportFileFromMemory(data, data_size, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace, 0);
+        const struct aiScene *scene = aiImportFileFromMemory(data, data_size, aiProcess_Triangulate | aiProcess_FlipUVs, 0);
 
 		if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
 			printf("ERROR::ASSIMP::%s\n", aiGetErrorString());
@@ -54,18 +53,14 @@ namespace CW {
         ProcessNode(this, scene->mRootNode, scene);
     }
     void Mesh::ProcessNode(Mesh *m, aiNode *node, const aiScene *scene) {
-		// process all the node's meshes (if any)
 		for (unsigned int i = 0; i < node->mNumMeshes; i++)
 		{
 			struct aiMesh *ai_mesh = scene->mMeshes[node->mMeshes[i]];
-
 			m->submeshes.push_back(CreateSubMesh(ai_mesh));
 		}
-		// then do the same for each of its children
+
 		for (unsigned int i = 0; i < node->mNumChildren; i++)
-		{
 			ProcessNode(m, node->mChildren[i], scene);
-		}
 	}
     Mesh *Mesh::CreateSubMesh(struct aiMesh *ai_mesh) {
 		Vertex *sub_vertices = new Vertex[ai_mesh->mNumVertices];
@@ -78,9 +73,8 @@ namespace CW {
 		
 		for (unsigned int i = 0; i < ai_mesh->mNumVertices; i++)
 		{
-			// process vertex positions, normals and texture coordinates
 			Vertex vertex;
-
+            
 			vec3s position;
 			position.x = ai_mesh->mVertices[i].x;
 			position.y = ai_mesh->mVertices[i].y;
@@ -108,12 +102,6 @@ namespace CW {
 			tangent.y = ai_mesh->mTangents[i].y;
 			tangent.z = ai_mesh->mTangents[i].z;
 			vertex.tangent = tangent;
-
-			vec3s bitangent;
-			bitangent.x = ai_mesh->mBitangents[i].x;
-			bitangent.y = ai_mesh->mBitangents[i].y;
-			bitangent.z = ai_mesh->mBitangents[i].z;
-			vertex.bitangent = bitangent;
 			
 			sub_vertices[i] = vertex;
 		}
@@ -181,7 +169,7 @@ namespace CW {
         for (Mesh* submesh : submeshes) {
             MaterialIndex material_index = material_indexes[submesh->material_used];
             Material* mat = AssetManager::Get()->GetMaterial(material_index);
-            if (!mat) mat = AssetManager::Get()->GetMaterial(AssetManager::Get()->GetDefaultMaterialIndex());
+
             submesh->DrawSubmesh(shader, mat);
         }
     }
@@ -211,32 +199,5 @@ namespace CW {
         glBindVertexArray(VAO);
         glDrawElementsInstanced(GL_TRIANGLES, (GLsizei) index_count, GL_UNSIGNED_INT, 0, instance_count);
         glBindVertexArray(0);
-    }
-
-    void Mesh::BindMeshTextures(Shader *shader) {
-        unsigned int diffuseNr = 1;
-        unsigned int specularNr = 1;
-        unsigned int normalsNr = 1;
-
-        for (unsigned int i = 0; i < texture_count; i++)
-        {
-            char number[3] = { 0 };
-
-            const char *name = "texture_diffuse";//textures[i].type;
-            if (strcmp(name, "texture_diffuse"))
-                sprintf(number, "%i", diffuseNr++);
-            else if (strcmp(name, "texture_specular"))
-                sprintf(number, "%i", specularNr++);
-            else if (strcmp(name, "texture_normal"))
-                sprintf(number, "%i", normalsNr++);
-
-            char result[60] = {};
-            strcat(result, "material.");
-            strcat(result, name);
-            strcat(result, number);
-
-            shader->SetInt(result, i);
-            //textures[i].Use(i);
-        }
     }
 }

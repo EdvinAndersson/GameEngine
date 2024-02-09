@@ -78,7 +78,6 @@ namespace CW {
             shader.SetInt("material.texture_normal1", 0);
             shader.SetInt("number_of_point_lights", 0);
 
-            //shader.SetFloat("material.shininess", 0.078125f * 128.0f);
             shader.SetFloat("material.shininess", 0.078125f * 128.0f);
 
             shader.SetV3("dirLight.direction", vec3s{ 1, -2, 1 });
