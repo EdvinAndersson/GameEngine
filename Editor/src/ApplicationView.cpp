@@ -100,6 +100,7 @@ namespace CWEditor {
         mat4s view = GLMS_MAT4_IDENTITY_INIT;
         view = glms_translate(view, pos);
         CW::R3D_SetViewModel(view);
+        CW::R3D_SetViewPos(pos);
         
         {
             ImGui::Begin("Game View");
@@ -224,33 +225,17 @@ namespace CWEditor {
             static CW::MaterialIndex material = CW::AssetManager::Get()->GetDefaultMaterialIndex();
             if (ImGui::Button("Create Random Cube")) {
                 CW::GameObject obj = CW::GameObject::Instantiate(vec3s {(float) (CW::Random()*2.0f-1)*5, (float) (CW::Random()*2.0f-1)*5, -5-(float) CW::Random()*5.0f });
-                obj.GetComponent<CW::Transform>().position = vec3s{-1,0,0};
                 obj.GetComponent<CW::Transform>().rotation = vec3s {0, glm_rad(0), 0};               
                 CW::MeshRenderer& mesh_renderer = obj.AddComponent<CW::MeshRenderer>();
                 CW::ModelIndex model_index = CW::AssetManager::Get()->GetModelIndex("brick/brick.obj");
                 CW::Model *model = CW::AssetManager::Get()->GetModel(model_index);
                 mesh_renderer.mesh = model_index;
                 memcpy(mesh_renderer.materials, model->material_indexes, MAX_MATERIALS * sizeof(CW::MaterialIndex));
-                //mesh_renderer.materials = model->material_indexes;
-                mesh_renderer.material_count = model->material_count;
-            }
-            if (ImGui::Button("Create Random Cube 2")) {
-                CW::GameObject obj = CW::GameObject::Instantiate(vec3s {(float) (CW::Random()*2.0f-1)*5, (float) (CW::Random()*2.0f-1)*5, -5-(float) CW::Random()*5.0f });
-                obj.GetComponent<CW::Transform>().position = vec3s{1,0,0};
-                obj.GetComponent<CW::Transform>().rotation = vec3s {0, glm_rad(0), 0};               
-                CW::MeshRenderer& mesh_renderer = obj.AddComponent<CW::MeshRenderer>();
-                CW::ModelIndex model_index = CW::AssetManager::Get()->GetModelIndex("brick/brick.obj");
-                CW::Model *model = CW::AssetManager::Get()->GetModel(model_index);
-                mesh_renderer.mesh = model_index;
-                CW::ModelIndex m[8] = {model->material_indexes[0]};
-
-                memcpy(mesh_renderer.materials, m, MAX_MATERIALS * sizeof(CW::MaterialIndex));
-                //mesh_renderer.materials = model->material_indexes;
                 mesh_renderer.material_count = model->material_count;
             }
             if(ImGui::IsItemHovered(ImGuiHoveredFlags_DelayNormal)){
-                    ImGui::SetTooltip("Creates a random cube guess were XD");
-                }
+                ImGui::SetTooltip("Creates a random cube guess were XD");
+            }
             ImGui::Spacing();
             ImGui::Spacing();
             ImGui::Text("Material options");

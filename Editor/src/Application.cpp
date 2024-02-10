@@ -13,7 +13,7 @@ namespace CWEditor {
 
     void Application::Init() {
         window = new CW::Window();
-        int success = window->Init(L"Cogwheel Engine", 1920, 1080);
+        int success = window->Init(L"Cogwheel Engine", 1920*0.75f, 1080*0.75f);
         if (success == 1) {
             cogwheel->Stop();
             return;

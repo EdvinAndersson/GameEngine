@@ -185,6 +185,11 @@ namespace CW {
             Texture normal = AssetManager::Get()->GetTexture(material->normal_map);
             normal.Use(1);
         }
+        if(material->specular_map != 0) {
+            shader->SetInt("material.texture_specular1", 2);
+            Texture specular = AssetManager::Get()->GetTexture(material->specular_map);
+            specular.Use(2);
+        }
 
         DrawSubmesh(shader);
     }

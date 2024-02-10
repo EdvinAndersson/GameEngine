@@ -16,14 +16,22 @@ namespace CW {
         //Load default white texuture
         default_texture_index = HashString("default_texture");
         Texture_Format format = { GL_RGBA, TEXTURE_NEAREST_NEIGHBOR };
-        TextureData *texture_data = CreateBlankTexture(format);
+        TextureData *texture_data = CreateBlankTexture(format, 0xFFFFFFFF);
         loaded_textures.insert({ default_texture_index, texture_data });
+
+        //Load default specular texuture
+        default_specular_texture_index = HashString("default_specular_texture");
+        Texture_Format format_specular = { GL_RGBA, TEXTURE_NEAREST_NEIGHBOR };
+        TextureData *texture_data_specular = CreateBlankTexture(format_specular, 0xFF2F2F2F);
+        loaded_textures.insert({ default_specular_texture_index, texture_data_specular });
 
         //Load default material
         default_material_index = HashString("default_material");
         Material *material = new Material();
         material->albedo_color = vec3s{ 1.0f, 1.0f, 1.0f };
         material->albedo = default_texture_index;
+        material->normal_map = default_texture_index;
+        material->specular_map = default_specular_texture_index;
         loaded_materials.insert({ default_material_index, material });
 
         //Load default cube mesh
@@ -115,14 +123,16 @@ namespace CW {
     void AssetManager::UnloadAssets() {
         //Unload textures
         for (auto& it : loaded_textures) {
-            if (it.first == default_texture_index)
+            if (it.first == default_texture_index || it.first == default_specular_texture_index)
                 continue;
             FreeTextureData(it.second);
             delete it.second;
         }
-        CW::TextureData *default_texture_data = loaded_textures[default_texture_index]; 
+        CW::TextureData *default_texture_data = loaded_textures[default_texture_index];
+        CW::TextureData *default_specular_texture_data = loaded_textures[default_specular_texture_index]; 
         loaded_textures.clear();
         loaded_textures.insert({ default_texture_index, default_texture_data });
+        loaded_textures.insert({ default_specular_texture_index, default_specular_texture_data });
 
         //Unload materials
         for (auto& it : loaded_materials) {

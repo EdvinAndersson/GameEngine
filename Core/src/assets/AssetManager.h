@@ -45,6 +45,7 @@ namespace CW {
             Model* GetModel(ModelIndex model_index) { return loaded_models[model_index]; }
 
             inline TextureIndex GetDefaultTextureIndex() { return default_texture_index; }
+            inline TextureIndex GetDefaultSpecularTextureIndex() { return default_specular_texture_index; }
             inline MaterialIndex GetDefaultMaterialIndex() { return default_material_index; }
             inline MeshIndex GetDefaultMeshIndex() { return default_mesh_index; }
 
@@ -58,7 +59,7 @@ namespace CW {
             std::unordered_map<ModelIndex, Model *> loaded_models = {};
             std::unordered_map<MeshIndex, Mesh *> loaded_meshes = {};
 
-            TextureIndex default_texture_index;
+            TextureIndex default_texture_index, default_specular_texture_index;
             MaterialIndex default_material_index;
             MeshIndex default_mesh_index;
             char assets_path[1024];

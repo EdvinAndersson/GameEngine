@@ -12,5 +12,6 @@ namespace CW {
 
         TextureIndex albedo;
         TextureIndex normal_map;
+        TextureIndex specular_map;
     };
 }
