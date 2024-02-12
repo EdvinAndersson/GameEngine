@@ -268,7 +268,7 @@ namespace CW {
         strcat(full_path, "/");
         strcat(full_path, path);
 
-        Mesh *mesh = new Mesh();
+        //Mesh *mesh = new Mesh();
         //mesh.L
     }
 

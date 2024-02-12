@@ -208,7 +208,7 @@ namespace CWEditor {
         }
         {
         ImGui::Begin("Debug View");
-            ImGui::SetWindowFontScale(1.3);
+            ImGui::SetWindowFontScale(1.3f);
             ImGui::Text("Project options");
             if (ImGui::Button("Save project")) {
                 cogwheel->GetProjectManager()->SaveProject();
