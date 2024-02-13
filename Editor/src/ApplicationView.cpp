@@ -399,7 +399,9 @@ namespace CWEditor {
         auto *loaded_textures = asset_manager.GetLoadedTextures();
         size_t total_count = loaded_textures->size();
 
-        ImGui::Text("Count: %i",total_count);
+        if (ImGui::Button("Refresh")) {
+            assets_builder->Refresh();
+        }
     }
     void ApplicationView::RenderComponents(){
         
