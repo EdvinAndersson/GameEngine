@@ -24,11 +24,12 @@ namespace CW {
 
 			MeshIndex mesh_index;
 			MaterialIndex material_indexes[MAX_MATERIALS];
-			char path[512] = {}, path_dir[512] = {}, asset_path_dir[512] = {};
 			unsigned int material_count = 0;
+
 		private:
 			std::vector<TextureIndex> Model::LoadMaterialTextures(struct aiMaterial *mat, enum aiTextureType type, const char *typeName);
 
+			char path[512] = {}, path_dir[512] = {}, asset_path_dir[512] = {};
 			const aiScene *ai_scene;
 	};
 }

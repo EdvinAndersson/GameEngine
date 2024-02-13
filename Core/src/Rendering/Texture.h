@@ -1,5 +1,6 @@
 #pragma once
 #include "../GLFunc.h"
+#include "cglm/struct.h"
 
 namespace CW {
 
@@ -33,7 +34,7 @@ namespace CW {
 
 	TextureData* CreateTexture(const char *path);
 	TextureData* CreateTexture(const char* path, Texture_Format texture_format);
-	TextureData* CreateBlankTexture(Texture_Format texture_format);
+	TextureData* CreateBlankTexture(Texture_Format texture_format, unsigned int color);
 	Texture CreateTextureFromData(unsigned char *data, int width, int height, Texture_Format texture_format);
 
 	TextureData* GetTextureData(const char *path);

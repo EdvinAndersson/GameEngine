@@ -100,6 +100,7 @@ namespace CWEditor {
         mat4s view = GLMS_MAT4_IDENTITY_INIT;
         view = glms_translate(view, pos);
         CW::R3D_SetViewModel(view);
+        CW::R3D_SetViewPos(pos);
         
         {
             ImGui::Begin("Game View");
@@ -202,13 +203,18 @@ namespace CWEditor {
             ImGui::End();
         }
         {
+            ImGui::Begin("Assets");
+            RenderAssets();
+            ImGui::End();
+        }
+        {
             ImGui::Begin("Console");
             
             ImGui::End();
         }
         {
         ImGui::Begin("Debug View");
-            ImGui::SetWindowFontScale(1.3);
+            ImGui::SetWindowFontScale(1.3f);
             ImGui::Text("Project options");
             if (ImGui::Button("Save project")) {
                 cogwheel->GetProjectManager()->SaveProject();
@@ -225,33 +231,17 @@ namespace CWEditor {
             static CW::MaterialIndex material = CW::AssetManager::Get()->GetDefaultMaterialIndex();
             if (ImGui::Button("Create Random Cube")) {
                 CW::GameObject obj = CW::GameObject::Instantiate(vec3s {(float) (CW::Random()*2.0f-1)*5, (float) (CW::Random()*2.0f-1)*5, -5-(float) CW::Random()*5.0f });
-                obj.GetComponent<CW::Transform>().position = vec3s{-1,0,0};
                 obj.GetComponent<CW::Transform>().rotation = vec3s {0, glm_rad(0), 0};               
                 CW::MeshRenderer& mesh_renderer = obj.AddComponent<CW::MeshRenderer>();
                 CW::ModelIndex model_index = CW::AssetManager::Get()->GetModelIndex("brick/brick.obj");
                 CW::Model *model = CW::AssetManager::Get()->GetModel(model_index);
                 mesh_renderer.mesh = model_index;
                 memcpy(mesh_renderer.materials, model->material_indexes, MAX_MATERIALS * sizeof(CW::MaterialIndex));
-                //mesh_renderer.materials = model->material_indexes;
-                mesh_renderer.material_count = model->material_count;
-            }
-            if (ImGui::Button("Create Random Cube 2")) {
-                CW::GameObject obj = CW::GameObject::Instantiate(vec3s {(float) (CW::Random()*2.0f-1)*5, (float) (CW::Random()*2.0f-1)*5, -5-(float) CW::Random()*5.0f });
-                obj.GetComponent<CW::Transform>().position = vec3s{1,0,0};
-                obj.GetComponent<CW::Transform>().rotation = vec3s {0, glm_rad(0), 0};               
-                CW::MeshRenderer& mesh_renderer = obj.AddComponent<CW::MeshRenderer>();
-                CW::ModelIndex model_index = CW::AssetManager::Get()->GetModelIndex("brick/brick.obj");
-                CW::Model *model = CW::AssetManager::Get()->GetModel(model_index);
-                mesh_renderer.mesh = model_index;
-                CW::ModelIndex m[8] = {model->material_indexes[0]};
-
-                memcpy(mesh_renderer.materials, m, MAX_MATERIALS * sizeof(CW::MaterialIndex));
-                //mesh_renderer.materials = model->material_indexes;
                 mesh_renderer.material_count = model->material_count;
             }
             if(ImGui::IsItemHovered(ImGuiHoveredFlags_DelayNormal)){
-                    ImGui::SetTooltip("Creates a random cube guess were XD");
-                }
+                ImGui::SetTooltip("Creates a random cube guess were XD");
+            }
             ImGui::Spacing();
             ImGui::Spacing();
             ImGui::Text("Material options");
@@ -358,17 +348,11 @@ namespace CWEditor {
         window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
         window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
 
-        // When using ImGuiDockNodeFlags_PassthruCentralNode, DockSpace() will render our background
-        // and handle the pass-thru hole, so the parent window should not have its own background:
-        if (dockspace_flags & ImGuiDockNodeFlags_PassthruCentralNode)
-            window_flags |= ImGuiWindowFlags_NoBackground;
-
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
 
-        ImGui::Begin("DockSpace Demo", (bool *)1, window_flags);
+        ImGui::Begin("DockSpace", (bool *)1, window_flags);
 
         ImGui::PopStyleVar();
-
         ImGui::PopStyleVar(2);
 
         ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
@@ -399,6 +383,9 @@ namespace CWEditor {
         }
 
         ImGui::End();
+    }
+    void ApplicationView::RenderAssets() {
+
     }
     bool ApplicationView::CheckNameConflict(char *name){
         CW::Scene& active_scene = cogwheel->GetSceneManager()->GetActiveScene();

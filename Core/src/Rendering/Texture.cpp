@@ -35,14 +35,13 @@ namespace CW {
     void FreeTextureData(TextureData *texture_data) {
         stbi_image_free(texture_data->data);
     }
-    TextureData* CreateBlankTexture(Texture_Format texture_format) {
+    TextureData* CreateBlankTexture(Texture_Format texture_format, unsigned int color) {
         TextureData *texture_data = new TextureData();
         texture_data->width = 1;
         texture_data->height = 1;
-        unsigned int data = 0xFFFFFFFF;
-        texture_data->data = (unsigned char*) &data;
+        texture_data->data = (unsigned char*) &color;
 
-        texture_data->texture = CreateTextureFromData((unsigned char*) &data, 1, 1, texture_format);
+        texture_data->texture = CreateTextureFromData(texture_data->data, 1, 1, texture_format);
 
         return texture_data;
     }
