@@ -49,6 +49,8 @@ namespace CW {
             inline MaterialIndex GetDefaultMaterialIndex() { return default_material_index; }
             inline MeshIndex GetDefaultMeshIndex() { return default_mesh_index; }
 
+            inline std::unordered_map<TextureIndex, TextureData *>* GetLoadedTextures() { return &loaded_textures; }
+
             static AssetManager* Get();
         private:
             void GetAllAssetPaths(DIR *dir, char file_paths[MAX_ASSETS][256], unsigned int *count, char base_dir[256]);

@@ -11,6 +11,7 @@ set compile_flags=/W4 /Zi /MP /Od /FC /wd4201 /Fe:CogwheelEditor.exe /MTd -D UNI
 
 set source_files=^
 ../src/*.cpp ^
+../src/assets/*.cpp ^
 ../src/vendor/imgui/*.cpp ^
 ../src/vendor/imgui/backends/*.cpp
 

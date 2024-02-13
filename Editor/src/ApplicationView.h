@@ -6,6 +6,8 @@
 #include "Core/src/Rendering/Framebuffer.h"
 #include "Core/src/Utility.h"
 
+#include "assets/AssetsBuilder.h"
+
 #include "vendor/imgui/imgui.h"
 #include "vendor/imgui/backends/imgui_impl_opengl3.h"
 #include "vendor/imgui/backends/imgui_impl_win32.h"
@@ -17,6 +19,7 @@ namespace CWEditor {
     class ApplicationView : CW::IEventListener {
         public:
             ApplicationView();
+            ~ApplicationView();
             
             void Init(CW::Cogwheel *cogwheel, CW::Window *window);
             void Update();
@@ -31,6 +34,8 @@ namespace CWEditor {
             CW::Framebuffer *framebuffer_game_view;
             CW::Cogwheel *cogwheel;
             CW::Window *window;
+            
+            AssetsBuilder *assets_builder;
 
             vec3s pos = {0,0,0};
             vec3s light_pos = {-12.0f, -12.0f, 12.0f};

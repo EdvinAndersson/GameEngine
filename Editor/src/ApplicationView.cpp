@@ -5,9 +5,16 @@
 namespace CWEditor {
     ApplicationView::ApplicationView() {}
 
+    ApplicationView::~ApplicationView() {
+        delete assets_builder;
+        delete framebuffer_game_view;
+    }
+
     void ApplicationView::Init(CW::Cogwheel *_cogwheel, CW::Window *_window) {
         cogwheel = _cogwheel;
         window = _window;
+
+        assets_builder = new AssetsBuilder();
 
         framebuffer_game_view = new CW::Framebuffer(CW::FramebufferType::DEFUALT, window->GetWidth(), window->GetHeight());
 
@@ -156,8 +163,10 @@ namespace CWEditor {
                     node_flags |= ImGuiTreeNodeFlags_Selected;
             
                 bool node_open = ImGui::TreeNodeEx((void*)(intptr_t)i, node_flags, game_object_name);
-                if (ImGui::IsItemClicked())
+                if (ImGui::IsItemClicked()){
+                    //selected_game_object = game_object;
                     node_clicked = i;
+                }
 
                 if (ImGui::BeginPopupContextItem(game_object_name)) {
                     node_clicked = i;
@@ -385,7 +394,12 @@ namespace CWEditor {
         ImGui::End();
     }
     void ApplicationView::RenderAssets() {
+        CW::AssetManager& asset_manager = *CW::AssetManager::Get();
+        
+        auto *loaded_textures = asset_manager.GetLoadedTextures();
+        size_t total_count = loaded_textures->size();
 
+        ImGui::Text("Count: %i",total_count);
     }
     void ApplicationView::RenderComponents(){
         
