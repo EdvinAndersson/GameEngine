@@ -15,11 +15,13 @@ namespace CWEditor {
         window = _window;
 
         assets_builder = new AssetsBuilder();
+        assets_builder->Refresh();
 
         framebuffer_game_view = new CW::Framebuffer(CW::FramebufferType::DEFUALT, window->GetWidth(), window->GetHeight());
 
         EventListen(CW::EventType::WINDOW_CLOSE);
         EventListen(CW::EventType::WINDOW_RESIZE);
+        EventListen(CW::EventType::PROJECT_LOAD);
 
         glDisable(GL_FRAMEBUFFER_SRGB);
 
@@ -332,6 +334,9 @@ namespace CWEditor {
                 framebuffer_game_view->ReCreate(width, height);
                 CW::R3D_Resize(width, height);
             } break;
+            case CW::EventType::PROJECT_LOAD: {
+                assets_builder->Refresh();
+            } break;
         }
     }
     void ApplicationView::RenderDockspace() {
@@ -393,13 +398,14 @@ namespace CWEditor {
         ImGui::End();
     }
     void ApplicationView::RenderAssets() {
-        CW::AssetManager& asset_manager = *CW::AssetManager::Get();
-        
-        auto *loaded_textures = asset_manager.GetLoadedTextures();
-        size_t total_count = loaded_textures->size();
-
         if (ImGui::Button("Refresh")) {
             assets_builder->Refresh();
+        }
+
+        for (auto& it : *assets_builder->GetContents()) {
+            AssetInfo asset_info = it.second;
+
+            ImGui::Text("name: %s, path: %s", asset_info.name, it.first);
         }
     }
     void ApplicationView::RenderComponents(){

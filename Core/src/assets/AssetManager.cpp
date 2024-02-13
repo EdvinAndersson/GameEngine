@@ -173,7 +173,7 @@ namespace CW {
         strcat(full_path, "/");
         strcat(full_path, path);
 
-        TextureData *texture_data = CreateTexture(full_path);
+        TextureData *texture_data = CreateTexture(full_path, path);
         loaded_textures.insert({ hashed_path, texture_data });
     }
 
