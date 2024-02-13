@@ -25,6 +25,7 @@ namespace CWEditor {
             void OnEvent(CW::Event event) override;
             void RenderDockspace();
             void RenderAssets();
+            void RenderComponents();
             bool CheckNameConflict(char * name);
 
             CW::Framebuffer *framebuffer_game_view;

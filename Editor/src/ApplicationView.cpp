@@ -199,7 +199,7 @@ namespace CWEditor {
         }
         {
             ImGui::Begin("Components");
-                renderComponents();
+            RenderComponents();
             ImGui::End();
         }
         {
@@ -386,6 +386,9 @@ namespace CWEditor {
     }
     void ApplicationView::RenderAssets() {
 
+    }
+    void ApplicationView::RenderComponents(){
+        
     }
     bool ApplicationView::CheckNameConflict(char *name){
         CW::Scene& active_scene = cogwheel->GetSceneManager()->GetActiveScene();
