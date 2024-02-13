@@ -34,6 +34,7 @@ namespace CWEditor {
             CW::Framebuffer *framebuffer_game_view;
             CW::Cogwheel *cogwheel;
             CW::Window *window;
+            CW::GameObject selected_game_object;
             
             AssetsBuilder *assets_builder;
 

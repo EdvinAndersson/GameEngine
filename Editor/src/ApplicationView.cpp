@@ -164,7 +164,7 @@ namespace CWEditor {
             
                 bool node_open = ImGui::TreeNodeEx((void*)(intptr_t)i, node_flags, game_object_name);
                 if (ImGui::IsItemClicked()){
-                    //selected_game_object = game_object;
+                    selected_game_object = game_object;
                     node_clicked = i;
                 }
 
@@ -199,7 +199,6 @@ namespace CWEditor {
             
                 }
                 if (node_open) {
-                    ImGui::BulletText("Blah blah\nBlah Blah");
                     ImGui::TreePop();  
                 }
             }
@@ -402,8 +401,10 @@ namespace CWEditor {
         ImGui::Text("Count: %i",total_count);
     }
     void ApplicationView::RenderComponents(){
-        
-    }
+        if(selected_game_object.GetEntity() != 0){
+            ImGui::BulletText("Blah blah\nBlah Blah");
+        }
+    }   
     bool ApplicationView::CheckNameConflict(char *name){
         CW::Scene& active_scene = cogwheel->GetSceneManager()->GetActiveScene();
         for(int i = 0; i < active_scene.game_objects.size(); i++){
