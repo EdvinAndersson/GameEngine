@@ -58,6 +58,6 @@ namespace CW {
 			return entity;
 		}
 	private:
-		Entity entity;
+		Entity entity = 0;
 	};
 }

@@ -149,15 +149,14 @@ namespace CWEditor {
             ImGui::ShowDemoWindow();
             ImGui::Begin("Scene objects");
             CW::Scene& active_scene = cogwheel->GetSceneManager()->GetActiveScene();
-            static ImGuiTreeNodeFlags base_flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_SpanAvailWidth;
             static int selection_mask = (1 << 2);
             int node_clicked = -1;
 
             for (int i = 0; i < active_scene.game_objects.size(); i++){
                 CW::GameObject game_object = *std::next(active_scene.game_objects.begin(), i); 
                 char* game_object_name = game_object.GetComponent<CW::Transform>().name;
+                ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_SpanAvailWidth;
 
-                ImGuiTreeNodeFlags node_flags = base_flags;
                 const bool is_selected = (selection_mask & (1 << i)) != 0;
                 if (is_selected)
                     node_flags |= ImGuiTreeNodeFlags_Selected;
@@ -403,9 +402,25 @@ namespace CWEditor {
         }
     }
     void ApplicationView::RenderComponents(){
-        if(selected_game_object.GetEntity() != 0){
-            ImGui::BulletText("Blah blah\nBlah Blah");
+        if(selected_game_object.GetEntity() == 0)
+            return;
+        ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_SpanAvailWidth;
+        
+        bool node_open = ImGui::TreeNodeEx((void*)(intptr_t)0, node_flags, "Transform");
+        if(node_open){
+            ImGui::Text("Position (X, Y, Z)");
+            ImGui::DragFloat3(" ", (float*)&selected_game_object.GetComponent<CW::Transform>().position, 0.01f);
+            ImGui::Text("Rotation (X, Y, Z)");
+            ImGui::DragFloat3(" ", (float*)&selected_game_object.GetComponent<CW::Transform>().rotation, 0.01f);
+            ImGui::TreePop();
         }
+        if(selected_game_object.HasComponent<CW::MeshRenderer>()){
+            node_open = ImGui::TreeNodeEx((void*)(intptr_t)1, node_flags, "MeshRenderer");
+            if(node_open){
+                
+                ImGui::TreePop();
+        }
+        } 
     }   
     bool ApplicationView::CheckNameConflict(char *name){
         CW::Scene& active_scene = cogwheel->GetSceneManager()->GetActiveScene();
