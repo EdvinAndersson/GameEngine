@@ -28,12 +28,12 @@ namespace CW {
 		int width, height, nr_channels;
 
 		const char *type;
-		char path[256];
+		char path[256], asset_path_dir[256];
 		Texture_Format texture_format;
 	};
 
-	TextureData* CreateTexture(const char *path);
-	TextureData* CreateTexture(const char* path, Texture_Format texture_format);
+	TextureData* CreateTexture(const char *path, char *asset_path_dir);
+	TextureData* CreateTexture(const char* path, char *asset_path_dir, Texture_Format texture_format);
 	TextureData* CreateBlankTexture(Texture_Format texture_format, unsigned int color);
 	Texture CreateTextureFromData(unsigned char *data, int width, int height, Texture_Format texture_format);
 

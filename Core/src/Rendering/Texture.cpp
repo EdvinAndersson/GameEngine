@@ -8,17 +8,18 @@ namespace CW {
         glBindTexture(GL_TEXTURE_2D, id);
     }
 
-    TextureData* CreateTexture(const char *path) {
+    TextureData* CreateTexture(const char *path, char *asset_path_dir) {
         Texture_Format texture_format;
 
         texture_format.color_format = GL_RGBA;
         texture_format.texture_filtering = TEXTURE_NEAREST_NEIGHBOR;
 
-        return CreateTexture(path, texture_format);
+        return CreateTexture(path, asset_path_dir, texture_format);
     }
-    TextureData* CreateTexture(const char *path, Texture_Format texture_format) {
+    TextureData* CreateTexture(const char *path, char *asset_path_dir, Texture_Format texture_format) {
         TextureData *texture_data = GetTextureData(path);
         texture_data->texture_format = texture_format;
+        strcpy(texture_data->asset_path_dir, asset_path_dir);
 
         switch (texture_data->nr_channels) {
             case 3: {
