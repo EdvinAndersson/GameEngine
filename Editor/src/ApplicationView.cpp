@@ -21,7 +21,7 @@ namespace CWEditor {
 
         EventListen(CW::EventType::WINDOW_CLOSE);
         EventListen(CW::EventType::WINDOW_RESIZE);
-        EventListen(CW::EventType::PROJECT_LOAD);
+        EventListen(CW::EventType::PROJECT_LOAD_LATE);
 
         glDisable(GL_FRAMEBUFFER_SRGB);
 
@@ -333,8 +333,9 @@ namespace CWEditor {
                 framebuffer_game_view->ReCreate(width, height);
                 CW::R3D_Resize(width, height);
             } break;
-            case CW::EventType::PROJECT_LOAD: {
+            case CW::EventType::PROJECT_LOAD_LATE: {
                 assets_builder->Refresh();
+                current_asset_folder = CW::AssetManager::Get()->GetAssetsPath();
             } break;
         }
     }
@@ -401,10 +402,26 @@ namespace CWEditor {
             assets_builder->Refresh();
         }
 
-        for (auto& it : *assets_builder->GetContents()) {
-            AssetInfo asset_info = it.second;
+        ImGuiStyle& style = ImGui::GetStyle();
+        size_t contents_count = assets_builder->GetContents()->size();
+        float window_visible = ImGui::GetWindowPos().x + ImGui::GetWindowContentRegionMax().x;
+        int n = 0;
 
-            ImGui::Text("name: %s, path: %s", asset_info.name, it.first);
+        current_asset_folder = CW::AssetManager::Get()->GetAssetsPath();
+        ImGui::Text(current_asset_folder);
+
+        for (auto& it : *assets_builder->GetContents()) {
+            ImGui::PushID(n);
+            AssetInfo asset_info = it.second.asset_infos[0];
+            CW::Texture texture = CW::AssetManager::Get()->GetTextureData(asset_info.icon)->texture;
+            ImGui::Image((ImTextureID) texture.id, ImVec2 { asset_view_size.x, asset_view_size.y });
+
+            float next_button = ImGui::GetItemRectMax().x + style.ItemSpacing.x + asset_view_size.x;
+            if (n + 1 < contents_count && next_button < window_visible)
+                ImGui::SameLine();
+
+            n++;
+            ImGui::PopID();
         }
     }
     void ApplicationView::RenderComponents(){

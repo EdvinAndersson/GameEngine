@@ -15,6 +15,7 @@ namespace CW {
 
         PROJECT_LOAD,
         PROJECT_CREATE,
+        PROJECT_LOAD_LATE,
 
         ECS_INSTANTIATE_GAMEOBJECT,
         ECS_DESTROY_GAMEOBJECT
@@ -29,6 +30,9 @@ namespace CW {
         Project *project;
     };
     struct EventData_PROJECT_CREATE {
+        Project *project;
+    };
+    struct EventData_PROJECT_LOAD_LATE{
         Project *project;
     };
     struct EventData_WINDOW_RESIZE {
