@@ -177,7 +177,7 @@ namespace CWEditor {
                         ImGui::OpenPopup("New_Name_Popup");
                     if (ImGui::Button("Close") || enter_pressed)
                         ImGui::CloseCurrentPopup();
-                        
+
                     ImGui::EndPopup();
                 }
                 if (node_clicked != -1) {
@@ -198,6 +198,7 @@ namespace CWEditor {
         }
         {
             ImGui::Begin("Components");
+                renderComponents();
             ImGui::End();
         }
         {
