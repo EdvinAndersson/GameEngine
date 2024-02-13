@@ -202,6 +202,11 @@ namespace CWEditor {
             ImGui::End();
         }
         {
+            ImGui::Begin("Assets");
+            RenderAssets();
+            ImGui::End();
+        }
+        {
             ImGui::Begin("Console");
             
             ImGui::End();
@@ -342,17 +347,11 @@ namespace CWEditor {
         window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
         window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
 
-        // When using ImGuiDockNodeFlags_PassthruCentralNode, DockSpace() will render our background
-        // and handle the pass-thru hole, so the parent window should not have its own background:
-        if (dockspace_flags & ImGuiDockNodeFlags_PassthruCentralNode)
-            window_flags |= ImGuiWindowFlags_NoBackground;
-
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
 
-        ImGui::Begin("DockSpace Demo", (bool *)1, window_flags);
+        ImGui::Begin("DockSpace", (bool *)1, window_flags);
 
         ImGui::PopStyleVar();
-
         ImGui::PopStyleVar(2);
 
         ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
@@ -383,6 +382,9 @@ namespace CWEditor {
         }
 
         ImGui::End();
+    }
+    void ApplicationView::RenderAssets() {
+
     }
     bool ApplicationView::CheckNameConflict(char *name){
         CW::Scene& active_scene = cogwheel->GetSceneManager()->GetActiveScene();
