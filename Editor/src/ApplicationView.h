@@ -38,7 +38,7 @@ namespace CWEditor {
             
             AssetsBuilder *assets_builder;
             vec2s asset_view_size = { 80.0f, 80.0f };
-            char *current_asset_folder = 0;
+            size_t current_asset_folder_hash;
 
             vec3s pos = {0,0,0};
             vec3s light_pos = {-12.0f, -12.0f, 12.0f};

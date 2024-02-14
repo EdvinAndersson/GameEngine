@@ -6,7 +6,7 @@
 namespace CWEditor {
 
     struct AssetInfoArray {
-        AssetInfo asset_infos[MAX_ASSETS];
+        AssetInfo *asset_infos[MAX_ASSETS];
     };
 
     class AssetsBuilder {
@@ -15,11 +15,12 @@ namespace CWEditor {
 
             void Refresh();
 
-            inline std::unordered_map<char *, AssetInfoArray>* GetContents() { return &contents; }
+            inline std::unordered_map<size_t, AssetInfoArray>* GetContents() { return &contents; }
+            inline int GetContentsCount(size_t dir_hash) { return contents_count[dir_hash]; }
         private:
             void MakeAssetsFolders(DIR *dir, char *base_dir);
 
-            std::unordered_map<char *, AssetInfoArray> contents;
-            std::unordered_map<char *, int> contents_count;
+            std::unordered_map<size_t, AssetInfoArray> contents;
+            std::unordered_map<size_t, int> contents_count;
     };
 }

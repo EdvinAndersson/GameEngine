@@ -14,6 +14,7 @@ namespace CWEditor {
     struct AssetInfo {
         AssetType asset_type;
         char *name;
+        char path[256];
         CW::TextureIndex icon;
     };
 }

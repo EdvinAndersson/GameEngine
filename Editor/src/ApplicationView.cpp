@@ -16,6 +16,7 @@ namespace CWEditor {
 
         assets_builder = new AssetsBuilder();
         assets_builder->Refresh();
+        current_asset_folder_hash = CW::HashString("");
 
         framebuffer_game_view = new CW::Framebuffer(CW::FramebufferType::DEFUALT, window->GetWidth(), window->GetHeight());
 
@@ -335,7 +336,7 @@ namespace CWEditor {
             } break;
             case CW::EventType::PROJECT_LOAD_LATE: {
                 assets_builder->Refresh();
-                current_asset_folder = CW::AssetManager::Get()->GetAssetsPath();
+                current_asset_folder_hash = CW::HashString("");
             } break;
         }
     }
@@ -398,8 +399,14 @@ namespace CWEditor {
         ImGui::End();
     }
     void ApplicationView::RenderAssets() {
+        static size_t prev_dir_hash;
+
         if (ImGui::Button("Refresh")) {
             assets_builder->Refresh();
+        }
+        ImGui::SameLine();
+        if (ImGui::Button("Back")) {
+            current_asset_folder_hash = prev_dir_hash;
         }
 
         ImGuiStyle& style = ImGui::GetStyle();
@@ -407,9 +414,36 @@ namespace CWEditor {
         float window_visible = ImGui::GetWindowPos().x + ImGui::GetWindowContentRegionMax().x;
         int n = 0;
 
-        current_asset_folder = CW::AssetManager::Get()->GetAssetsPath();
-        ImGui::Text(current_asset_folder);
+        //ImGui::Text(current_asset_folder_hash);
+        AssetInfoArray& asset_info_array = (*assets_builder->GetContents())[current_asset_folder_hash];
+        int asset_info_count = assets_builder->GetContentsCount(current_asset_folder_hash);
 
+
+        for (int i = 0; i < asset_info_count; i++) {
+            ImGui::PushID(i);
+            
+            AssetInfo& asset_info = *asset_info_array.asset_infos[i];
+            CW::Texture texture = CW::AssetManager::Get()->GetTextureData(asset_info.icon)->texture;
+
+            bool is_clicked = ImGui::ImageButton((ImTextureID) texture.id, ImVec2 { asset_view_size.x, asset_view_size.y });
+            if (is_clicked) {
+
+                if (asset_info.asset_type == AssetType::FOLDER) {
+                    printf("path: %s\n", asset_info.path);
+                    prev_dir_hash = current_asset_folder_hash;
+                    current_asset_folder_hash = CW::HashString(asset_info.path);
+                    ImGui::PopID();
+                    return;
+                }
+            }
+
+            float next_button = ImGui::GetItemRectMax().x + style.ItemSpacing.x + asset_view_size.x;
+            if (n + 1 < contents_count && next_button < window_visible)
+                ImGui::SameLine();
+
+            ImGui::PopID();
+        }
+#if 0
         for (auto& it : *assets_builder->GetContents()) {
             ImGui::PushID(n);
             AssetInfo asset_info = it.second.asset_infos[0];
@@ -423,6 +457,7 @@ namespace CWEditor {
             n++;
             ImGui::PopID();
         }
+#endif
     }
     void ApplicationView::RenderComponents(){
         if(selected_game_object.GetEntity() == 0)
