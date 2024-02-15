@@ -399,14 +399,15 @@ namespace CWEditor {
         ImGui::End();
     }
     void ApplicationView::RenderAssets() {
-        static size_t prev_dir_hash;
+        static char* asset_path = "";
 
         if (ImGui::Button("Refresh")) {
             assets_builder->Refresh();
         }
         ImGui::SameLine();
         if (ImGui::Button("Back")) {
-            current_asset_folder_hash = prev_dir_hash;
+            asset_path = GetSubDirectory(asset_path);
+            current_asset_folder_hash = CW::HashString(asset_path);
         }
 
         ImGuiStyle& style = ImGui::GetStyle();
@@ -414,7 +415,6 @@ namespace CWEditor {
         float window_visible = ImGui::GetWindowPos().x + ImGui::GetWindowContentRegionMax().x;
         int n = 0;
 
-        //ImGui::Text(current_asset_folder_hash);
         AssetInfoArray& asset_info_array = (*assets_builder->GetContents())[current_asset_folder_hash];
         int asset_info_count = assets_builder->GetContentsCount(current_asset_folder_hash);
 
@@ -429,9 +429,8 @@ namespace CWEditor {
             if (is_clicked) {
 
                 if (asset_info.asset_type == AssetType::FOLDER) {
-                    printf("path: %s\n", asset_info.path);
-                    prev_dir_hash = current_asset_folder_hash;
-                    current_asset_folder_hash = CW::HashString(asset_info.path);
+                    asset_path = asset_info.path;
+                    current_asset_folder_hash = CW::HashString(asset_path);
                     ImGui::PopID();
                     return;
                 }
@@ -443,21 +442,6 @@ namespace CWEditor {
 
             ImGui::PopID();
         }
-#if 0
-        for (auto& it : *assets_builder->GetContents()) {
-            ImGui::PushID(n);
-            AssetInfo asset_info = it.second.asset_infos[0];
-            CW::Texture texture = CW::AssetManager::Get()->GetTextureData(asset_info.icon)->texture;
-            ImGui::Image((ImTextureID) texture.id, ImVec2 { asset_view_size.x, asset_view_size.y });
-
-            float next_button = ImGui::GetItemRectMax().x + style.ItemSpacing.x + asset_view_size.x;
-            if (n + 1 < contents_count && next_button < window_visible)
-                ImGui::SameLine();
-
-            n++;
-            ImGui::PopID();
-        }
-#endif
     }
     void ApplicationView::RenderComponents(){
         if(selected_game_object.GetEntity() == 0)
@@ -488,5 +472,15 @@ namespace CWEditor {
                 return true;
         }
         return false;
+    }
+    char* ApplicationView::GetSubDirectory(char *dir) {
+        char *last_slash = strchr(dir, '/');
+        if (last_slash != 0) {
+            char buffer[256] = {};
+            strncpy(buffer, dir, strlen(dir) - strlen(last_slash));
+            return buffer;
+        } else {
+            return "";
+        }
     }
 }

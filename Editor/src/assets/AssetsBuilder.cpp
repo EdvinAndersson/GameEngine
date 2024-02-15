@@ -8,6 +8,7 @@ namespace CWEditor {
                 delete asset;
         }
         contents.clear();
+        contents_count.clear();
 
         CW::AssetManager& asset_manager = *CW::AssetManager::Get();
         char *assets_path = asset_manager.GetAssetsPath();
@@ -29,10 +30,13 @@ namespace CWEditor {
             asset_info->icon = it.first;
             
             char *name = strrchr(texture_data->asset_path_dir, '/');
-            if (name != 0)
-                asset_info->name = name + 1;
+            if (name != 0) {
+                strcpy(asset_info->name, name+1);
+            }
             else
-                asset_info->name = texture_data->asset_path_dir;
+            {
+                strcpy(asset_info->name, texture_data->asset_path_dir);
+            }
 
             char path[256] = {};
             if (name != 0)
@@ -59,11 +63,15 @@ namespace CWEditor {
 
                 AssetInfo *asset_info = new AssetInfo();
                 asset_info->asset_type = AssetType::FOLDER;
-                asset_info->icon = CW::AssetManager::Get()->GetDefaultTextureIndex();
-                asset_info->name = next_base_dir;
+                asset_info->icon = CW::AssetManager::Get()->GetTextureIndex("images/folder_icon.png");
                 strncpy(asset_info->path, next_base_dir, strlen(next_base_dir) - 1);
-
-                size_t dir_hashed = CW::HashString(base_dir);
+                strcpy(asset_info->name, asset_info->path);
+                
+                char next_base_without_slash[256] = {};
+                if (strchr(base_dir, '/') != 0) {
+                    strncpy(next_base_without_slash, base_dir, strlen(base_dir) - 1);
+                }
+                size_t dir_hashed = CW::HashString(next_base_without_slash);
 
                 if (contents.find(dir_hashed) != contents.end()) {
                     int count = contents_count[dir_hashed];
@@ -79,11 +87,12 @@ namespace CWEditor {
 
                     printf("DIR 1: %i\n", dir_hashed);
                 }
+
                 char new_path[256] = {};
                 strcpy(new_path, CW::AssetManager::Get()->GetAssetsPath());
                 strcat(new_path, "/");
                 strcat(new_path, next_base_dir);
-                
+
                 DIR *di = opendir(new_path);
                 CW_ASSERT(di != 0, "Could not open assets folder!");
                 MakeAssetsFolders(di, next_base_dir);

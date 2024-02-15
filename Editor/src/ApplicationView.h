@@ -30,6 +30,7 @@ namespace CWEditor {
             void RenderAssets();
             void RenderComponents();
             bool CheckNameConflict(char * name);
+            char* GetSubDirectory(char *dir);
 
             CW::Framebuffer *framebuffer_game_view;
             CW::Cogwheel *cogwheel;
