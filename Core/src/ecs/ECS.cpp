@@ -18,7 +18,7 @@ namespace CW {
         component_manager->RegisterComponent<MeshRenderer>();
         component_manager->RegisterComponent<Script>();
         component_manager->RegisterComponent<Light>();
-
+        component_manager->RegisterComponent<Camera>();
         EventListen(PROJECT_LOAD);
 
 #if 0
