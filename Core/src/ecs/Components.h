@@ -23,4 +23,7 @@ namespace CW {
     struct Light {
 
     };
+    struct Camera {
+        bool is_main;
+    };
 }

@@ -44,6 +44,10 @@ namespace CWEditor {
             CW::AssetManager::Get()->GetTextureIndex("images/skybox/bottom.jpg"),
             CW::AssetManager::Get()->GetTextureIndex("images/skybox/front.jpg"),
             CW::AssetManager::Get()->GetTextureIndex("images/skybox/back.jpg"));
+        
+        CW::GameObject camera = CW::GameObject::Instantiate(vec3s {0, 4, 0 });
+        camera.AddComponent<CW::Camera>();
+        strcpy(camera.GetComponent<CW::Transform>().name, "Camera");
 
         CW::GameObject obj = CW::GameObject::Instantiate(vec3s {0, 4, 0 });
         obj.GetComponent<CW::Transform>().scale = vec3s {40, 1, 40};
@@ -51,6 +55,8 @@ namespace CWEditor {
         mesh_renderer.mesh = CW::AssetManager::Get()->GetDefaultMeshIndex();
         mesh_renderer.materials[0] = CW::AssetManager::Get()->GetDefaultMaterialIndex();
         mesh_renderer.material_count++;
+
+        
     }
     
     void ApplicationView::Update() {
@@ -318,6 +324,9 @@ namespace CWEditor {
                 versors quat = glms_mat4_quat(mat);
                 CW::R3D_RenderMesh(mesh_renderer.mesh, mesh_renderer.materials, transform.position, transform.scale, quat);
             }
+            if(game_object.HasComponent<CW::Camera>()){
+                pos = game_object.GetComponent<CW::Transform>().position;
+            }
         }
     }
 
@@ -477,8 +486,14 @@ namespace CWEditor {
             ImGui::PopItemWidth();
             ImGui::TreePop();
         }
+        if(selected_game_object.HasComponent<CW::Camera>()){
+            node_open = ImGui::TreeNodeEx((void*)(intptr_t)1, node_flags, "Camera");
+            if(node_open){
+                ImGui::TreePop();
+            }
+        }
         if(selected_game_object.HasComponent<CW::MeshRenderer>()){
-            node_open = ImGui::TreeNodeEx((void*)(intptr_t)1, node_flags, "MeshRenderer");
+            node_open = ImGui::TreeNodeEx((void*)(intptr_t)2, node_flags, "MeshRenderer");
             if(node_open){
                 CW::MeshRenderer& mesh_renderer = selected_game_object.GetComponent<CW::MeshRenderer>();
                 ImGui::Text("Materials (%i)", mesh_renderer.material_count);
@@ -509,13 +524,13 @@ namespace CWEditor {
             }
         }
         if(selected_game_object.HasComponent<CW::Script>()){
-            node_open = ImGui::TreeNodeEx((void*)(intptr_t)1, node_flags, "Script");
+            node_open = ImGui::TreeNodeEx((void*)(intptr_t)3, node_flags, "Script");
             if(node_open){
                 ImGui::TreePop();
             }
         }
         if(selected_game_object.HasComponent<CW::Light>()){
-            node_open = ImGui::TreeNodeEx((void*)(intptr_t)1, node_flags, "Light");
+            node_open = ImGui::TreeNodeEx((void*)(intptr_t)4, node_flags, "Light");
             if(node_open){
                 ImGui::TreePop();
             }
