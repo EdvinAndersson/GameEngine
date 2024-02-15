@@ -478,10 +478,21 @@ namespace CWEditor {
         if(selected_game_object.HasComponent<CW::MeshRenderer>()){
             node_open = ImGui::TreeNodeEx((void*)(intptr_t)1, node_flags, "MeshRenderer");
             if(node_open){
-                
                 ImGui::TreePop();
+            }
         }
-        } 
+        if(selected_game_object.HasComponent<CW::Script>()){
+            node_open = ImGui::TreeNodeEx((void*)(intptr_t)1, node_flags, "Script");
+            if(node_open){
+                ImGui::TreePop();
+            }
+        }
+        if(selected_game_object.HasComponent<CW::Light>()){
+            node_open = ImGui::TreeNodeEx((void*)(intptr_t)1, node_flags, "Light");
+            if(node_open){
+                ImGui::TreePop();
+            }
+        }
     }   
     bool ApplicationView::CheckNameConflict(char *name){
         CW::Scene& active_scene = cogwheel->GetSceneManager()->GetActiveScene();
