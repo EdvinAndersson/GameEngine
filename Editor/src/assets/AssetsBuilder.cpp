@@ -25,28 +25,36 @@ namespace CWEditor {
 
             CW::TextureData* texture_data = it.second;
 
-            AssetInfo *asset_info = new AssetInfo();
-            asset_info->asset_type = AssetType::TEXTURE;
-            asset_info->icon = it.first;
-            
-            char *name = strrchr(texture_data->asset_path_dir, '/');
-            if (name != 0) {
-                strcpy(asset_info->name, name+1);
-            }
-            else
-            {
-                strcpy(asset_info->name, texture_data->asset_path_dir);
-            }
-
-            char path[256] = {};
-            if (name != 0)
-                strncpy(path, texture_data->asset_path_dir, name - texture_data->asset_path_dir);
-
-            size_t path_hash = CW::HashString(path);
-            int count = contents_count[path_hash];
-            contents[path_hash].asset_infos[count] = asset_info;
-            contents_count[path_hash]++;
+            CreateAssetInfo(AssetType::TEXTURE, it.first, texture_data->asset_path_dir);
         }
+        auto *loaded_materials = asset_manager.GetLoadedMaterials();
+        for (auto& it : *loaded_materials) {
+            if (it.first == asset_manager.GetDefaultMaterialIndex()) continue;
+
+            CW::Material* material = it.second;
+
+            CreateAssetInfo(AssetType::MATERIAL, asset_manager.GetDefaultTextureIndex(), "");
+        }
+    }
+    void AssetsBuilder::CreateAssetInfo(AssetType asset_type, CW::TextureIndex texture_index, char *asset_path) {
+        AssetInfo *asset_info = new AssetInfo();
+        asset_info->asset_type = asset_type;
+        asset_info->icon = texture_index;
+        
+        char *name = strrchr(asset_path, '/');
+        if (name != 0) 
+            strcpy(asset_info->name, name+1);
+        else
+            strcpy(asset_info->name, asset_path);
+
+        char path[256] = {};
+        if (name != 0)
+            strncpy(path, asset_path, name - asset_path);
+
+        size_t path_hash = CW::HashString(path);
+        int count = contents_count[path_hash];
+        contents[path_hash].asset_infos[count] = asset_info;
+        contents_count[path_hash]++;
     }
     void AssetsBuilder::MakeAssetsFolders(DIR *dir, char *base_dir) {
         struct dirent *ent;
@@ -77,15 +85,11 @@ namespace CWEditor {
                     int count = contents_count[dir_hashed];
                     contents[dir_hashed].asset_infos[count] = asset_info;
                     contents_count[dir_hashed]++;
-
-                    printf("DIR 0: %i\n", dir_hashed);
                 } else {
                     AssetInfoArray a = {};
                     a.asset_infos[0] = asset_info;
                     contents.insert({dir_hashed, a});
                     contents_count.insert({dir_hashed, 1});
-
-                    printf("DIR 1: %i\n", dir_hashed);
                 }
 
                 char new_path[256] = {};

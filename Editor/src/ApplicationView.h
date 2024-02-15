@@ -38,7 +38,7 @@ namespace CWEditor {
             CW::GameObject selected_game_object;
             
             AssetsBuilder *assets_builder;
-            vec2s asset_view_size = { 80.0f, 80.0f };
+            vec2s asset_view_size = { 70.0f, 100.0f };
             size_t current_asset_folder_hash;
 
             vec3s pos = {0,0,0};

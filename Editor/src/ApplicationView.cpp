@@ -418,29 +418,34 @@ namespace CWEditor {
         AssetInfoArray& asset_info_array = (*assets_builder->GetContents())[current_asset_folder_hash];
         int asset_info_count = assets_builder->GetContentsCount(current_asset_folder_hash);
 
+        for (int i = 0; i < asset_info_count; i++) { 
+            ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoScrollbar;
+            char buff[16] = {};
+            sprintf(buff, "Asset %i", i);
+            ImGui::BeginChild(buff, ImVec2(asset_view_size.x, asset_view_size.y), 0, window_flags);
 
-        for (int i = 0; i < asset_info_count; i++) {
-            ImGui::PushID(i);
-            
             AssetInfo& asset_info = *asset_info_array.asset_infos[i];
             CW::Texture texture = CW::AssetManager::Get()->GetTextureData(asset_info.icon)->texture;
 
-            bool is_clicked = ImGui::ImageButton((ImTextureID) texture.id, ImVec2 { asset_view_size.x, asset_view_size.y });
-            if (is_clicked) {
+            ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.f, 0.f, 0.f, 0.f));
 
+            bool is_clicked = ImGui::ImageButton((ImTextureID) texture.id, ImVec2 { asset_view_size.x - style.ItemSpacing.x, asset_view_size.x - style.ItemSpacing.x }, ImVec2(0,0), ImVec2(1,1), -1, ImVec4(0,0,0,0), ImVec4(1,1,1,1));
+            if (is_clicked) {
                 if (asset_info.asset_type == AssetType::FOLDER) {
                     asset_path = asset_info.path;
                     current_asset_folder_hash = CW::HashString(asset_path);
-                    ImGui::PopID();
-                    return;
                 }
             }
+            ImGui::TextWrapped("%s", asset_info.name);
+
+            ImGui::PopStyleColor(1);
+            ImGui::EndChild();
 
             float next_button = ImGui::GetItemRectMax().x + style.ItemSpacing.x + asset_view_size.x;
             if (n + 1 < contents_count && next_button < window_visible)
                 ImGui::SameLine();
 
-            ImGui::PopID();
+            if (is_clicked) return;
         }
     }
     void ApplicationView::RenderComponents(){
