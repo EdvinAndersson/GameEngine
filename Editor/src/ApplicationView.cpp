@@ -415,9 +415,17 @@ namespace CWEditor {
         bool node_open = ImGui::TreeNodeEx((void*)(intptr_t)0, node_flags, "Transform");
         if(node_open){
             ImGui::Text("Position (X, Y, Z)");
+            ImGui::PushItemWidth(-1);
             ImGui::DragFloat3(" ", (float*)&selected_game_object.GetComponent<CW::Transform>().position, 0.01f);
+            ImGui::PopItemWidth();
             ImGui::Text("Rotation (X, Y, Z)");
-            ImGui::DragFloat3(" ", (float*)&selected_game_object.GetComponent<CW::Transform>().rotation, 0.01f);
+            ImGui::PushItemWidth(-1);
+            ImGui::DragFloat3("  ", (float*)&selected_game_object.GetComponent<CW::Transform>().rotation, 0.01f);
+            ImGui::PopItemWidth();
+            ImGui::Text("Scale (X, Y, Z)");
+            ImGui::PushItemWidth(-1);
+            ImGui::DragFloat3("   ", (float*)&selected_game_object.GetComponent<CW::Transform>().scale, 0.01f);
+            ImGui::PopItemWidth();
             ImGui::TreePop();
         }
         if(selected_game_object.HasComponent<CW::MeshRenderer>()){
