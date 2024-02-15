@@ -17,4 +17,10 @@ namespace CW {
         MaterialIndex materials[MAX_MATERIALS];
         unsigned int material_count = 0;
     };
+    struct Script {
+
+    };
+    struct Light {
+
+    };
 }

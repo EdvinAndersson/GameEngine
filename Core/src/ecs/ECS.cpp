@@ -16,6 +16,8 @@ namespace CW {
     ECS::ECS() {
         component_manager->RegisterComponent<Transform>();
         component_manager->RegisterComponent<MeshRenderer>();
+        component_manager->RegisterComponent<Script>();
+        component_manager->RegisterComponent<Light>();
 
         EventListen(PROJECT_LOAD);
 
