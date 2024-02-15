@@ -16,12 +16,13 @@ namespace CWEditor {
 
         assets_builder = new AssetsBuilder();
         assets_builder->Refresh();
+        current_asset_folder_hash = CW::HashString("");
 
         framebuffer_game_view = new CW::Framebuffer(CW::FramebufferType::DEFUALT, window->GetWidth(), window->GetHeight());
 
         EventListen(CW::EventType::WINDOW_CLOSE);
         EventListen(CW::EventType::WINDOW_RESIZE);
-        EventListen(CW::EventType::PROJECT_LOAD);
+        EventListen(CW::EventType::PROJECT_LOAD_LATE);
 
         glDisable(GL_FRAMEBUFFER_SRGB);
 
@@ -333,8 +334,9 @@ namespace CWEditor {
                 framebuffer_game_view->ReCreate(width, height);
                 CW::R3D_Resize(width, height);
             } break;
-            case CW::EventType::PROJECT_LOAD: {
+            case CW::EventType::PROJECT_LOAD_LATE: {
                 assets_builder->Refresh();
+                current_asset_folder_hash = CW::HashString("");
             } break;
         }
     }
@@ -397,14 +399,53 @@ namespace CWEditor {
         ImGui::End();
     }
     void ApplicationView::RenderAssets() {
+        static char* asset_path = "";
+
         if (ImGui::Button("Refresh")) {
             assets_builder->Refresh();
         }
+        ImGui::SameLine();
+        if (ImGui::Button("Back")) {
+            asset_path = GetSubDirectory(asset_path);
+            current_asset_folder_hash = CW::HashString(asset_path);
+        }
 
-        for (auto& it : *assets_builder->GetContents()) {
-            AssetInfo asset_info = it.second;
+        ImGuiStyle& style = ImGui::GetStyle();
+        size_t contents_count = assets_builder->GetContents()->size();
+        float window_visible = ImGui::GetWindowPos().x + ImGui::GetWindowContentRegionMax().x;
+        int n = 0;
 
-            ImGui::Text("name: %s, path: %s", asset_info.name, it.first);
+        AssetInfoArray& asset_info_array = (*assets_builder->GetContents())[current_asset_folder_hash];
+        int asset_info_count = assets_builder->GetContentsCount(current_asset_folder_hash);
+
+        for (int i = 0; i < asset_info_count; i++) { 
+            ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoScrollbar;
+            char buff[16] = {};
+            sprintf(buff, "Asset %i", i);
+            ImGui::BeginChild(buff, ImVec2(asset_view_size.x, asset_view_size.y), 0, window_flags);
+
+            AssetInfo& asset_info = *asset_info_array.asset_infos[i];
+            CW::Texture texture = CW::AssetManager::Get()->GetTextureData(asset_info.icon)->texture;
+
+            ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.f, 0.f, 0.f, 0.f));
+
+            bool is_clicked = ImGui::ImageButton((ImTextureID) texture.id, ImVec2 { asset_view_size.x - style.ItemSpacing.x, asset_view_size.x - style.ItemSpacing.x }, ImVec2(0,0), ImVec2(1,1), -1, ImVec4(0,0,0,0), ImVec4(1,1,1,1));
+            if (is_clicked) {
+                if (asset_info.asset_type == AssetType::FOLDER) {
+                    asset_path = asset_info.path;
+                    current_asset_folder_hash = CW::HashString(asset_path);
+                }
+            }
+            ImGui::TextWrapped("%s", asset_info.name);
+
+            ImGui::PopStyleColor(1);
+            ImGui::EndChild();
+
+            float next_button = ImGui::GetItemRectMax().x + style.ItemSpacing.x + asset_view_size.x;
+            if (n + 1 < contents_count && next_button < window_visible)
+                ImGui::SameLine();
+
+            if (is_clicked) return;
         }
     }
     void ApplicationView::RenderComponents(){
@@ -444,5 +485,15 @@ namespace CWEditor {
                 return true;
         }
         return false;
+    }
+    char* ApplicationView::GetSubDirectory(char *dir) {
+        char *last_slash = strchr(dir, '/');
+        if (last_slash != 0) {
+            char buffer[256] = {};
+            strncpy(buffer, dir, strlen(dir) - strlen(last_slash));
+            return buffer;
+        } else {
+            return "";
+        }
     }
 }

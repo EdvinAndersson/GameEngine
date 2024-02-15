@@ -86,6 +86,9 @@ namespace CW {
         EventData_PROJECT_LOAD e = { current_project };
         EventManager::InvokeEvent(PROJECT_LOAD, &e);
 
+        EventData_PROJECT_LOAD_LATE e2 = { current_project };
+        EventManager::InvokeEvent(PROJECT_LOAD_LATE, &e2);
+
         for (unsigned int i = 0; i < scene_count; i++) {
             scene_manager->CreateNewScene(current_project, deserialized.GetString());
 

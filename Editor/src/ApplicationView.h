@@ -30,6 +30,7 @@ namespace CWEditor {
             void RenderAssets();
             void RenderComponents();
             bool CheckNameConflict(char * name);
+            char* GetSubDirectory(char *dir);
 
             CW::Framebuffer *framebuffer_game_view;
             CW::Cogwheel *cogwheel;
@@ -37,6 +38,8 @@ namespace CWEditor {
             CW::GameObject selected_game_object;
             
             AssetsBuilder *assets_builder;
+            vec2s asset_view_size = { 70.0f, 100.0f };
+            size_t current_asset_folder_hash;
 
             vec3s pos = {0,0,0};
             vec3s light_pos = {-12.0f, -12.0f, 12.0f};
