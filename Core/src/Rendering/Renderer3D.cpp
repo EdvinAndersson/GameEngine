@@ -64,7 +64,7 @@ namespace CW {
         g_r3d_data->instance_shader = CreateShader(vertex_shader_instanced, fragment_shader);
         g_r3d_data->depth_shader = CreateShader(vertex_shader_depth, fragment_shader_depth);
 
-        g_r3d_data->defualt_texture = AssetManager::Get()->GetTexture("default_texture");
+        g_r3d_data->defualt_texture = AssetManager::Get()->GetTexture("default_texture.png");
 
         R3D_Resize(window->GetWidth(), window->GetHeight());
         R3D_SetViewModel(GLMS_MAT4_IDENTITY_INIT);

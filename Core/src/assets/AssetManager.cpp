@@ -14,24 +14,27 @@ namespace CW {
         EventListen(EventType::PROJECT_LOAD);
 
         //Load default white texuture
-        default_texture_index = HashString("default_texture");
+        default_texture_index = HashString("default_texture.png");
         Texture_Format format = { GL_RGBA, TEXTURE_NEAREST_NEIGHBOR };
         TextureData *texture_data = CreateBlankTexture(format, 0xFFFFFFFF);
+        strcpy(texture_data->asset_path_dir, "default_texture.png");
         loaded_textures.insert({ default_texture_index, texture_data });
 
         //Load default specular texuture
-        default_specular_texture_index = HashString("default_specular_texture");
+        default_specular_texture_index = HashString("default_specular_texture.png");
         Texture_Format format_specular = { GL_RGBA, TEXTURE_NEAREST_NEIGHBOR };
         TextureData *texture_data_specular = CreateBlankTexture(format_specular, 0xFF2F2F2F);
+        strcpy(texture_data_specular->asset_path_dir, "default_specular_texture.png");
         loaded_textures.insert({ default_specular_texture_index, texture_data_specular });
 
         //Load default material
-        default_material_index = HashString("default_material");
+        default_material_index = HashString("default_material.mat");
         Material *material = new Material();
         material->albedo_color = vec3s{ 1.0f, 1.0f, 1.0f };
         material->albedo = default_texture_index;
         material->normal_map = default_texture_index;
         material->specular_map = default_specular_texture_index;
+        strcpy(material->asset_path, "default_material.mat");
         loaded_materials.insert({ default_material_index, material });
 
         //Load default cube mesh
@@ -213,6 +216,7 @@ namespace CW {
         material->albedo_color = deserialize.GetVec3();
         material->albedo = deserialize.GetSize_t();
         material->normal_map = deserialize.GetSize_t();
+        material->specular_map = deserialize.GetSize_t();
         strcpy(material->asset_path, path);
 
         loaded_materials.insert({ hashed_path, material });
@@ -235,6 +239,7 @@ namespace CW {
         serialize.SubmitVec3(material.albedo_color);
         serialize.SubmitSize_t(material.albedo);
         serialize.SubmitSize_t(material.normal_map);
+        serialize.SubmitSize_t(material.specular_map);
 
         fwrite(serialize.GetData(), 1, strlen(serialize.GetData()), file);
 

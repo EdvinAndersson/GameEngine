@@ -270,7 +270,9 @@ namespace CWEditor {
             if (ImGui::Button("Create And Load Material 1")) {
                 CW::Material mat = {};
                 mat.albedo_color = vec3s { 0.0f, 0.0f, 1.0f };
-                mat.albedo = CW::AssetManager::Get()->GetTextureIndex("images/BrickTexture.png");
+                mat.albedo = CW::AssetManager::Get()->GetTextureIndex("brick/brickwall.png");
+                mat.normal_map = CW::AssetManager::Get()->GetDefaultTextureIndex();
+                mat.specular_map = CW::AssetManager::Get()->GetDefaultSpecularTextureIndex();
                 CW::AssetManager::Get()->CreateAndLoadMaterialAsset("Material1.mat", mat);
             }
             if(ImGui::IsItemHovered(ImGuiHoveredFlags_DelayNormal)){
@@ -438,7 +440,7 @@ namespace CWEditor {
             }
             if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None))
             {
-                ImGui::SetDragDropPayload("DND_DEMO_CELL", &i, sizeof(int));
+                ImGui::SetDragDropPayload("DND_DEMO_CELL", &asset_info.asset_index, sizeof(size_t));
                 ImGui::Text("Drag");
                 ImGui::EndDragDropSource();
             }
@@ -478,6 +480,31 @@ namespace CWEditor {
         if(selected_game_object.HasComponent<CW::MeshRenderer>()){
             node_open = ImGui::TreeNodeEx((void*)(intptr_t)1, node_flags, "MeshRenderer");
             if(node_open){
+                CW::MeshRenderer& mesh_renderer = selected_game_object.GetComponent<CW::MeshRenderer>();
+                ImGui::Text("Materials (%i)", mesh_renderer.material_count);
+                for (int i = 0; i < mesh_renderer.material_count; i++) {
+
+                    CW::Material *mat = CW::AssetManager::Get()->GetMaterial(mesh_renderer.materials[i]);
+                    char buff[256] = {};
+                    sprintf(buff, "%s", mat->asset_path);
+
+                    ImGui::PushItemWidth(-1);
+                    ImGui::InputText("Material Label", buff, 128, ImGuiInputTextFlags_ReadOnly);
+                    ImGui::PopItemWidth();
+                }
+                if (ImGui::BeginDragDropTarget())
+                {
+                    if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DND_DEMO_CELL"))
+                    {
+                        IM_ASSERT(payload->DataSize == sizeof(size_t));
+                        size_t index = *(const size_t*)payload->Data;
+                        
+                        if (CW::AssetManager::Get()->GetMaterial(index) != 0) {
+                            selected_game_object.GetComponent<CW::MeshRenderer>().materials[0] = index;
+                        }
+                    }
+                    ImGui::EndDragDropTarget();
+                }
                 ImGui::TreePop();
             }
         }
