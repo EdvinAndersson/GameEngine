@@ -496,14 +496,19 @@ namespace CWEditor {
             node_open = ImGui::TreeNodeEx((void*)(intptr_t)2, node_flags, "MeshRenderer");
             if(node_open){
                 CW::MeshRenderer& mesh_renderer = selected_game_object.GetComponent<CW::MeshRenderer>();
-                ImGui::Text("Materials (%i)", mesh_renderer.material_count);
-                for (int i = 0; i < mesh_renderer.material_count; i++) {
+                ImGui::Text("Materials");
+                ImGui::SameLine();
+                ImGui::PushItemWidth(-FLT_EPSILON);
+                ImGui::InputInt("Material Count", (int*) &mesh_renderer.material_count);
+                ImGui::PopItemWidth();
 
+                for (unsigned int i = 0; i < mesh_renderer.material_count; i++) {
                     CW::Material *mat = CW::AssetManager::Get()->GetMaterial(mesh_renderer.materials[i]);
                     char buff[256] = {};
-                    sprintf(buff, "%s", mat->asset_path);
+                    if (mat != 0)
+                        sprintf(buff, "%s", mat->asset_path);
 
-                    ImGui::PushItemWidth(-1);
+                    ImGui::PushItemWidth(-FLT_EPSILON);
                     ImGui::InputText("Material Label", buff, 128, ImGuiInputTextFlags_ReadOnly);
                     ImGui::PopItemWidth();
                 }
