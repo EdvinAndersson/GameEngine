@@ -33,7 +33,7 @@ namespace CWEditor {
 
             CW::Material* material = it.second;
 
-            CreateAssetInfo(AssetType::MATERIAL, asset_manager.GetDefaultTextureIndex(), "");
+            CreateAssetInfo(AssetType::MATERIAL, asset_manager.GetDefaultTextureIndex(), material->asset_path);
         }
     }
     void AssetsBuilder::CreateAssetInfo(AssetType asset_type, CW::TextureIndex texture_index, char *asset_path) {

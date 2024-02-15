@@ -213,6 +213,7 @@ namespace CW {
         material->albedo_color = deserialize.GetVec3();
         material->albedo = deserialize.GetSize_t();
         material->normal_map = deserialize.GetSize_t();
+        strcpy(material->asset_path, path);
 
         loaded_materials.insert({ hashed_path, material });
 
@@ -244,6 +245,7 @@ namespace CW {
         mat->albedo_color = material.albedo_color;
         mat->albedo = material.albedo;
         mat->normal_map = material.normal_map;
+        strcpy(mat->asset_path, path);
 
         loaded_materials.insert({ hashed_path, mat });
     }

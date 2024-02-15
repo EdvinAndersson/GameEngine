@@ -411,9 +411,7 @@ namespace CWEditor {
         }
 
         ImGuiStyle& style = ImGui::GetStyle();
-        size_t contents_count = assets_builder->GetContents()->size();
         float window_visible = ImGui::GetWindowPos().x + ImGui::GetWindowContentRegionMax().x;
-        int n = 0;
 
         AssetInfoArray& asset_info_array = (*assets_builder->GetContents())[current_asset_folder_hash];
         int asset_info_count = assets_builder->GetContentsCount(current_asset_folder_hash);
@@ -434,7 +432,15 @@ namespace CWEditor {
                 if (asset_info.asset_type == AssetType::FOLDER) {
                     asset_path = asset_info.path;
                     current_asset_folder_hash = CW::HashString(asset_path);
+                } else {
+                    is_clicked = false;
                 }
+            }
+            if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None))
+            {
+                ImGui::SetDragDropPayload("DND_DEMO_CELL", &i, sizeof(int));
+                ImGui::Text("Drag");
+                ImGui::EndDragDropSource();
             }
             ImGui::TextWrapped("%s", asset_info.name);
 
@@ -442,7 +448,7 @@ namespace CWEditor {
             ImGui::EndChild();
 
             float next_button = ImGui::GetItemRectMax().x + style.ItemSpacing.x + asset_view_size.x;
-            if (n + 1 < contents_count && next_button < window_visible)
+            if (next_button < window_visible)
                 ImGui::SameLine();
 
             if (is_clicked) return;
