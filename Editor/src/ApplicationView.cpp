@@ -233,8 +233,11 @@ namespace CWEditor {
                     ImGui::TreePop();  
                 }
             }
-            if(ShowPopup(CW::GameObject {})){
+            
+            ShowPopup(CW::GameObject {});
 
+            if (ImGui::IsMouseClicked(ImGuiMouseButton_Right)){
+                ImGui::OpenPopup("Popup");
             }
                 
             ImGui::End();
@@ -622,7 +625,7 @@ namespace CWEditor {
                 
 
                 if (ImGui::Button("New Name"))
-                        ImGui::OpenPopup("New_Name_Popup");
+                    ImGui::OpenPopup("New_Name_Popup");
             }
             if (ImGui::Button("Close") || enter_pressed)
                 ImGui::CloseCurrentPopup();
