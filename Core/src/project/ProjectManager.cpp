@@ -101,12 +101,14 @@ namespace CW {
                 for (int i = 0; i < MAX_COMPONENTS; i++)
                     signature.set(i, (int) (str_signature[i] - '0'));
 
+                char *name = deserialized.GetString();
                 vec3s pos = deserialized.GetVec3();
                 vec3s rotation = deserialized.GetVec3();
                 vec3s scale = deserialized.GetVec3();
 
                 GameObject obj = GameObject::Instantiate(pos);
                 CW::Transform& transform = obj.GetComponent<CW::Transform>();
+                strcpy(transform.name, name);
                 transform.rotation = rotation;
                 transform.scale = scale;
 
@@ -175,6 +177,7 @@ namespace CW {
                 serialized.SubmitString(str_signature);
                 
                 CW::Transform& transform = obj.GetComponent<CW::Transform>();
+                serialized.SubmitString(transform.name);
                 serialized.SubmitVec3(transform.position);
                 serialized.SubmitVec3(transform.rotation);
                 serialized.SubmitVec3(transform.scale);
