@@ -25,7 +25,7 @@ namespace CW {
 			~Mesh();
 
 			void DrawMesh(Shader *shader);
-			void DrawMesh(Shader *shader, MaterialIndex* material_indexes);
+			void DrawMesh(Shader *shader, MaterialIndex* material_indexes, int material_count);
 			void DrawMeshInstanced(Shader *shader, int instance_count);
 
 			void Load(const aiScene *scene);

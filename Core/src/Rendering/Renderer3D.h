@@ -17,7 +17,7 @@ namespace CW {
 	void R3D_SetViewPos(vec3s position);
 
 	void R3D_RenderSkybox(Texture skybox_texture, mat4s view);
-	void R3D_RenderMesh(MeshIndex mesh_index, MaterialIndex *material_indexes, vec3s position, vec3s scale, versors quaternion);
+	void R3D_RenderMesh(MeshIndex mesh_index, MaterialIndex *material_indexes, int material_count, vec3s position, vec3s scale, versors quaternion);
 
 	void R3D__CreateInstanceSSBO();
 	void R3D_BeginInstanced(Model *model);

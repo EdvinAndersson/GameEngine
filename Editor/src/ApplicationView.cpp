@@ -139,7 +139,7 @@ namespace CWEditor {
             vec3s p = vec3s{cosf(rot)*3, 0, sinf(rot)*3};
             CW::R3D_SetPointLight(p, vec3s {0.4f, 0.4f, 0.4f}, vec3s {1.0f, 1.0f, 1.0f}, vec3s {0.5f, 0.5f, 0.5f}, 0.1, 0.3, 0.4f);
             CW::MaterialIndex m[8] = {CW::AssetManager::Get()->GetDefaultMaterialIndex()};
-            CW::R3D_RenderMesh(CW::AssetManager::Get()->GetDefaultMeshIndex(), m, p, vec3s {0.2f, 0.2f, 0.2f}, GLMS_QUAT_IDENTITY_INIT);
+            CW::R3D_RenderMesh(CW::AssetManager::Get()->GetDefaultMeshIndex(), m, 1, p, vec3s {0.2f, 0.2f, 0.2f}, GLMS_QUAT_IDENTITY_INIT);
             
             RenderScene();
 
@@ -288,6 +288,8 @@ namespace CWEditor {
                 CW::Material mat = {};
                 mat.albedo_color = vec3s { 0.0f, 0.0f, 1.0f };
                 mat.albedo = CW::AssetManager::Get()->GetDefaultTextureIndex();
+                mat.normal_map = CW::AssetManager::Get()->GetDefaultTextureIndex();
+                mat.specular_map = CW::AssetManager::Get()->GetDefaultSpecularTextureIndex();
                 CW::AssetManager::Get()->CreateAndLoadMaterialAsset("Material2.mat", mat);
             }
             if(ImGui::IsItemHovered(ImGuiHoveredFlags_DelayNormal)){
@@ -322,7 +324,7 @@ namespace CWEditor {
                 CW::MeshRenderer& mesh_renderer = game_object.GetComponent<CW::MeshRenderer>();
                 mat4s mat = glms_euler_xyz(transform.rotation);
                 versors quat = glms_mat4_quat(mat);
-                CW::R3D_RenderMesh(mesh_renderer.mesh, mesh_renderer.materials, transform.position, transform.scale, quat);
+                CW::R3D_RenderMesh(mesh_renderer.mesh, mesh_renderer.materials, mesh_renderer.material_count, transform.position, transform.scale, quat);
             }
             if(game_object.HasComponent<CW::Camera>()){
                 pos = game_object.GetComponent<CW::Transform>().position;
@@ -449,7 +451,17 @@ namespace CWEditor {
             }
             if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None))
             {
-                ImGui::SetDragDropPayload("DND_DEMO_CELL", &asset_info.asset_index, sizeof(size_t));
+                char *drag_drop_type = "";
+                switch (asset_info.asset_type)
+                {
+                    case AssetType::MATERIAL: {
+                        drag_drop_type = "Materials";
+                    }break;
+                    case AssetType::TEXTURE: {
+                        drag_drop_type = "Textures";
+                    }break;
+                }
+                ImGui::SetDragDropPayload(drag_drop_type, &asset_info.asset_index, sizeof(size_t));
                 ImGui::Text("Drag");
                 ImGui::EndDragDropSource();
             }
@@ -472,18 +484,12 @@ namespace CWEditor {
         
         bool node_open = ImGui::TreeNodeEx((void*)(intptr_t)0, node_flags, "Transform");
         if(node_open){
-            ImGui::Text("Position (X, Y, Z)");
-            ImGui::PushItemWidth(-1);
-            ImGui::DragFloat3(" ", (float*)&selected_game_object.GetComponent<CW::Transform>().position, 0.01f);
-            ImGui::PopItemWidth();
-            ImGui::Text("Rotation (X, Y, Z)");
-            ImGui::PushItemWidth(-1);
-            ImGui::DragFloat3("  ", (float*)&selected_game_object.GetComponent<CW::Transform>().rotation, 0.01f);
-            ImGui::PopItemWidth();
-            ImGui::Text("Scale (X, Y, Z)");
-            ImGui::PushItemWidth(-1);
-            ImGui::DragFloat3("   ", (float*)&selected_game_object.GetComponent<CW::Transform>().scale, 0.01f);
-            ImGui::PopItemWidth();
+            CW::Transform& transform = selected_game_object.GetComponent<CW::Transform>();
+
+            UIDragFloat3("Position", "Position (X, Y, Z)", &transform.position);
+            UIDragFloat3("Rotation", "Position (X, Y, Z)", &transform.rotation);
+            UIDragFloat3("Scale", "Position (X, Y, Z)", &transform.scale);
+
             ImGui::TreePop();
         }
         if(selected_game_object.HasComponent<CW::Camera>()){
@@ -496,35 +502,7 @@ namespace CWEditor {
             node_open = ImGui::TreeNodeEx((void*)(intptr_t)2, node_flags, "MeshRenderer");
             if(node_open){
                 CW::MeshRenderer& mesh_renderer = selected_game_object.GetComponent<CW::MeshRenderer>();
-                ImGui::Text("Materials");
-                ImGui::SameLine();
-                ImGui::PushItemWidth(-FLT_EPSILON);
-                ImGui::InputInt("Material Count", (int*) &mesh_renderer.material_count);
-                ImGui::PopItemWidth();
-
-                for (unsigned int i = 0; i < mesh_renderer.material_count; i++) {
-                    CW::Material *mat = CW::AssetManager::Get()->GetMaterial(mesh_renderer.materials[i]);
-                    char buff[256] = {};
-                    if (mat != 0)
-                        sprintf(buff, "%s", mat->asset_path);
-
-                    ImGui::PushItemWidth(-FLT_EPSILON);
-                    ImGui::InputText("Material Label", buff, 128, ImGuiInputTextFlags_ReadOnly);
-                    ImGui::PopItemWidth();
-                }
-                if (ImGui::BeginDragDropTarget())
-                {
-                    if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DND_DEMO_CELL"))
-                    {
-                        IM_ASSERT(payload->DataSize == sizeof(size_t));
-                        size_t index = *(const size_t*)payload->Data;
-                        
-                        if (CW::AssetManager::Get()->GetMaterial(index) != 0) {
-                            selected_game_object.GetComponent<CW::MeshRenderer>().materials[0] = index;
-                        }
-                    }
-                    ImGui::EndDragDropTarget();
-                }
+                UIAssetList(AssetType::MATERIAL, "Materials", mesh_renderer.materials, &mesh_renderer.material_count);
                 ImGui::TreePop();
             }
         }
@@ -540,7 +518,58 @@ namespace CWEditor {
                 ImGui::TreePop();
             }
         }
-    }   
+    }
+    void ApplicationView::UIDragFloat3(char *label, char *text, vec3s *vec3) {
+        ImGui::Text(text);
+        ImGui::PushItemWidth(-FLT_EPSILON);
+        ImGui::DragFloat3(label, (float*) vec3, 0.01f);
+        ImGui::PopItemWidth();
+    }
+    void ApplicationView::UIAssetList(AssetType asset_type, char *title, size_t *asset_array, unsigned int *array_count) {
+        ImGui::Text(title);
+        ImGui::SameLine();
+        ImGui::PushItemWidth(-FLT_EPSILON);
+        char c[64] = {};
+        sprintf(c, "%i", asset_array);
+        if (ImGui::InputInt(c, (int*) array_count)) {
+            *array_count = min(*array_count, MAX_MATERIALS);
+        }
+        ImGui::PopItemWidth();
+
+        for (unsigned int i = 0; i < *array_count; i++) {
+            char buff[256] = {};
+            switch (asset_type) {
+                case AssetType::MATERIAL: {
+                    CW::Material *mat = CW::AssetManager::Get()->GetMaterial(asset_array[i]);
+                    if (mat != 0)
+                        sprintf(buff, "%s", mat->asset_path);
+                } break;
+                case AssetType::TEXTURE: {
+                    CW::TextureData *tex = CW::AssetManager::Get()->GetTextureData(asset_array[i]);
+                    if (tex != 0)
+                        sprintf(buff, "%s", tex->asset_path_dir);
+                } break;
+            }
+            char material_label[32] = {};
+            sprintf(material_label, "%s %i", title, i);
+            
+            ImGui::PushItemWidth(-FLT_EPSILON);
+            ImGui::InputText(material_label, buff, 128, ImGuiInputTextFlags_ReadOnly);
+            ImGui::PopItemWidth();
+            if (ImGui::BeginDragDropTarget())
+            {
+                if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(title))
+                {
+                    IM_ASSERT(payload->DataSize == sizeof(size_t));
+                    size_t index = *(const size_t*)payload->Data;
+                    
+                    asset_array[i] = index;
+                }
+                ImGui::EndDragDropTarget();
+            }
+        }
+    }
+
     bool ApplicationView::CheckNameConflict(char *name){
         CW::Scene& active_scene = cogwheel->GetSceneManager()->GetActiveScene();
         for(int i = 0; i < active_scene.game_objects.size(); i++){

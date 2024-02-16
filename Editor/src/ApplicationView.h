@@ -29,6 +29,10 @@ namespace CWEditor {
             void RenderDockspace();
             void RenderAssets();
             void RenderComponents();
+
+            void UIDragFloat3(char *label, char *text, vec3s *vec3);
+            void UIAssetList(AssetType asset_type, char *title, size_t *asset_array, unsigned int *array_count);
+
             bool CheckNameConflict(char * name);
             char* GetSubDirectory(char *dir);
 
@@ -40,6 +44,9 @@ namespace CWEditor {
             AssetsBuilder *assets_builder;
             vec2s asset_view_size = { 70.0f, 100.0f };
             size_t current_asset_folder_hash;
+
+            CW::TextureIndex t[8] = {};
+            unsigned int count = 0;
 
             vec3s pos = {0,0,0};
             vec3s light_pos = {-12.0f, -12.0f, 12.0f};
