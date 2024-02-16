@@ -165,9 +165,11 @@ namespace CW {
             submesh->DrawSubmesh(shader);
         }
     }
-    void Mesh::DrawMesh(Shader *shader, MaterialIndex* material_indexes) {
+    void Mesh::DrawMesh(Shader *shader, MaterialIndex* material_indexes, int material_count) {
         for (Mesh* submesh : submeshes) {
             MaterialIndex material_index = material_indexes[submesh->material_used];
+            if (submesh->material_used >= material_count)
+                material_index = AssetManager::Get()->GetDefaultMaterialIndex();
             Material* mat = AssetManager::Get()->GetMaterial(material_index);
 
             submesh->DrawSubmesh(shader, mat);

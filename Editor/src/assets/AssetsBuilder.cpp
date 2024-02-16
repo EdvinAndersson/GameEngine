@@ -25,7 +25,7 @@ namespace CWEditor {
 
             CW::TextureData* texture_data = it.second;
 
-            CreateAssetInfo(AssetType::TEXTURE, it.first, texture_data->asset_path_dir);
+            CreateAssetInfo(AssetType::TEXTURE, it.first, it.first, texture_data->asset_path_dir);
         }
         auto *loaded_materials = asset_manager.GetLoadedMaterials();
         for (auto& it : *loaded_materials) {
@@ -33,12 +33,13 @@ namespace CWEditor {
 
             CW::Material* material = it.second;
 
-            CreateAssetInfo(AssetType::MATERIAL, asset_manager.GetDefaultTextureIndex(), material->asset_path);
+            CreateAssetInfo(AssetType::MATERIAL, it.first, asset_manager.GetDefaultTextureIndex(), material->asset_path);
         }
     }
-    void AssetsBuilder::CreateAssetInfo(AssetType asset_type, CW::TextureIndex texture_index, char *asset_path) {
+    void AssetsBuilder::CreateAssetInfo(AssetType asset_type, size_t asset_index, CW::TextureIndex texture_index, char *asset_path) {
         AssetInfo *asset_info = new AssetInfo();
         asset_info->asset_type = asset_type;
+        asset_info->asset_index = asset_index;
         asset_info->icon = texture_index;
         
         char *name = strrchr(asset_path, '/');

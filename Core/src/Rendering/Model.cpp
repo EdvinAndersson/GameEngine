@@ -26,9 +26,9 @@ namespace CW {
 		ProcessNode(ai_scene->mRootNode, ai_scene);
 	}
 	void Model::ProcessNode(aiNode *node, const aiScene *scene) {
-		material_count = scene->mNumMaterials;
+		material_count = scene->mNumMaterials - 1;
 
-		for (int i = 0; i < scene->mNumMaterials; i++)
+		for (int i = 0; i < material_count; i++)
 			material_indexes[i] = 0;
 
 		// process all the node's meshes (if any)

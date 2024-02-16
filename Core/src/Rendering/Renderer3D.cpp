@@ -64,7 +64,7 @@ namespace CW {
         g_r3d_data->instance_shader = CreateShader(vertex_shader_instanced, fragment_shader);
         g_r3d_data->depth_shader = CreateShader(vertex_shader_depth, fragment_shader_depth);
 
-        g_r3d_data->defualt_texture = AssetManager::Get()->GetTexture("default_texture");
+        g_r3d_data->defualt_texture = AssetManager::Get()->GetTexture("default_texture.png");
 
         R3D_Resize(window->GetWidth(), window->GetHeight());
         R3D_SetViewModel(GLMS_MAT4_IDENTITY_INIT);
@@ -159,7 +159,7 @@ namespace CW {
 
         glDepthFunc(GL_LESS);
     }
-    void R3D_RenderMesh(MeshIndex mesh_index, MaterialIndex *material_indexes, vec3s position, vec3s scale, versors quaternion) {
+    void R3D_RenderMesh(MeshIndex mesh_index, MaterialIndex *material_indexes, int material_count, vec3s position, vec3s scale, versors quaternion) {
         g_r3d_data->active_shader.Use();
 
         mat4s transform = GLMS_MAT4_IDENTITY_INIT;
@@ -171,7 +171,7 @@ namespace CW {
         g_r3d_data->active_shader.SetMat4f("model", &transform);
 
         Mesh *mesh = AssetManager::Get()->GetMesh(mesh_index);
-        mesh->DrawMesh(&g_r3d_data->active_shader, material_indexes);
+        mesh->DrawMesh(&g_r3d_data->active_shader, material_indexes, material_count);
     }
 
     void R3D__CreateInstanceSSBO() {
