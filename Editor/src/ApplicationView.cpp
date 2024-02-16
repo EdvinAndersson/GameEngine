@@ -117,6 +117,7 @@ namespace CWEditor {
 
         mat4s view = GLMS_MAT4_IDENTITY_INIT;
         view = glms_translate(view, pos);
+        view = glms_mat4_mul(glms_quat_mat4(glms_euler_xyz_quat(cam_rot)), view);
         CW::R3D_SetViewModel(view);
         CW::R3D_SetViewPos(pos);
         {
@@ -216,28 +217,9 @@ namespace CWEditor {
                     selected_game_object = game_object;
                     node_clicked = i;
                 }
-
-                if (ImGui::BeginPopupContextItem(game_object_name)) {
+                
+                if(ShowPopup(game_object)){
                     node_clicked = i;
-                    bool enter_pressed = false;
-                    if (ImGui::BeginPopupContextItem("New_Name_Popup")){
-                        static char buf1[32] = ""; 
-                        ImGui::InputText("default", buf1, 32);
-                        if(window->GetInputState(CW::KeyCode::RETURN)){
-                            enter_pressed = true;
-                            if(CheckNameConflict(buf1) == false)
-                                strcpy_s(game_object.GetComponent<CW::Transform>().name, 32, buf1);
-                            strcpy_s(buf1, 1, "");
-                            ImGui::CloseCurrentPopup();
-                        }
-                        ImGui::EndPopup();
-                    }
-                    if (ImGui::Button("New Name"))
-                        ImGui::OpenPopup("New_Name_Popup");
-                    if (ImGui::Button("Close") || enter_pressed)
-                        ImGui::CloseCurrentPopup();
-
-                    ImGui::EndPopup();
                 }
                 if (node_clicked != -1) {
                     
@@ -250,6 +232,9 @@ namespace CWEditor {
                 if (node_open) {
                     ImGui::TreePop();  
                 }
+            }
+            if(ShowPopup(CW::GameObject {})){
+
             }
                 
             ImGui::End();
@@ -369,10 +354,10 @@ namespace CWEditor {
             }
             if(game_object.HasComponent<CW::Camera>()){
                 pos = game_object.GetComponent<CW::Transform>().position;
+                cam_rot = game_object.GetComponent<CW::Transform>().rotation;
             }
         }
     }
-
     void ApplicationView::OnEvent(CW::Event e) {
         switch (e.event_type) {
             case CW::EventType::WINDOW_CLOSE: {
@@ -610,7 +595,42 @@ namespace CWEditor {
             }
         }
     }
+    bool ApplicationView::ShowPopup(CW::GameObject game_object){
+        bool is_clicked = false;
+        char title[128] = {"Popup"};
+        if(game_object.GetEntity() != 0)
+            strcpy(title, game_object.GetComponent<CW::Transform>().name);
+        if (ImGui::BeginPopupContextItem(title)) { 
+            bool enter_pressed = false;
+            is_clicked = true;
+            if(game_object.GetEntity() != 0){
+                if (ImGui::BeginPopupContextItem("New_Name_Popup")){
+                    static char buf1[32] = ""; 
+                    ImGui::InputText("default", buf1, 32);
 
+                    if(window->GetInputState(CW::KeyCode::RETURN)){
+                        enter_pressed = true;
+
+                        if(CheckNameConflict(buf1) == false)
+                            strcpy_s(game_object.GetComponent<CW::Transform>().name, 32, buf1);
+
+                        strcpy_s(buf1, 1, "");
+                        ImGui::CloseCurrentPopup();
+                    }
+                    ImGui::EndPopup(); 
+                }
+                
+
+                if (ImGui::Button("New Name"))
+                        ImGui::OpenPopup("New_Name_Popup");
+            }
+            if (ImGui::Button("Close") || enter_pressed)
+                ImGui::CloseCurrentPopup();
+
+            ImGui::EndPopup();
+        }
+        return is_clicked;
+    }
     bool ApplicationView::CheckNameConflict(char *name){
         CW::Scene& active_scene = cogwheel->GetSceneManager()->GetActiveScene();
         for(int i = 0; i < active_scene.game_objects.size(); i++){
