@@ -8,6 +8,7 @@ namespace CWEditor {
     ApplicationView::~ApplicationView() {
         delete assets_builder;
         delete framebuffer_game_view;
+        delete framebuffer_dev_view;
     }
 
     void ApplicationView::Init(CW::Cogwheel *_cogwheel, CW::Window *_window) {
@@ -19,6 +20,7 @@ namespace CWEditor {
         current_asset_folder_hash = CW::HashString("");
 
         framebuffer_game_view = new CW::Framebuffer(CW::FramebufferType::DEFUALT, window->GetWidth(), window->GetHeight());
+        framebuffer_dev_view = new CW::Framebuffer(CW::FramebufferType::DEFUALT, window->GetWidth(), window->GetHeight());
 
         EventListen(CW::EventType::WINDOW_CLOSE);
         EventListen(CW::EventType::WINDOW_RESIZE);
@@ -82,22 +84,22 @@ namespace CWEditor {
         RenderDockspace();
 
         if (window->GetInputState(CW::W)) {
-            pos.z += 0.1f;
+            dev_pos.z += 0.1f;
         }
         if (window->GetInputState(CW::A)) {
-            pos.x += 0.1f;
+            dev_pos.x += 0.1f;
         }
         if (window->GetInputState(CW::S)) {
-            pos.z -= 0.1f;
+            dev_pos.z -= 0.1f;
         }
         if (window->GetInputState(CW::D)) {
-            pos.x -= 0.1f;
+            dev_pos.x -= 0.1f;
         }
         if (window->GetInputState(CW::SPACE)) {
-            pos.y += 0.1f;
+            dev_pos.y += 0.1f;
         }
         if (window->GetInputState(CW::SHIFT)) {
-            pos.y -= 0.1f;
+            dev_pos.y -= 0.1f;
         }
 
         if (window->GetInputState(CW::UP)) {
@@ -117,7 +119,6 @@ namespace CWEditor {
         view = glms_translate(view, pos);
         CW::R3D_SetViewModel(view);
         CW::R3D_SetViewPos(pos);
-        
         {
             ImGui::Begin("Game View");
 
@@ -151,6 +152,47 @@ namespace CWEditor {
             float width = ImGui::GetWindowContentRegionMax().x - ImGui::GetWindowContentRegionMin().x;
             float height = width * aspect_ratio;
             ImGui::Image((ImTextureID)framebuffer_game_view->GetTexture().id, ImVec2 {width, height });
+            
+            ImGui::End();
+        }
+
+        mat4s dev_view = GLMS_MAT4_IDENTITY_INIT;
+        dev_view = glms_translate(dev_view, dev_pos);
+        CW::R3D_SetViewModel(dev_view);
+        CW::R3D_SetViewPos(dev_pos);
+        {
+            ImGui::Begin("Dev View");
+
+            //Shadow pass
+            CW::R3D_BeginShadowPass(light_pos);
+            RenderScene();
+            CW::R3D_EndShadowPass();
+
+            //Render pass
+            framebuffer_dev_view->Bind();
+            glViewport(0, 0, window->GetWidth(), window->GetHeight());
+            CW::R3D_Clear(vec4s {0,0,0,1} );
+
+            CW::R3D_UseDefaultShader();
+            CW::R3D_GetDefaultShader().SetV3("dirLight.direction", vec3s {-light_pos.x,-light_pos.y,-light_pos.z});
+
+            static float rot = 0;
+            rot += 0.004f;
+            vec3s p = vec3s{cosf(rot)*3, 0, sinf(rot)*3};
+            CW::R3D_SetPointLight(p, vec3s {0.4f, 0.4f, 0.4f}, vec3s {1.0f, 1.0f, 1.0f}, vec3s {0.5f, 0.5f, 0.5f}, 0.1, 0.3, 0.4f);
+            CW::MaterialIndex m[8] = {CW::AssetManager::Get()->GetDefaultMaterialIndex()};
+            CW::R3D_RenderMesh(CW::AssetManager::Get()->GetDefaultMeshIndex(), m, p, vec3s {0.2f, 0.2f, 0.2f}, GLMS_QUAT_IDENTITY_INIT);
+            
+            RenderScene();
+
+            CW::R3D_RenderSkybox(skybox_texture->texture, dev_view);
+            
+            framebuffer_dev_view->UnBind();
+
+            //Show the final render
+            float width = ImGui::GetWindowContentRegionMax().x - ImGui::GetWindowContentRegionMin().x;
+            float height = width * aspect_ratio;
+            ImGui::Image((ImTextureID)framebuffer_dev_view->GetTexture().id, ImVec2 {width, height });
             
             ImGui::End();
         }

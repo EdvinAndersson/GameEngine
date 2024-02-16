@@ -32,7 +32,7 @@ namespace CWEditor {
             bool CheckNameConflict(char * name);
             char* GetSubDirectory(char *dir);
 
-            CW::Framebuffer *framebuffer_game_view;
+            CW::Framebuffer *framebuffer_game_view, *framebuffer_dev_view;
             CW::Cogwheel *cogwheel;
             CW::Window *window;
             CW::GameObject selected_game_object;
@@ -42,6 +42,7 @@ namespace CWEditor {
             size_t current_asset_folder_hash;
 
             vec3s pos = {0,0,0};
+            vec3s dev_pos = {10, 10, 10};
             vec3s light_pos = {-12.0f, -12.0f, 12.0f};
 
             CW::TextureData *skybox_texture;
