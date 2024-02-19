@@ -136,12 +136,7 @@ namespace CWEditor {
             CW::R3D_UseDefaultShader();
             CW::R3D_GetDefaultShader().SetV3("dirLight.direction", vec3s {-light_pos.x,-light_pos.y,-light_pos.z});
 
-            static float rot = 0;
-            rot += 0.004f;
-            vec3s p = vec3s{cosf(rot)*3, 0, sinf(rot)*3};
-            CW::R3D_SetPointLight(p, vec3s {0.4f, 0.4f, 0.4f}, vec3s {1.0f, 1.0f, 1.0f}, vec3s {0.5f, 0.5f, 0.5f}, 0.1, 0.3, 0.4f);
-            CW::MaterialIndex m[8] = {CW::AssetManager::Get()->GetDefaultMaterialIndex()};
-            CW::R3D_RenderMesh(CW::AssetManager::Get()->GetDefaultMeshIndex(), m, 1, p, vec3s {0.2f, 0.2f, 0.2f}, GLMS_QUAT_IDENTITY_INIT);
+            CW::R3D_SetPointLight(vec3s {3.0f, 0, 3.0f}, vec3s {0.4f, 0.4f, 0.4f}, vec3s {1.0f, 1.0f, 1.0f}, vec3s {0.5f, 0.5f, 0.5f}, 0.1, 0.3, 0.4f);
             
             RenderScene();
 

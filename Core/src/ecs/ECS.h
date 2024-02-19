@@ -7,6 +7,7 @@ namespace CW {
         public:
             ECS();
 
+            void UpdateComponenets();
             void OnEvent(Event event) override;
     };
 }

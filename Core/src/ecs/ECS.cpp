@@ -47,6 +47,9 @@ namespace CW {
 
         //printf("%i\n", obj.GetSignature());
     }
+    void ECS::UpdateComponenets() {
+        
+    }
     void ECS::OnEvent(Event event) {
         switch (event.event_type)
         {
