@@ -35,4 +35,4 @@ del *.obj
 popd
 
 xcopy build\CogwheelCore.lib ..\Editor\build /y
-xcopy build\CogwheelCore.lib export\build /y
+xcopy build\CogwheelCore.lib ..\export\build /y

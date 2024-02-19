@@ -1,6 +1,5 @@
 @echo off
 
-pushd Core
 pushd export
 
 for /f "usebackq delims=" %%i in (`vswhere.exe -prerelease -latest -property installationPath`) do (
@@ -14,6 +13,5 @@ for /f "usebackq delims=" %%i in (`vswhere.exe -prerelease -latest -property ins
 )
 
 rem Instance or command prompt not found
-popd
 popd
 exit /b 2

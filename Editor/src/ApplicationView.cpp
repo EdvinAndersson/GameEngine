@@ -325,7 +325,7 @@ namespace CWEditor {
             if (ImGui::Button("Build Game")) {
                 STARTUPINFOA si = {};
                 PROCESS_INFORMATION pi = {};
-                bool success = CreateProcessA(NULL, "Core\\export\\export.bat", NULL, NULL, false, 0, NULL, NULL, &si, &pi);
+                bool success = CreateProcessA(NULL, "export\\export.bat", NULL, NULL, false, 0, NULL, NULL, &si, &pi);
                 
                 CW_ASSERT(success != 0, "Could not build the game!");
             }
@@ -343,20 +343,6 @@ namespace CWEditor {
         CW::Scene& active_scene = cogwheel->GetSceneManager()->GetActiveScene();
 
         cogwheel->GetECS()->UpdateComponenets(active_scene);
-
-        /*for (CW::GameObject game_object : active_scene.game_objects) {
-            if (game_object.HasComponent<CW::MeshRenderer>()) {
-                CW::Transform& transform = game_object.GetComponent<CW::Transform>();
-                CW::MeshRenderer& mesh_renderer = game_object.GetComponent<CW::MeshRenderer>();
-                mat4s mat = glms_euler_xyz(transform.rotation);
-                versors quat = glms_mat4_quat(mat);
-                CW::R3D_RenderMesh(mesh_renderer.mesh, mesh_renderer.materials, mesh_renderer.material_count, transform.position, transform.scale, quat);
-            }
-            if(game_object.HasComponent<CW::Camera>()){
-                pos = game_object.GetComponent<CW::Transform>().position;
-                cam_rot = game_object.GetComponent<CW::Transform>().rotation;
-            }
-        }*/
     }
     void ApplicationView::OnEvent(CW::Event e) {
         switch (e.event_type) {

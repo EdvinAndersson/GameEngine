@@ -33,7 +33,15 @@ namespace CWGame {
         while (cogwheel->IsRunning()) {
             cogwheel->Update();
 
+            mat4s view = GLMS_MAT4_IDENTITY_INIT;
+            view = glms_translate(view, {0,0,0});
+            view = glms_mat4_mul(glms_quat_mat4(glms_euler_xyz_quat({0,0,0})), view);
+            CW::R3D_SetViewModel(view);
+            CW::R3D_SetViewPos({0,0,0});
+
+            glViewport(0, 0, window->GetWidth(), window->GetHeight());
             CW::R3D_Clear(vec4s {0,0,0,1} );
+            
             CW::R3D_UseDefaultShader();
             vec3s light_pos = {-12.0f, -12.0f, 12.0f};
             CW::R3D_GetDefaultShader().SetV3("dirLight.direction", vec3s {-light_pos.x,-light_pos.y,-light_pos.z});
@@ -42,19 +50,7 @@ namespace CWGame {
 
             CW::Scene& active_scene = cogwheel->GetSceneManager()->GetActiveScene();
 
-            for (CW::GameObject game_object : active_scene.game_objects) {
-                if (game_object.HasComponent<CW::MeshRenderer>()) {
-                    CW::Transform& transform = game_object.GetComponent<CW::Transform>();
-                    CW::MeshRenderer& mesh_renderer = game_object.GetComponent<CW::MeshRenderer>();
-                    mat4s mat = glms_euler_xyz(transform.rotation);
-                    versors quat = glms_mat4_quat(mat);
-                    CW::R3D_RenderMesh(mesh_renderer.mesh, mesh_renderer.materials, mesh_renderer.material_count, transform.position, transform.scale, quat);
-                }
-                if(game_object.HasComponent<CW::Camera>()){
-                    //pos = game_object.GetComponent<CW::Transform>().position;
-                    //cam_rot = game_object.GetComponent<CW::Transform>().rotation;
-                }
-            }
+            cogwheel->GetECS()->UpdateComponenets(active_scene);
 
             window->PollEvents();
             window->WinSwapBuffers();
@@ -63,12 +59,10 @@ namespace CWGame {
     void Game::OnEvent(CW::Event event) {
         switch (event.event_type)
         {
-            case CW::WINDOW_CLOSE:
-            {
+            case CW::WINDOW_CLOSE: {
                 cogwheel->Stop();
             } break;
-            case CW::PROJECT_LOAD:
-            {
+            case CW::PROJECT_LOAD: {
                 CW::EventData_PROJECT_LOAD* e = (CW::EventData_PROJECT_LOAD*) event.data;
                 window->WinSetTitle(e->project->specification.project_name);
             } break;
