@@ -236,7 +236,7 @@ namespace CWEditor {
             
             ShowPopup(CW::GameObject {});
 
-            if (ImGui::IsMouseClicked(ImGuiMouseButton_Right)){
+            if (ImGui::IsMouseClicked(ImGuiMouseButton_Right) && ImGui::IsWindowHovered() && node_clicked == -1){
                 ImGui::OpenPopup("Popup");
             }
                 
@@ -600,10 +600,17 @@ namespace CWEditor {
     }
     bool ApplicationView::ShowPopup(CW::GameObject game_object){
         bool is_clicked = false;
-        char title[128] = {"Popup"};
-        if(game_object.GetEntity() != 0)
+        char title[128] = "Popup";
+        bool flags = ImGuiPopupFlags_None;
+
+        if(game_object.GetEntity() != 0){
             strcpy(title, game_object.GetComponent<CW::Transform>().name);
-        if (ImGui::BeginPopupContextItem(title)) { 
+            flags = ImGuiPopupFlags_MouseButtonRight;
+        } else {
+            ImGui::Text("");
+        }
+
+        if (ImGui::BeginPopupContextItem(title, flags)) { 
             bool enter_pressed = false;
             is_clicked = true;
             if(game_object.GetEntity() != 0){
