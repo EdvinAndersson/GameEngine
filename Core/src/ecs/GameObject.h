@@ -54,10 +54,7 @@ namespace CW {
 		Signature GetSignature() {
 			return entity_manager->GetSignature(entity);
 		}
-		Entity GetEntity() {
-			return entity;
-		}
-	private:
+		
 		Entity entity = 0;
 	};
 }

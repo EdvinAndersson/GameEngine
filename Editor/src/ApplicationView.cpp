@@ -342,7 +342,9 @@ namespace CWEditor {
     void ApplicationView::RenderScene() {
         CW::Scene& active_scene = cogwheel->GetSceneManager()->GetActiveScene();
 
-        for (CW::GameObject game_object : active_scene.game_objects) {
+        cogwheel->GetECS()->UpdateComponenets(active_scene);
+
+        /*for (CW::GameObject game_object : active_scene.game_objects) {
             if (game_object.HasComponent<CW::MeshRenderer>()) {
                 CW::Transform& transform = game_object.GetComponent<CW::Transform>();
                 CW::MeshRenderer& mesh_renderer = game_object.GetComponent<CW::MeshRenderer>();
@@ -354,7 +356,7 @@ namespace CWEditor {
                 pos = game_object.GetComponent<CW::Transform>().position;
                 cam_rot = game_object.GetComponent<CW::Transform>().rotation;
             }
-        }
+        }*/
     }
     void ApplicationView::OnEvent(CW::Event e) {
         switch (e.event_type) {
@@ -502,7 +504,7 @@ namespace CWEditor {
         }
     }
     void ApplicationView::RenderComponents(){
-        if(selected_game_object.GetEntity() == 0)
+        if(selected_game_object.entity == 0)
             return;
         ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_SpanAvailWidth;
         
@@ -511,8 +513,8 @@ namespace CWEditor {
             CW::Transform& transform = selected_game_object.GetComponent<CW::Transform>();
 
             UIDragFloat3("Position", "Position (X, Y, Z)", &transform.position);
-            UIDragFloat3("Rotation", "Position (X, Y, Z)", &transform.rotation);
-            UIDragFloat3("Scale", "Position (X, Y, Z)", &transform.scale);
+            UIDragFloat3("Rotation", "Rotation (X, Y, Z)", &transform.rotation);
+            UIDragFloat3("Scale", "Scale (X, Y, Z)", &transform.scale);
 
             ImGui::TreePop();
         }
@@ -598,7 +600,7 @@ namespace CWEditor {
         char title[128] = "Popup";
         bool flags = ImGuiPopupFlags_None;
 
-        if(game_object.GetEntity() != 0){
+        if(game_object.entity != 0){
             strcpy(title, game_object.GetComponent<CW::Transform>().name);
             flags = ImGuiPopupFlags_MouseButtonRight;
         } else {
@@ -608,7 +610,7 @@ namespace CWEditor {
         if (ImGui::BeginPopupContextItem(title, flags)) { 
             bool enter_pressed = false;
             is_clicked = true;
-            if(game_object.GetEntity() != 0){
+            if(game_object.entity != 0){
                 if (ImGui::BeginPopupContextItem("New_Name_Popup")){
                     static char buf1[32] = ""; 
                     ImGui::InputText("default", buf1, 32);

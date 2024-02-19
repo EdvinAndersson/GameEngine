@@ -7,6 +7,7 @@
 //temp
 #include "GameObject.h"
 #include "AddComponents.h"
+#include "GeneratedComponents.h"
 
 namespace CW {
 
@@ -47,9 +48,10 @@ namespace CW {
 
         //printf("%i\n", obj.GetSignature());
     }
-    void ECS::UpdateComponenets() {
-        
+    void ECS::UpdateComponenets(Scene &scene) {
+        GeneratedUpdateComponenets(scene);
     }
+    
     void ECS::OnEvent(Event event) {
         switch (event.event_type)
         {

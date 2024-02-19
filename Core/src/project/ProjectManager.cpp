@@ -166,7 +166,7 @@ namespace CW {
                 for (int c = 0; c < MAX_COMPONENTS; c++)
                     if (signature.test(c)) component_count++;
 
-                serialized.SubmitInt(obj.GetEntity());
+                serialized.SubmitInt(obj.entity);
 
                 char str_signature[MAX_COMPONENTS+1];
                 for (int c = 0; c < MAX_COMPONENTS; c++)

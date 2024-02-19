@@ -20,7 +20,7 @@ namespace CW {
         return gameObject;
     }
     void GameObject::Destory(GameObject &gameObject) {
-        entity_manager->DestroyEntity(gameObject.GetEntity());
+        entity_manager->DestroyEntity(gameObject.entity);
         
         EventData_ECS_DESTROY_GAMEOBJECT e;
         e.game_object = gameObject;

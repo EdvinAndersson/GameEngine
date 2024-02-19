@@ -20,6 +20,7 @@ namespace CW {
             inline bool IsRunning() { return running; }
             inline SceneManager *GetSceneManager() { return scene_manager; }
             inline ProjectManager *GetProjectManager() { return project_manager; }
+            inline ECS *GetECS() { return ecs; }
 
             void OnEvent(Event event) override;
         private:

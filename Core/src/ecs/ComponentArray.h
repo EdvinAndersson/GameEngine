@@ -56,6 +56,18 @@ namespace CW {
 			return mComponentArray[mEntityToIndexMap[entity]];
 		}
 
+		T* GetComponentArrayData() {
+			return mComponentArray;
+		}
+
+		size_t GetComponentArraySize() {
+			return mSize;
+		}
+
+		Entity GetEntity(size_t index) {
+			return mIndexToEntityMap[index];
+		}
+
 		void EntityDestroyed(Entity entity) override {
 			if (mEntityToIndexMap.find(entity) != mEntityToIndexMap.end())
 			{
