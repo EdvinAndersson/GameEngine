@@ -629,7 +629,11 @@ namespace CWEditor {
                 if (ImGui::Button("New Name"))
                     ImGui::OpenPopup("New_Name_Popup");
             }
-            if (ImGui::Button("Close") || enter_pressed)
+            if(ImGui::Button("New Game Object")){
+                CW::GameObject::Instantiate();
+                ImGui::CloseCurrentPopup();
+            }
+            if (ImGui::Button("close") || enter_pressed)
                 ImGui::CloseCurrentPopup();
 
             ImGui::EndPopup();
