@@ -524,7 +524,7 @@ namespace CWEditor {
                 ImGui::TreePop();
             }
         }
-        RenderAssetPopup(selected_game_object);
+        RenderAssetPopup(selected_game_object, AssetType::MATERIAL);
         if(ImGui::Button("New Component")){
             OpenAssetPopup();
         }
@@ -592,7 +592,24 @@ namespace CWEditor {
     void ApplicationView::RenderAssetPopup(CW::GameObject game_object, AssetType asset_type){
         char title[128] = "Asset Popup";
         if(ImGui::BeginPopupContextItem(title, 0)){
+            switch (asset_type)
+            {
+            case AssetType::MATERIAL :
+                auto loaded_materials = CW::AssetManager::Get()->GetLoadedMaterials();
+                for (auto& it : *loaded_materials){
+                    ImGui::BulletText("%s", it.second->asset_path);
+                }
+                break;
+            //case AssetType::SCRIPT :
+                //CW::AssetManager::Get()->
+                //break;
+            //case AssetType::TEXTURE :
+                
+                //break;
             
+            //default:
+                //break;
+            }
             ImGui::EndPopup();    
         }
     }
