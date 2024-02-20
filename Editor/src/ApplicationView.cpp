@@ -57,8 +57,6 @@ namespace CWEditor {
         mesh_renderer.mesh = CW::AssetManager::Get()->GetDefaultMeshIndex();
         mesh_renderer.materials[0] = CW::AssetManager::Get()->GetDefaultMaterialIndex();
         mesh_renderer.material_count++;
-
-        
     }
     
     void ApplicationView::Update() {
@@ -468,17 +466,7 @@ namespace CWEditor {
             }
             if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None))
             {
-                char *drag_drop_type = "";
-                switch (asset_info.asset_type)
-                {
-                    case AssetType::MATERIAL: {
-                        drag_drop_type = "Materials";
-                    } break;
-                    case AssetType::TEXTURE: {
-                        drag_drop_type = "Textures";
-                    } break;
-                }
-                ImGui::SetDragDropPayload(drag_drop_type, &asset_info.asset_index, sizeof(size_t));
+                ImGui::SetDragDropPayload(GetDragDropType(asset_info.asset_type), &asset_info.asset_index, sizeof(size_t));
                 ImGui::Text("Drag");
                 ImGui::EndDragDropSource();
             }
@@ -520,7 +508,7 @@ namespace CWEditor {
             node_open = ImGui::TreeNodeEx((void*)(intptr_t)2, node_flags, "MeshRenderer");
             if(node_open){
                 CW::MeshRenderer& mesh_renderer = selected_game_object.GetComponent<CW::MeshRenderer>();
-                UIAssetList(AssetType::MATERIAL, "Materials", mesh_renderer.materials, &mesh_renderer.material_count);
+                UIAssetList(AssetType::MATERIAL, mesh_renderer.materials, &mesh_renderer.material_count);
                 ImGui::TreePop();
             }
         }
@@ -543,7 +531,9 @@ namespace CWEditor {
         ImGui::DragFloat3(label, (float*) vec3, 0.01f);
         ImGui::PopItemWidth();
     }
-    void ApplicationView::UIAssetList(AssetType asset_type, char *title, size_t *asset_array, unsigned int *array_count) {
+    void ApplicationView::UIAssetList(AssetType asset_type, size_t *asset_array, unsigned int *array_count) {
+        char *title = GetDragDropType(asset_type);
+
         ImGui::Text(title);
         ImGui::SameLine();
         ImGui::PushItemWidth(-FLT_EPSILON);

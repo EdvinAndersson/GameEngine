@@ -31,7 +31,7 @@ namespace CWEditor {
             void RenderComponents();
 
             void UIDragFloat3(char *label, char *text, vec3s *vec3);
-            void UIAssetList(AssetType asset_type, char *title, size_t *asset_array, unsigned int *array_count);
+            void UIAssetList(AssetType asset_type, size_t *asset_array, unsigned int *array_count);
 
             bool ShowPopup(CW::GameObject game_object);
             bool CheckNameConflict(char * name);
