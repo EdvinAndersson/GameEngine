@@ -536,6 +536,10 @@ namespace CWEditor {
                 ImGui::TreePop();
             }
         }
+        RenderAssetPopup(selected_game_object);
+        if(ImGui::Button("New Component")){
+            OpenAssetPopup();
+        }
     }
     void ApplicationView::UIDragFloat3(char *label, char *text, vec3s *vec3) {
         ImGui::Text(text);
@@ -587,6 +591,22 @@ namespace CWEditor {
             }
         }
     }
+    void ApplicationView::OpenAssetPopup(){
+        char title[128] = "Asset Popup";
+        
+
+        
+        ImGui::OpenPopup(title);
+        
+    }
+    void ApplicationView::RenderAssetPopup(CW::GameObject game_object, AssetType asset_type){
+        char title[128] = "Asset Popup";
+        if(ImGui::BeginPopupContextItem(title, 0)){
+            
+            ImGui::EndPopup();    
+        }
+    }
+    
     bool ApplicationView::ShowPopup(CW::GameObject game_object){
         bool is_clicked = false;
         char title[128] = "Popup";
