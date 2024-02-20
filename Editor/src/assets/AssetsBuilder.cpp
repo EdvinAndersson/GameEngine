@@ -27,7 +27,8 @@ namespace CWEditor {
 
             CreateAssetInfo(AssetType::TEXTURE, it.first, it.first, texture_data->asset_path_dir);
         }
-        auto *loaded_materials = asset_manager.GetLoadedMaterials();
+        auto loaded_materials = asset_manager.GetLoadedMaterials();
+
         for (auto& it : *loaded_materials) {
             if (it.first == asset_manager.GetDefaultMaterialIndex()) continue;
 
