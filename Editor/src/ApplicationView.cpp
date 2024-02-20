@@ -238,6 +238,11 @@ namespace CWEditor {
             ImGui::End();
         }
         {
+            //TODO
+            //ImGuiCond_FirstUseEver
+            //ImGui::SetNextWindowPos();
+            //ImGui::SetNextWindowSize();
+
             ImGui::Begin("Components");
             RenderComponents();
             ImGui::End();
@@ -443,9 +448,9 @@ namespace CWEditor {
 
         for (int i = 0; i < asset_info_count; i++) { 
             ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoScrollbar;
-            char buff[16] = {};
-            sprintf(buff, "Asset %i", i);
-            ImGui::BeginChild(buff, ImVec2(asset_view_size.x, asset_view_size.y), 0, window_flags);
+
+            ImGui::PushID(i);
+            ImGui::BeginChild("Asset", ImVec2(asset_view_size.x, asset_view_size.y), 0, window_flags);
 
             AssetInfo& asset_info = *asset_info_array.asset_infos[i];
             CW::Texture texture = CW::AssetManager::Get()->GetTextureData(asset_info.icon)->texture;
@@ -468,10 +473,10 @@ namespace CWEditor {
                 {
                     case AssetType::MATERIAL: {
                         drag_drop_type = "Materials";
-                    }break;
+                    } break;
                     case AssetType::TEXTURE: {
                         drag_drop_type = "Textures";
-                    }break;
+                    } break;
                 }
                 ImGui::SetDragDropPayload(drag_drop_type, &asset_info.asset_index, sizeof(size_t));
                 ImGui::Text("Drag");
@@ -481,6 +486,7 @@ namespace CWEditor {
 
             ImGui::PopStyleColor(1);
             ImGui::EndChild();
+            ImGui::PopID();
 
             float next_button = ImGui::GetItemRectMax().x + style.ItemSpacing.x + asset_view_size.x;
             if (next_button < window_visible)
