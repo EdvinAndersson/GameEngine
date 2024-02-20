@@ -34,6 +34,8 @@ namespace CWEditor {
             void UIAssetList(AssetType asset_type, size_t *asset_array, unsigned int *array_count);
 
             bool ShowPopup(CW::GameObject game_object);
+            void OpenAssetPopup();
+            void RenderAssetPopup(CW::GameObject game_object, AssetType asset_type);
             bool CheckNameConflict(char * name);
             char* GetSubDirectory(char *dir);
 
