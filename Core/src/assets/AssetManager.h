@@ -5,6 +5,7 @@
 #include "Rendering/Texture.h"
 #include "Rendering/Model.h"
 #include "Rendering/Material.h"
+#include "Script.h"
 #include "Utility.h"
 #include "serialization/Deserialize.h"
 #include "serialization/Serialize.h"
@@ -44,6 +45,8 @@ namespace CW {
             inline ModelIndex GetModelIndex(char *path) { return HashString(path); }
             Model* GetModel(ModelIndex model_index) { return loaded_models[model_index]; }
 
+            void LoadScript(char *path);
+
             inline TextureIndex GetDefaultTextureIndex() { return default_texture_index; }
             inline TextureIndex GetDefaultSpecularTextureIndex() { return default_specular_texture_index; }
             inline MaterialIndex GetDefaultMaterialIndex() { return default_material_index; }
@@ -51,6 +54,7 @@ namespace CW {
 
             inline std::unordered_map<TextureIndex, TextureData *>* GetLoadedTextures() { return &loaded_textures; }
             inline std::unordered_map<MaterialIndex, Material *>* GetLoadedMaterials() { return &loaded_materials; }
+            inline std::unordered_map<ScriptIndex, ScriptData *>* GetLoadedScripts() { return &loaded_scripts; }
 
             inline char* GetAssetsPath() { return assets_path; }
 
@@ -60,13 +64,13 @@ namespace CW {
 
             std::unordered_map<TextureIndex, TextureData *> loaded_textures = {};
             std::unordered_map<MaterialIndex, Material *> loaded_materials = {};
-
             std::unordered_map<ModelIndex, Model *> loaded_models = {};
             std::unordered_map<MeshIndex, Mesh *> loaded_meshes = {};
+            std::unordered_map<ScriptIndex, ScriptData *> loaded_scripts = {};
 
             TextureIndex default_texture_index, default_specular_texture_index;
             MaterialIndex default_material_index;
             MeshIndex default_mesh_index;
-            char assets_path[1024];
+            char assets_path[256];
     };
 }

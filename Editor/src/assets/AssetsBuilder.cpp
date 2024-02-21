@@ -28,13 +28,18 @@ namespace CWEditor {
             CreateAssetInfo(AssetType::TEXTURE, it.first, it.first, texture_data->asset_path_dir);
         }
         auto loaded_materials = asset_manager.GetLoadedMaterials();
-
         for (auto& it : *loaded_materials) {
             if (it.first == asset_manager.GetDefaultMaterialIndex()) continue;
 
             CW::Material* material = it.second;
 
             CreateAssetInfo(AssetType::MATERIAL, it.first, asset_manager.GetDefaultTextureIndex(), material->asset_path);
+        }
+        auto loaded_scripts = asset_manager.GetLoadedScripts();
+        for (auto& it : *loaded_scripts) {
+            CW::ScriptData *script_data = it.second;
+
+            CreateAssetInfo(AssetType::SCRIPT, it.first, asset_manager.GetDefaultTextureIndex(), script_data->asset_path);
         }
     }
     void AssetsBuilder::CreateAssetInfo(AssetType asset_type, size_t asset_index, CW::TextureIndex texture_index, char *asset_path) {

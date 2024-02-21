@@ -7,6 +7,7 @@
 #include "Core/src/Utility.h"
 
 #include "assets/AssetsBuilder.h"
+#include "ImGuiComponents.h"
 
 #include "vendor/imgui/imgui.h"
 #include "vendor/imgui/backends/imgui_impl_opengl3.h"
@@ -29,9 +30,6 @@ namespace CWEditor {
             void RenderDockspace();
             void RenderAssets();
             void RenderComponents();
-
-            void UIDragFloat3(char *label, char *text, vec3s *vec3);
-            void UIAssetList(AssetType asset_type, size_t *asset_array, unsigned int *array_count);
 
             bool ShowPopup(CW::GameObject game_object);
             void OpenAssetPopup();
