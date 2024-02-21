@@ -1,5 +1,7 @@
 #pragma once
+
 #include <Windows.h>
+#include <stdio.h>
 
 #define CW_ASSERT(expr, msg) if (!(expr)) { __CW_ASSERT(#expr, __FILE__, __LINE__, msg); DebugBreak(); }
 

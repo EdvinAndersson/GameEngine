@@ -11,6 +11,7 @@
 #include "serialization/Serialize.h"
 #include "event/IEventListener.h"
 #include "vendor/dirent/dirent.h"
+#include "ScriptManager.h"
 
 namespace CW {
 

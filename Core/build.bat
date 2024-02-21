@@ -6,7 +6,8 @@ pushd build
 set compile_flags=/W4 /Zi /c /MTd /MP /Od /FC /wd4201 -D_CRT_SECURE_NO_WARNINGS -D UNICODE -DDEBUG ^
 -I../src/vendor/assimp/include ^
 -I../src/vendor/cglm-master/include ^
--I../src
+-I../src ^
+-I../../
 
 set linker_flags=gdi32.lib user32.lib kernel32.lib shell32.lib ^
 /out:CogwheelCore.lib ^

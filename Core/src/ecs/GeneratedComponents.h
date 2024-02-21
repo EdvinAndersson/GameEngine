@@ -5,6 +5,8 @@
 #include "ecs/Components.h"
 #include "Rendering/Renderer3D.h"
 
+#include "Editor/res/projects/Project1/Assets/scripts/TestComponent.h"
+
 namespace CW {
 
     inline void UpdateTransforms(std::shared_ptr<ComponentArray<Transform>> components) {
@@ -32,7 +34,19 @@ namespace CW {
         for (int i = 0; i < size; i++) {
         }
     }
-        
+    inline void UpdateTestComponents(std::shared_ptr<ComponentArray<TestComponent>> components) {
+        size_t size = components->GetComponentArraySize();
+        auto comp_datas = components->GetComponentArrayData();
+        for (int i = 0; i < size; i++) {
+            GameObject game_object = GameObject { components->GetEntity(i) };
+            TestComponent_OnUpdate(game_object, comp_datas[i]);
+        }
+    }
+    
+    inline void GeneratedRegisterComponents(ComponentManager *component_manager) {
+        component_manager->RegisterComponent<TestComponent>();
+    }
+
     inline void GeneratedUpdateComponenets(Scene &scene) {
         {
             std::shared_ptr<ComponentArray<Transform>> comp = component_manager->GetComponentArray<Transform>();
@@ -45,6 +59,10 @@ namespace CW {
         {
             std::shared_ptr<ComponentArray<Camera>> comp = component_manager->GetComponentArray<Camera>();
             UpdateCameras(comp);
+        }
+        {
+            std::shared_ptr<ComponentArray<TestComponent>> comp = component_manager->GetComponentArray<TestComponent>();
+            UpdateTestComponents(comp);
         }
     }
 }
