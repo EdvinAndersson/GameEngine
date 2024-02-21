@@ -591,15 +591,18 @@ namespace CWEditor {
     }
     void ApplicationView::RenderAssetPopup(CW::GameObject game_object, AssetType asset_type){
         char title[128] = "Asset Popup";
-        if(ImGui::BeginPopupContextItem(title, 0)){
-            switch (asset_type)
-            {
-            case AssetType::MATERIAL :
-                auto loaded_materials = CW::AssetManager::Get()->GetLoadedMaterials();
-                for (auto& it : *loaded_materials){
-                    ImGui::BulletText("%s", it.second->asset_path);
-                }
-                break;
+        if(ImGui::BeginPopup(title)){
+            
+            if(game_object.HasComponent<CW::Transform>() == false){
+                ImGui::Button("Transform");
+            }
+            if(game_object.HasComponent<CW::MeshRenderer>() == false){
+                ImGui::Button("MeshRenderer");
+            }
+            if(game_object.HasComponent<CW::Script>() == false){
+                ImGui::Button("Script");
+            }
+            
             //case AssetType::SCRIPT :
                 //CW::AssetManager::Get()->
                 //break;
@@ -609,7 +612,7 @@ namespace CWEditor {
             
             //default:
                 //break;
-            }
+            
             ImGui::EndPopup();    
         }
     }
