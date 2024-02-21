@@ -120,6 +120,10 @@ namespace CW {
                 LoadModel(file_paths[i]);
                 continue;
             }
+            if (strcmp(file_type, "h") == 0) {
+                LoadScript(file_paths[i]);
+                continue;
+            }
         }
 
     }
@@ -304,6 +308,23 @@ namespace CW {
         loaded_meshes.insert({ hashed_path, mesh });
 
         model->mesh_index = hashed_path;
+    }
+
+    void AssetManager::LoadScript(char *path) {
+        size_t hashed_path = HashString(path);
+
+        if (loaded_scripts.find(hashed_path) != loaded_scripts.end()){
+            printf("Script is already loaded! %s\n", path);
+            return;
+        }
+
+        ScriptData *script_data = new ScriptData();
+        strcpy(script_data->asset_path, path);
+        char *name = strchr(path, '/') + 1;
+        strncpy(script_data->name, name, strlen(name)-2); //remove .h
+        printf("name: %s\n", script_data->name);
+
+        loaded_scripts.insert({ hashed_path, script_data });
     }
 
     void AssetManager::GetAllAssetPaths(DIR *dir, char file_paths[MAX_ASSETS][256], unsigned int *count, char base_dir[256]) {
