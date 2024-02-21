@@ -63,4 +63,42 @@ namespace CWEditor {
             }
         }
     }
+    inline void RenderAssetPopup(CW::GameObject game_object, AssetType asset_type){
+        char title[128] = "Asset Popup";
+        if(ImGui::BeginPopup(title)){
+            switch (asset_type)
+            {
+            case AssetType::SCRIPT :
+                if (game_object.HasComponent<CW::MeshRenderer>() == false){
+                    if (ImGui::Button("MeshRenderer")){
+                        CW::MeshRenderer& meshtemp = game_object.AddComponent<CW::MeshRenderer>();
+                        meshtemp.mesh = CW::AssetManager::Get()->GetDefaultMeshIndex();
+                        meshtemp.materials[0] = CW::AssetManager::Get()->GetDefaultMaterialIndex();
+                        meshtemp.material_count = 1;
+                        ImGui::CloseCurrentPopup();
+                    }
+                }
+                if (game_object.HasComponent<CW::Script>() == false){  
+                    auto *loaded_scripts = CW::AssetManager::Get()->GetLoadedScripts();
+                    for (auto& it : *loaded_scripts) {
+                        CW::ScriptData* script_data = it.second;
+                        ImGui::Button(script_data->name);
+                    }
+                    
+                }
+                break;
+            case AssetType::TEXTURE :
+                
+                break;
+            
+            //default:
+                //break;
+            }
+            ImGui::EndPopup();    
+        }
+    }
+    inline void OpenAssetPopup(){
+        char title[128] = "Asset Popup"; 
+        ImGui::OpenPopup(title);   
+    }
 }

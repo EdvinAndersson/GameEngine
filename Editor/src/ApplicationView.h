@@ -32,8 +32,6 @@ namespace CWEditor {
             void RenderComponents();
 
             bool ShowPopup(CW::GameObject game_object);
-            void OpenAssetPopup();
-            void RenderAssetPopup(CW::GameObject game_object, AssetType asset_type);
             bool CheckNameConflict(char * name);
             char* GetSubDirectory(char *dir);
 

@@ -524,47 +524,11 @@ namespace CWEditor {
                 ImGui::TreePop();
             }
         }
-        RenderAssetPopup(selected_game_object, AssetType::MATERIAL);
+        RenderAssetPopup(selected_game_object, AssetType::SCRIPT);
         if(ImGui::Button("New Component")){
             OpenAssetPopup();
         }
     }
-    void ApplicationView::OpenAssetPopup(){
-        char title[128] = "Asset Popup";
-        
-
-        
-        ImGui::OpenPopup(title);
-        
-    }
-    void ApplicationView::RenderAssetPopup(CW::GameObject game_object, AssetType asset_type){
-        char title[128] = "Asset Popup";
-        if(ImGui::BeginPopup(title)){
-            
-            if(game_object.HasComponent<CW::Transform>() == false){
-                ImGui::Button("Transform");
-            }
-            if(game_object.HasComponent<CW::MeshRenderer>() == false){
-                ImGui::Button("MeshRenderer");
-            }
-            if(game_object.HasComponent<CW::Script>() == false){
-                ImGui::Button("Script");
-            }
-            
-            //case AssetType::SCRIPT :
-                //CW::AssetManager::Get()->
-                //break;
-            //case AssetType::TEXTURE :
-                
-                //break;
-            
-            //default:
-                //break;
-            
-            ImGui::EndPopup();    
-        }
-    }
-    
     bool ApplicationView::ShowPopup(CW::GameObject game_object){
         bool is_clicked = false;
         char title[128] = "Popup";
