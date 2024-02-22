@@ -71,12 +71,14 @@ namespace CWEditor {
     }
     inline void RenderAssetPopup(CW::GameObject game_object, AssetType asset_type){
         char title[128] = "Asset Popup";
-        if(ImGui::BeginPopup(title)){
+        if (ImGui::BeginPopup(title)){
+            static ImGuiTextFilter filter;
+            filter.Draw();
             switch (asset_type)
             {
             case AssetType::SCRIPT :
                 if (game_object.HasComponent<CW::MeshRenderer>() == false){
-                    if (ImGui::Button("MeshRenderer")){
+                    if (filter.PassFilter("MeshRenderer") && ImGui::Button("MeshRenderer")){
                         CW::MeshRenderer& meshtemp = game_object.AddComponent<CW::MeshRenderer>();
                         meshtemp.mesh = CW::AssetManager::Get()->GetDefaultMeshIndex();
                         meshtemp.materials[0] = CW::AssetManager::Get()->GetDefaultMaterialIndex();
