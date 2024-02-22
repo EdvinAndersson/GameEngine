@@ -71,9 +71,13 @@ namespace CWEditor {
     }
     inline void RenderAssetPopup(CW::GameObject game_object, AssetType asset_type){
         char title[128] = "Asset Popup";
-        if (ImGui::BeginPopup(title)){
+        ImGuiWindowFlags flags = ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize; 
+        if (ImGui::BeginPopup(title, flags)){
             static ImGuiTextFilter filter;
-            filter.Draw();
+            ImGui::Text("Search");
+            ImGui::PushItemWidth(-FLT_EPSILON);
+            filter.Draw("Search", 200);
+            ImGui::PopItemWidth();
 
             switch (asset_type) {
                 case AssetType::SCRIPT : {
@@ -95,6 +99,7 @@ namespace CWEditor {
 
                         if (filter.PassFilter(script_data->name) && ImGui::Button(script_data->name)) {
                             CW::AddGenereatedComponent(hashed, game_object);
+                            ImGui::CloseCurrentPopup();
                         }
                     }
                 } break;
