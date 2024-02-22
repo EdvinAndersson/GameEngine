@@ -7,6 +7,7 @@ ScriptsDLL.dll
 ScriptsDLL.lib
 
 tools/build_scripts/*.obj
+tools/GeneratedComponentsUtility.cpp
 !build_scripts_dll.bat
 !GeneratedComponentsUtility.h
 
