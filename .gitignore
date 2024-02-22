@@ -6,7 +6,7 @@ CogwheelCore.lib
 ScriptsDLL.dll
 ScriptsDLL.lib
 
-*/tools/*
+*/tools/*.obj
 !build_scripts_dll.bat
 !GeneratedComponentsUtility.h
 
