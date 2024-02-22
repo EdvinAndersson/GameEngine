@@ -89,6 +89,8 @@ namespace CW {
 
 				component->Reset();
 			}
+			mComponentTypes.clear();
+			mComponentArrays.clear();
 		}
 		const size_t GetComponentValue(ComponentType type) {
 			for (auto it = mComponentTypes.begin(); it != mComponentTypes.end(); ++it) {

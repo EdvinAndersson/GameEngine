@@ -13,6 +13,7 @@ namespace CW {
     typedef bool(*PFNHasGenereatedComponent)(size_t type, GameObject& obj);
 
     void BuildDLL();
+    void FreeDLL();
     void LoadDLLFunctions(char *path);
 
     void InitGeneretedComponentsUtility();
