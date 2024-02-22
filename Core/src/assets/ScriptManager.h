@@ -12,6 +12,8 @@ namespace CW {
     typedef void(*PFNAddGenereatedComponent)(size_t type, GameObject& obj);
     typedef bool(*PFNHasGenereatedComponent)(size_t type, GameObject& obj);
 
+    //void TestComponent_OnUpdate(CW::GameObject game_object, TestComponent& comp);
+
     void BuildDLL();
     void FreeDLL();
     void LoadDLLFunctions(char *path);

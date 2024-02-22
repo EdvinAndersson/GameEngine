@@ -12,8 +12,8 @@ struct TestComponent {
 //void TestComponent_OnDestroy(CW::GameObject game_object, TestComponent comp);
 extern "C" {
     #ifdef EXPORTING_DLL
-        extern __declspec(dllexport) void TestComponent_OnUpdate(CW::GameObject game_object, TestComponent comp);
+        extern __declspec(dllexport) void TestComponent_OnUpdate(CW::GameObject game_object, TestComponent& comp);
     #else
-        extern __declspec(dllimport) void TestComponent_OnUpdate(CW::GameObject game_object, TestComponent comp);
+        extern __declspec(dllimport) void TestComponent_OnUpdate(CW::GameObject game_object, TestComponent& comp);
     #endif
 }

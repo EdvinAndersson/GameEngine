@@ -3,6 +3,9 @@
 #include "Core/src/Utility.h"
 #include "Core/src/ecs/GameObject.h"
 
+//#include "Editor/res/projects/Project1/Assets/scripts/TestComponent.h"
+//typedef bool(*PFNComponentFunction)(CW::GameObject, TestComponent&);
+
 extern "C" {
     #ifdef EXPORTING_DLL
         extern __declspec(dllexport) void InitGeneretedComponentsUtility(CW::ComponentManager *component_manager, CW::EntityManager *entity_manager);
