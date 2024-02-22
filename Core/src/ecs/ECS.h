@@ -3,6 +3,8 @@
 #include "../event/IEventListener.h"
 #include "../scene/Scene.h"
 
+#include "assets/AssetManager.h"
+
 namespace CW {
     class ECS : public IEventListener {
         public:

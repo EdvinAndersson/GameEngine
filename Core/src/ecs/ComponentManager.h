@@ -15,15 +15,14 @@ namespace CW {
 		template<typename T>
 		void RegisterComponent()
 		{
-			const char *typeName = typeid(T).name();
-
-			CW_ASSERT(mComponentTypes.find(typeName) == mComponentTypes.end(), "Registering component type more than once.");
+			size_t typeHash = typeid(T).hash_code();
+			CW_ASSERT(mComponentTypes.find(typeHash) == mComponentTypes.end(), "Registering component type more than once.");
 
 			// Add this component type to the component type map
-			mComponentTypes.insert({ typeName, mNextComponentType });
+			mComponentTypes.insert({ typeHash, mNextComponentType });
 
 			// Create a ComponentArray pointer and add it to the component arrays map
-			mComponentArrays.insert({ typeName, std::make_shared<ComponentArray<T>>() });
+			mComponentArrays.insert({ typeHash, std::make_shared<ComponentArray<T>>() });
 
 			// Increment the value so that the next component registered will be different
 			++mNextComponentType;
@@ -32,12 +31,12 @@ namespace CW {
 		template<typename T>
 		ComponentType GetComponentType()
 		{
-			const char *typeName = typeid(T).name();
+			size_t typeHash = typeid(T).hash_code();
 
-			CW_ASSERT(mComponentTypes.find(typeName) != mComponentTypes.end(), "Component not registered before use.");
+			CW_ASSERT(mComponentTypes.find(typeHash) != mComponentTypes.end(), "Component not registered before use.");
 
 			// Return this component's type - used for creating signatures
-			return mComponentTypes[typeName];
+			return mComponentTypes[typeHash];
 		}
 
 		template<typename T>
@@ -76,13 +75,14 @@ namespace CW {
 		template<typename T>
 		std::shared_ptr<ComponentArray<T>> GetComponentArray()
 		{
-			const char *typeName = typeid(T).name();
+			size_t typeHash = typeid(T).hash_code();
 
-			CW_ASSERT(mComponentTypes.find(typeName) != mComponentTypes.end(), "Component not registered before use.");
+			CW_ASSERT(mComponentTypes.find(typeHash) != mComponentTypes.end(), "Component not registered before use.");
 
-			return std::static_pointer_cast<ComponentArray<T>>(mComponentArrays[typeName]);
+			return std::static_pointer_cast<ComponentArray<T>>(mComponentArrays[typeHash]);
 		}
 		void ResetComponentArrays() {
+
 			for (auto const &pair : mComponentArrays)
 			{
 				auto const &component = pair.second;
@@ -90,7 +90,7 @@ namespace CW {
 				component->Reset();
 			}
 		}
-		const char * GetComponentValue(ComponentType type) {
+		const size_t GetComponentValue(ComponentType type) {
 			for (auto it = mComponentTypes.begin(); it != mComponentTypes.end(); ++it) {
 				if (it->second == type) return it->first;
 			}
@@ -98,10 +98,10 @@ namespace CW {
 		}
 	private:
 		// Map from type string pointer to a component type
-		std::unordered_map<const char *, ComponentType> mComponentTypes{};
+		std::unordered_map<size_t, ComponentType> mComponentTypes{};
 
 		// Map from type string pointer to a component array
-		std::unordered_map<const char *, std::shared_ptr<IComponentArray>> mComponentArrays{};
+		std::unordered_map<size_t, std::shared_ptr<IComponentArray>> mComponentArrays{};
 
 		// The component type to be assigned to the next registered component - starting at 0
 		ComponentType mNextComponentType{};

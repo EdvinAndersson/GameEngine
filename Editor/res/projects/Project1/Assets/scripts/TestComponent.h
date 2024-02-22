@@ -1,3 +1,5 @@
+#pragma once
+
 #include "Core/src/ecs/GameObject.h"
 #include "Core/src/ecs/Components.h"
 
@@ -8,9 +10,10 @@ struct TestComponent {
 //void TestComponent_OnStart(CW::GameObject game_object, TestComponent comp);
 //void TestComponent_OnUpdate(CW::GameObject game_object, TestComponent comp);
 //void TestComponent_OnDestroy(CW::GameObject game_object, TestComponent comp);
-
-#ifdef EXPORTING_DLL
-extern __declspec(dllexport) void TestComponent_OnUpdate(CW::GameObject game_object, TestComponent comp);
-#else
-extern __declspec(dllimport) void TestComponent_OnUpdate(CW::GameObject game_object, TestComponent comp);
-#endif
+extern "C" {
+    #ifdef EXPORTING_DLL
+        extern __declspec(dllexport) void TestComponent_OnUpdate(CW::GameObject game_object, TestComponent comp);
+    #else
+        extern __declspec(dllimport) void TestComponent_OnUpdate(CW::GameObject game_object, TestComponent comp);
+    #endif
+}

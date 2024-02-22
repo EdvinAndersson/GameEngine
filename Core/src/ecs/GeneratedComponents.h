@@ -1,3 +1,4 @@
+
 #pragma once
 
 #include "ecs/GameObject.h"
@@ -42,10 +43,6 @@ namespace CW {
             TestComponent_OnUpdate(game_object, comp_datas[i]);
         }
     }
-    
-    inline void GeneratedRegisterComponents(ComponentManager *component_manager) {
-        component_manager->RegisterComponent<TestComponent>();
-    }
 
     inline void GeneratedUpdateComponenets(Scene &scene) {
         {
@@ -66,3 +63,4 @@ namespace CW {
         }
     }
 }
+        

@@ -15,7 +15,8 @@ set source_files=^
 ../src/vendor/imgui/*.cpp ^
 ../src/vendor/imgui/backends/*.cpp
 
-set linker_flags=CogwheelCore.lib gdi32.lib user32.lib kernel32.lib shell32.lib -incremental:no ScriptsDLL.lib
+set linker_flags=CogwheelCore.lib gdi32.lib user32.lib kernel32.lib shell32.lib -incremental:no 
+rem ScriptsDLL.lib
 
 cl %compile_flags% %source_files% /link %linker_flags%
 

@@ -4,7 +4,7 @@
 
 namespace CW {
 
-    using ComponentType = std::uint8_t;
+    using ComponentType = uint8_t;
 
     const ComponentType MAX_COMPONENTS = 32;
 

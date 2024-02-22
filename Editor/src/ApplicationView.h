@@ -6,6 +6,10 @@
 #include "Core/src/Rendering/Framebuffer.h"
 #include "Core/src/Utility.h"
 
+#include "Editor/res/projects/Project1/Assets/scripts/TestComponent.h"
+#include "Editor/res/projects/Project1/Assets/scripts/TestComponent2.h"
+#include "tools/GeneratedComponentsUtility.h"
+
 #include "assets/AssetsBuilder.h"
 #include "ImGuiComponents.h"
 

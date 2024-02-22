@@ -8,8 +8,8 @@ namespace CW {
     Cogwheel::Cogwheel() {}
 
     Cogwheel::~Cogwheel() {
-        delete ecs;
         delete asset_manager;
+        delete ecs;
         delete scene_manager;
         delete project_manager;
     }
@@ -19,8 +19,8 @@ namespace CW {
 
         EventListen(PROJECT_LOAD);
 
-        ecs = new ECS();
         asset_manager = new AssetManager();
+        ecs = new ECS();
         project_manager = new ProjectManager();
 
         scene_manager = new SceneManager();

@@ -125,9 +125,6 @@ namespace CW {
                 continue;
             }
         }
-
-        BuildDLL();
-
     }
     void AssetManager::UnloadAssets() {
         //Unload textures

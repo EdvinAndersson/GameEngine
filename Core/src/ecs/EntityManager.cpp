@@ -1,5 +1,4 @@
 #include "EntityManager.h"
-#include "CWAssert.h"
 
 namespace CW {
 	EntityManager::EntityManager()

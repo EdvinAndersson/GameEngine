@@ -524,6 +524,15 @@ namespace CWEditor {
                 ImGui::TreePop();
             }
         }
+        for (auto& it : *CW::AssetManager::Get()->GetLoadedScripts()) {
+            CW::ScriptData *script_data = it.second;
+            if (CW::HasGenereatedComponent(CW::HashString(script_data->name), selected_game_object)) {
+                node_open = ImGui::TreeNodeEx((void*)(intptr_t)5, node_flags, script_data->name);
+                if(node_open){
+                    ImGui::TreePop();
+                }
+            }
+        }
         RenderAssetPopup(selected_game_object, AssetType::SCRIPT);
         if(ImGui::Button("New Component")){
             OpenAssetPopup();

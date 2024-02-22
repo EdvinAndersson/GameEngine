@@ -9,6 +9,12 @@
 #include "vendor/imgui/backends/imgui_impl_opengl3.h"
 #include "vendor/imgui/backends/imgui_impl_win32.h"
 
+//temp
+#include "Editor/res/projects/Project1/Assets/scripts/TestComponent.h"
+
+//#include "tools/GeneratedComponentsUtility.h"
+#include "Core/src/assets/ScriptManager.h"
+
 namespace CWEditor {
 
     inline void UIDragFloat3(char *label, char *text, vec3s *vec3) {
@@ -82,7 +88,9 @@ namespace CWEditor {
                     auto *loaded_scripts = CW::AssetManager::Get()->GetLoadedScripts();
                     for (auto& it : *loaded_scripts) {
                         CW::ScriptData* script_data = it.second;
-                        ImGui::Button(script_data->name);
+                        if (ImGui::Button(script_data->name)) {
+                            CW::AddGenereatedComponent(CW::HashString(script_data->name), game_object);
+                        }
                     }
                     
                 }

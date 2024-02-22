@@ -24,7 +24,7 @@ namespace CW {
 			return this->entity < rhs.entity;
 		}
 		template<typename T>
-		T& AddComponent() {
+		T& AddComponent(ComponentManager *component_manager, EntityManager *entity_manager) {
 			component_manager->AddComponent<T>(entity);
 
 			Signature signature = entity_manager->GetSignature(entity);
@@ -32,6 +32,10 @@ namespace CW {
 			entity_manager->SetSignature(entity, signature);
 
 			return component_manager->GetComponent<T>(entity);
+		}
+		template<typename T>
+		T& AddComponent() {
+			return AddComponent<T>(component_manager, entity_manager);
 		}
 		template<typename T>
 		T& GetComponent() {
@@ -46,10 +50,14 @@ namespace CW {
 			entity_manager->SetSignature(entity, signature);
 		}
 		template<typename T>
-		bool HasComponent() {
+		bool HasComponent(ComponentManager *component_manager, EntityManager *entity_manager) {
 			Signature signature = entity_manager->GetSignature(entity);
 
 			return signature.test(component_manager->GetComponentType<T>());
+		}
+		template<typename T>
+		bool HasComponent() {
+			return HasComponent<T>(component_manager, entity_manager);
 		}
 		Signature GetSignature() {
 			return entity_manager->GetSignature(entity);

@@ -1,10 +1,10 @@
 #pragma once
-#include <cassert>
 #include <queue>
 #include <bitset>
 
 #include "Entity.h"
 #include "Component.h"
+#include "CWAssert.h"
 
 namespace CW {
 
