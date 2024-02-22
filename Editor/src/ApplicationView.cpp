@@ -524,10 +524,11 @@ namespace CWEditor {
                 ImGui::TreePop();
             }
         }
+        int index = 5;
         for (auto& it : *CW::AssetManager::Get()->GetLoadedScripts()) {
             CW::ScriptData *script_data = it.second;
             if (CW::HasGenereatedComponent(CW::HashString(script_data->name), selected_game_object)) {
-                node_open = ImGui::TreeNodeEx((void*)(intptr_t)5, node_flags, script_data->name);
+                node_open = ImGui::TreeNodeEx((void*)(intptr_t)index++, node_flags, script_data->name);
                 if(node_open){
                     ImGui::TreePop();
                 }
@@ -538,6 +539,7 @@ namespace CWEditor {
             OpenAssetPopup();
         }
     }
+
     bool ApplicationView::ShowPopup(CW::GameObject game_object){
         bool is_clicked = false;
         char title[128] = "Popup";

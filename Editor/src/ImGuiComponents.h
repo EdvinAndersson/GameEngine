@@ -74,35 +74,33 @@ namespace CWEditor {
         if (ImGui::BeginPopup(title)){
             static ImGuiTextFilter filter;
             filter.Draw();
-            switch (asset_type)
-            {
-            case AssetType::SCRIPT :
-                if (game_object.HasComponent<CW::MeshRenderer>() == false){
-                    if (filter.PassFilter("MeshRenderer") && ImGui::Button("MeshRenderer")){
-                        CW::MeshRenderer& meshtemp = game_object.AddComponent<CW::MeshRenderer>();
-                        meshtemp.mesh = CW::AssetManager::Get()->GetDefaultMeshIndex();
-                        meshtemp.materials[0] = CW::AssetManager::Get()->GetDefaultMaterialIndex();
-                        meshtemp.material_count = 1;
-                        ImGui::CloseCurrentPopup();
+
+            switch (asset_type) {
+                case AssetType::SCRIPT : {
+                    if (!game_object.HasComponent<CW::MeshRenderer>() && filter.PassFilter("MeshRenderer")) {
+                        if (ImGui::Button("MeshRenderer")){
+                            CW::MeshRenderer& meshtemp = game_object.AddComponent<CW::MeshRenderer>();
+                            meshtemp.mesh = CW::AssetManager::Get()->GetDefaultMeshIndex();
+                            meshtemp.materials[0] = CW::AssetManager::Get()->GetDefaultMaterialIndex();
+                            meshtemp.material_count = 1;
+                            ImGui::CloseCurrentPopup();
+                        }
                     }
-                }
-                if (game_object.HasComponent<CW::Script>() == false){  
+
                     auto *loaded_scripts = CW::AssetManager::Get()->GetLoadedScripts();
                     for (auto& it : *loaded_scripts) {
                         CW::ScriptData* script_data = it.second;
-                        if (ImGui::Button(script_data->name)) {
-                            CW::AddGenereatedComponent(CW::HashString(script_data->name), game_object);
+                        size_t hashed = CW::HashString(script_data->name);
+                        if (CW::HasGenereatedComponent(hashed, game_object)) continue;
+
+                        if (filter.PassFilter(script_data->name) && ImGui::Button(script_data->name)) {
+                            CW::AddGenereatedComponent(hashed, game_object);
                         }
                     }
-                    
-                }
-                break;
-            case AssetType::TEXTURE :
-                
-                break;
-            
-            //default:
-                //break;
+                } break;
+                case AssetType::TEXTURE: {
+
+                } break;
             }
             ImGui::EndPopup();    
         }
