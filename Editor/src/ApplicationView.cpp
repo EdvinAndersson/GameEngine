@@ -580,6 +580,10 @@ namespace CWEditor {
                 CW::GameObject::Instantiate();
                 ImGui::CloseCurrentPopup();
             }
+            if(ImGui::Button("Remove Game Object")){
+                CW::GameObject::Destory(game_object);
+                ImGui::CloseCurrentPopup();
+            }
             if (ImGui::Button("close") || enter_pressed)
                 ImGui::CloseCurrentPopup();
 
