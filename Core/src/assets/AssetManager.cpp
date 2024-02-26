@@ -165,6 +165,12 @@ namespace CW {
             delete it.second;
         }
         loaded_models.clear();
+
+        //Unload scripts
+        for (auto& it : loaded_scripts) {
+            delete it.second;
+        }
+        loaded_scripts.clear();
     }
 
     void AssetManager::LoadTexture(char *path) {

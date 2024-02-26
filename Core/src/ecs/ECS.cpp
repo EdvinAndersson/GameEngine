@@ -92,11 +92,6 @@ namespace CW {
         fprintf(file_output, "}\n");
         fclose(file_output);
         #endif
-        component_manager->RegisterComponent<Transform>();
-        component_manager->RegisterComponent<MeshRenderer>();
-        component_manager->RegisterComponent<Script>();
-        component_manager->RegisterComponent<Light>();
-        component_manager->RegisterComponent<Camera>();
 
         //GeneratedRegisterComponents(component_manager);
         EventListen(PROJECT_LOAD);
@@ -138,6 +133,12 @@ namespace CW {
             {
                 component_manager->ResetComponentArrays();
                 entity_manager->ResetEntities();
+
+                component_manager->RegisterComponent<Transform>();
+                component_manager->RegisterComponent<MeshRenderer>();
+                component_manager->RegisterComponent<Script>();
+                component_manager->RegisterComponent<Light>();
+                component_manager->RegisterComponent<Camera>();
 
                 auto loaded_scripts = CW::AssetManager::Get()->GetLoadedScripts();
 
@@ -193,14 +194,13 @@ namespace CW {
 
                 fclose(file_output);
 
+                FreeDLL();
                 BuildDLL();
 
                 LoadDLLFunctions("ScriptsDLL.dll");
                 
                 CW::InitGeneretedComponentsUtility();
                 CW::RegisterGeneratedComponents();
-
-                //FreeLibrary(hDll);
             } break;
         }
     }

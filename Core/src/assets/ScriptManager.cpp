@@ -11,6 +11,8 @@ namespace CW {
     PFNAddGenereatedComponent _AddGenereatedComponent;
     PFNHasGenereatedComponent _HasGenereatedComponent;
 
+    HINSTANCE hDll;
+
     void PrintErrorMessage(DWORD errorMessageID) {
         LPSTR messageBuffer = nullptr;
         if(errorMessageID != 0) {
@@ -45,8 +47,15 @@ namespace CW {
             Sleep(0);
         }
     }
+
+    void FreeDLL() {
+        if (hDll == 0) return;
+
+        FreeLibrary(hDll);
+    }
+
     void LoadDLLFunctions(char *path) {
-        HINSTANCE hDll = LoadLibraryA(path);
+        hDll = LoadLibraryA(path);
         CW_ASSERT(hDll != 0, "Could not link Scripts DLL");
 
         _InitGeneretedComponentsUtility = (PFNInitGeneretedComponentsUtility) GetProcAddress(hDll, "InitGeneretedComponentsUtility");
