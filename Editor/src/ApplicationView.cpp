@@ -586,7 +586,7 @@ namespace CWEditor {
             }
             if (ImGui::Button("close") || enter_pressed)
                 ImGui::CloseCurrentPopup();
-
+                
             ImGui::EndPopup();
         }
         return is_clicked;
