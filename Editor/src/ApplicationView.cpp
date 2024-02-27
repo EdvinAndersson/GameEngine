@@ -609,7 +609,7 @@ namespace CWEditor {
         if (ImGui::BeginPopupContextItem(title, flags)) { 
             bool enter_pressed = false;
             is_clicked = true;
-            if(game_object.entity != 0){
+            if (game_object.entity != 0) {
                 if (ImGui::BeginPopupContextItem("New_Name_Popup")){
                     static char buf1[32] = ""; 
                     ImGui::InputText("default", buf1, 32);
@@ -625,17 +625,18 @@ namespace CWEditor {
                     }
                     ImGui::EndPopup(); 
                 }
-                
 
                 if (ImGui::Button("New Name"))
                     ImGui::OpenPopup("New_Name_Popup");
+
+                if(ImGui::Button("Remove Game Object")){
+                    CW::GameObject::Destory(game_object);
+                    selected_game_object = CW::GameObject {0};
+                    ImGui::CloseCurrentPopup();
+                }
             }
             if(ImGui::Button("New Game Object")){
                 CW::GameObject::Instantiate();
-                ImGui::CloseCurrentPopup();
-            }
-            if(ImGui::Button("Remove Game Object")){
-                CW::GameObject::Destory(game_object);
                 ImGui::CloseCurrentPopup();
             }
             if (ImGui::Button("close") || enter_pressed)
