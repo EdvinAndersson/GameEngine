@@ -16,6 +16,7 @@
 #include "vendor/imgui/backends/imgui_impl_win32.h"
 
 #include <cstdlib>
+#include <shobjidl.h>
 
 namespace CWEditor {
 
