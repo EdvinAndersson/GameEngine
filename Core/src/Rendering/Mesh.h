@@ -28,7 +28,7 @@ namespace CW {
 			void DrawMesh(Shader *shader, MaterialIndex* material_indexes, int material_count);
 			void DrawMeshInstanced(Shader *shader, int instance_count);
 
-			void Load(const aiScene *scene);
+			void Load(char *asset_path, const aiScene *scene);
 			void LoadMeshFromData(const char *data, int data_size);
 
 			void ProcessNode(Mesh *mesh, aiNode *node, const aiScene *scene);
@@ -41,6 +41,8 @@ namespace CW {
 
 			unsigned int VAO = 0, VBO = 0, EBO = 0;
 			unsigned int vertex_count = 0, index_count = 0, texture_count = 0;
+			
+			char asset_path[256] = {};
 
 			std::vector<Mesh*> submeshes;
 		private:

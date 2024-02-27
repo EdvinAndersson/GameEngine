@@ -41,6 +41,13 @@ namespace CWEditor {
 
             CreateAssetInfo(AssetType::SCRIPT, it.first, asset_manager.GetDefaultTextureIndex(), script_data->asset_path);
         }
+        auto loaded_meshes = asset_manager.GetLoadedMeshes();
+        for (auto& it : *loaded_meshes) {
+            if (it.first == asset_manager.GetDefaultMeshIndex()) continue;
+            CW::Mesh *mesh_data = it.second;
+
+            CreateAssetInfo(AssetType::MESH, it.first, asset_manager.GetDefaultTextureIndex(), mesh_data->asset_path);
+        }
     }
     void AssetsBuilder::CreateAssetInfo(AssetType asset_type, size_t asset_index, CW::TextureIndex texture_index, char *asset_path) {
         AssetInfo *asset_info = new AssetInfo();

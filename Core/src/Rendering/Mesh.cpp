@@ -39,7 +39,9 @@ namespace CW {
         }
         submeshes.clear();
     }
-    void Mesh::Load(const aiScene *scene) {
+    void Mesh::Load(char *asset_path, const aiScene *scene) {
+        strcpy(this->asset_path, asset_path);
+        
 		ProcessNode(this, scene->mRootNode, scene);
     }
     void Mesh::LoadMeshFromData(const char *data, int data_size) {
@@ -168,7 +170,7 @@ namespace CW {
     void Mesh::DrawMesh(Shader *shader, MaterialIndex* material_indexes, int material_count) {
         for (Mesh* submesh : submeshes) {
             MaterialIndex material_index = material_indexes[submesh->material_used];
-            if (submesh->material_used >= material_count)
+            if (submesh->material_used >= material_count || material_index == 0)
                 material_index = AssetManager::Get()->GetDefaultMaterialIndex();
             Material* mat = AssetManager::Get()->GetMaterial(material_index);
 

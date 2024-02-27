@@ -165,7 +165,7 @@ namespace CW {
         mat4s transform = GLMS_MAT4_IDENTITY_INIT;
 
         transform = glms_translate(transform, position);
-        transform = glms_mat4_mul(glms_quat_mat4(quaternion), transform);
+        transform = glms_mat4_mul(transform, glms_quat_mat4(quaternion));
         transform = glms_scale(transform, scale);
 
         g_r3d_data->active_shader.SetMat4f("model", &transform);

@@ -13,8 +13,8 @@ namespace CW {
         char name[128] = {};
     };
     struct MeshRenderer {
-        MeshIndex mesh;
-        MaterialIndex materials[MAX_MATERIALS];
+        MeshIndex mesh = 0;
+        MaterialIndex materials[MAX_MATERIALS] = {};
         unsigned int material_count = 0;
     };
     struct Script {

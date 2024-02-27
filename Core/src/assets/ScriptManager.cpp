@@ -10,6 +10,7 @@ namespace CW {
     PFNRegisterGeneratedComponents _RegisterGeneratedComponents;
     PFNAddGenereatedComponent _AddGenereatedComponent;
     PFNHasGenereatedComponent _HasGenereatedComponent;
+    PFNUpdateGeneratedComponents _UpdateGeneratedComponents;
 
     HINSTANCE hDll;
 
@@ -64,6 +65,9 @@ namespace CW {
         _RegisterGeneratedComponents = (PFNRegisterGeneratedComponents) GetProcAddress(hDll, "RegisterGeneratedComponents");
         CW_ASSERT(_RegisterGeneratedComponents, "Unable to load function pointer!");
 
+        _UpdateGeneratedComponents = (PFNUpdateGeneratedComponents) GetProcAddress(hDll, "UpdateGeneratedComponents");
+        CW_ASSERT(_UpdateGeneratedComponents, "Unable to load function pointer!");
+
         _AddGenereatedComponent = (PFNAddGenereatedComponent) GetProcAddress(hDll, "AddGenereatedComponent");
         CW_ASSERT(_AddGenereatedComponent, "Unable to load function pointer!");
 
@@ -73,6 +77,7 @@ namespace CW {
 
     void InitGeneretedComponentsUtility() { _InitGeneretedComponentsUtility(component_manager, entity_manager); }
     void RegisterGeneratedComponents() { _RegisterGeneratedComponents(); }
+    void UpdateGeneratedComponents() { _UpdateGeneratedComponents(); }
     void AddGenereatedComponent(size_t type, GameObject& obj) { _AddGenereatedComponent(type, obj); }
     bool HasGenereatedComponent(size_t type, GameObject& obj) { return _HasGenereatedComponent(type, obj); }
 }

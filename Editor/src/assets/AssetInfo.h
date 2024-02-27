@@ -9,7 +9,8 @@ namespace CWEditor {
         TEXTURE,
         MATERIAL,
         MODEL,
-        SCRIPT
+        SCRIPT,
+        MESH
     };
 
     struct AssetInfo {
@@ -28,10 +29,13 @@ namespace CWEditor {
                 return "Material";
             } break;
             case AssetType::TEXTURE: {
-                return "Material";
+                return "Texture";
             } break;
             case AssetType::SCRIPT: {
                 return "Script";
+            } break;
+            case AssetType::MESH: {
+                return "Mesh";
             } break;
         }
         return "";

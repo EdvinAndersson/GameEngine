@@ -4,12 +4,15 @@
 #include "../scene/Scene.h"
 
 #include "assets/AssetManager.h"
+#include "GameObject.h"
+#include "Rendering/Renderer3D.h"
 
 namespace CW {
     class ECS : public IEventListener {
         public:
             ECS();
 
+            void UpdateBaseComponents();
             void UpdateComponenets(Scene &scene);
             void OnEvent(Event event) override;
     };

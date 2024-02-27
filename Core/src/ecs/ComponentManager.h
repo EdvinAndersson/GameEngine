@@ -82,15 +82,9 @@ namespace CW {
 			return std::static_pointer_cast<ComponentArray<T>>(mComponentArrays[typeHash]);
 		}
 		void ResetComponentArrays() {
-
-			for (auto const &pair : mComponentArrays)
-			{
-				auto const &component = pair.second;
-
-				component->Reset();
-			}
-			mComponentTypes.clear();
 			mComponentArrays.clear();
+			mComponentTypes.clear();
+			mNextComponentType = 0;
 		}
 		const size_t GetComponentValue(ComponentType type) {
 			for (auto it = mComponentTypes.begin(); it != mComponentTypes.end(); ++it) {

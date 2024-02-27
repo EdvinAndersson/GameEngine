@@ -508,7 +508,8 @@ namespace CWEditor {
             node_open = ImGui::TreeNodeEx((void*)(intptr_t)2, node_flags, "MeshRenderer");
             if(node_open){
                 CW::MeshRenderer& mesh_renderer = selected_game_object.GetComponent<CW::MeshRenderer>();
-                UIAssetList(AssetType::MATERIAL, mesh_renderer.materials, &mesh_renderer.material_count);
+                UIAssetInput(AssetType::MESH, &mesh_renderer.mesh);
+                UIAssetInputList(AssetType::MATERIAL, mesh_renderer.materials, &mesh_renderer.material_count);
                 ImGui::TreePop();
             }
         }

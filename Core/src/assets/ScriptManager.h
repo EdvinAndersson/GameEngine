@@ -9,10 +9,10 @@
 namespace CW {
     typedef void(*PFNInitGeneretedComponentsUtility)(ComponentManager *, EntityManager *);
     typedef void(*PFNRegisterGeneratedComponents)();
+    typedef void(*PFNUpdateGeneratedComponents)();
     typedef void(*PFNAddGenereatedComponent)(size_t type, GameObject& obj);
     typedef bool(*PFNHasGenereatedComponent)(size_t type, GameObject& obj);
 
-    //void TestComponent_OnUpdate(CW::GameObject game_object, TestComponent& comp);
 
     void BuildDLL();
     void FreeDLL();
@@ -20,6 +20,7 @@ namespace CW {
 
     void InitGeneretedComponentsUtility();
     void RegisterGeneratedComponents();
+    void UpdateGeneratedComponents();
     void AddGenereatedComponent(size_t type, GameObject& obj);
     bool HasGenereatedComponent(size_t type, GameObject& obj);
 }

@@ -4,33 +4,15 @@
 #include "ComponentManager.h"
 #include "Components.h"
 
-//temp
-#include "GameObject.h"
-
 namespace CW {
 
     EntityManager *entity_manager = new EntityManager();
     ComponentManager *component_manager = new ComponentManager();
 
     ECS::ECS() {
-        std::string f = R"(
-#pragma once
-
-#include "ecs/GameObject.h"
-#include "scene/Scene.h"
-#include "ecs/Components.h"
-#include "Rendering/Renderer3D.h"
-
-#include "Editor/res/projects/Project1/Assets/scripts/TestComponent.h"
-
-namespace CW {
-
-    inline void UpdateTransforms(std::shared_ptr<ComponentArray<Transform>> components) {
-        size_t size = components->GetComponentArraySize();
-        auto comp_datas = components->GetComponentArrayData();
-        for (int i = 0; i < size; i++) {
-        }
+        EventListen(PROJECT_LOAD);
     }
+
     inline void UpdateMeshRenderers(std::shared_ptr<ComponentArray<MeshRenderer>> components) {
         size_t size = components->GetComponentArraySize();
         auto comp_datas = components->GetComponentArrayData();
@@ -50,20 +32,8 @@ namespace CW {
         for (int i = 0; i < size; i++) {
         }
     }
-    inline void UpdateTestComponents(std::shared_ptr<ComponentArray<TestComponent>> components) {
-        size_t size = components->GetComponentArraySize();
-        auto comp_datas = components->GetComponentArrayData();
-        for (int i = 0; i < size; i++) {
-            GameObject game_object = GameObject { components->GetEntity(i) };
-            TestComponent_OnUpdate(game_object, comp_datas[i]);
-        }
-    }
 
-    inline void GeneratedUpdateComponenets(Scene &scene) {
-        {
-            std::shared_ptr<ComponentArray<Transform>> comp = component_manager->GetComponentArray<Transform>();
-            UpdateTransforms(comp);
-        }
+    void ECS::UpdateBaseComponents() {
         {
             std::shared_ptr<ComponentArray<MeshRenderer>> comp = component_manager->GetComponentArray<MeshRenderer>();
             UpdateMeshRenderers(comp);
@@ -72,60 +42,11 @@ namespace CW {
             std::shared_ptr<ComponentArray<Camera>> comp = component_manager->GetComponentArray<Camera>();
             UpdateCameras(comp);
         }
-        {
-            std::shared_ptr<ComponentArray<TestComponent>> comp = component_manager->GetComponentArray<TestComponent>();
-            UpdateTestComponents(comp);
-        }
-    }
-}
-        )";
-
-        FILE *file_output = fopen("Core/src/ecs/GeneratedComponents.h", "w");
-        fprintf(file_output, f.c_str());
-        #if 0
-        fprintf(file_output, "#pragma once\n");
-        fprintf(file_output, "#include \"GameObject.h\"\n");
-        fprintf(file_output, "namespace CW {\n");
-        fprintf(file_output, "  void AddC(GameObject obj) {\n");
-        fprintf(file_output, "      obj.AddComponent<%s>();\n", "TestComponent");
-        fprintf(file_output, "  }\n");
-        fprintf(file_output, "}\n");
-        fclose(file_output);
-        #endif
-
-        //GeneratedRegisterComponents(component_manager);
-        EventListen(PROJECT_LOAD);
-
-#if 0
-        ComponentType t = component_manager->GetComponentType<MeshRenderer>();
-        printf("%i\n", t);
-
-        auto a = component_manager->GetComponentValue(t);
-        printf("%s\n", a);
-        const char *name_begin = strchr(a, ':') + 2;
-        printf("%s\n", name_begin);
-
-        //GameObject obj = GameObject::Instantiate();
-        
-        FILE *file_output = fopen("Core/src/ecs/AddComponents.h", "w");
-        fprintf(file_output, "#pragma once\n");
-        fprintf(file_output, "#include \"GameObject.h\"\n");
-        fprintf(file_output, "namespace CW {\n");
-        fprintf(file_output, "  void AddC(GameObject obj) {\n");
-        fprintf(file_output, "      obj.AddComponent<%s>();\n", name_begin);
-        fprintf(file_output, "  }\n");
-        fprintf(file_output, "}\n");
-        fclose(file_output);
-#endif
-        //
-        //AddC(obj);
-
-        //printf("%i\n", obj.GetSignature());
     }
     void ECS::UpdateComponenets(Scene &scene) {
-        //GeneratedUpdateComponenets(scene);
+        UpdateBaseComponents();
+        CW::UpdateGeneratedComponents();
     }
-    
     void ECS::OnEvent(Event event) {
         switch (event.event_type)
         {
@@ -169,6 +90,20 @@ namespace CW {
                     ScriptData *script_data = it.second;
                     fprintf(file_output, "    _component_manager->RegisterComponent<%s>();\n", script_data->name);
                     fprintf(file_output, "    printf(\"Registered Component: %s\\n\");\n", script_data->name);
+                }
+                fprintf(file_output, "}\n");
+
+                fprintf(file_output, "void UpdateGeneratedComponents() {\n");
+                for (auto& it : *loaded_scripts) {
+                    ScriptData *script_data = it.second;
+                    fprintf(file_output, "    {\n");
+                    fprintf(file_output, "        auto components = _component_manager->GetComponentArray<%s>();\n", script_data->name);
+                    fprintf(file_output, "        %s *c = components->GetComponentArrayData();\n", script_data->name);
+                    fprintf(file_output, "        int count = _component_manager->GetComponentArray<%s>().get()->GetComponentArraySize();\n", script_data->name);
+                    fprintf(file_output, "        for (int i = 0; i < count; i++) {\n");
+                    fprintf(file_output, "            %s_OnUpdate(CW::GameObject { components->GetEntity(i) }, c[i]);\n", script_data->name);
+                    fprintf(file_output, "        }\n");
+                    fprintf(file_output, "    }\n");
                 }
                 fprintf(file_output, "}\n");
 

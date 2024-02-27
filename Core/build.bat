@@ -9,7 +9,7 @@ set compile_flags=/W4 /Zi /c /MTd /MP /Od /FC /wd4201 -D_CRT_SECURE_NO_WARNINGS 
 -I../src ^
 -I../../
 
-set linker_flags=gdi32.lib user32.lib kernel32.lib shell32.lib ^
+set linker_flags=gdi32.lib user32.lib kernel32.lib shell32.lib ole32.lib ^
 /out:CogwheelCore.lib ^
 ../src/vendor/assimp/lib/assimp-vc142-mtd.lib
 

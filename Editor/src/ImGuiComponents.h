@@ -9,10 +9,6 @@
 #include "vendor/imgui/backends/imgui_impl_opengl3.h"
 #include "vendor/imgui/backends/imgui_impl_win32.h"
 
-//temp
-#include "Editor/res/projects/Project1/Assets/scripts/TestComponent.h"
-
-//#include "tools/GeneratedComponentsUtility.h"
 #include "Core/src/assets/ScriptManager.h"
 
 namespace CWEditor {
@@ -23,7 +19,47 @@ namespace CWEditor {
         ImGui::DragFloat3(label, (float*) vec3, 0.01f);
         ImGui::PopItemWidth();
     }
-    inline void UIAssetList(AssetType asset_type, size_t *asset_array, unsigned int *array_count) {
+    inline void UIAssetInput(AssetType asset_type, size_t *asset_array) {
+        char *title = GetDragDropType(asset_type);
+
+        ImGui::Text(title);
+        ImGui::SameLine();
+        
+        char buff[256] = {};
+        switch (asset_type) {
+            case AssetType::MATERIAL: {
+                CW::Material *mat = CW::AssetManager::Get()->GetMaterial(*asset_array);
+                if (mat != 0)
+                    strcpy(buff, mat->asset_path);
+            } break;
+            case AssetType::TEXTURE: {
+                CW::TextureData *tex = CW::AssetManager::Get()->GetTextureData(*asset_array);
+                if (tex != 0)
+                    strcpy(buff, tex->asset_path_dir);
+            } break;
+            case AssetType::MESH: {
+                CW::Mesh *mesh = CW::AssetManager::Get()->GetMesh(*asset_array);
+                if (mesh != 0)
+                    strcpy(buff, mesh->asset_path);
+            } break;
+        }
+        
+        ImGui::PushItemWidth(-FLT_EPSILON);
+        ImGui::InputText(title, buff, 128, ImGuiInputTextFlags_ReadOnly);
+        ImGui::PopItemWidth();
+        if (ImGui::BeginDragDropTarget())
+        {
+            if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(title))
+            {
+                IM_ASSERT(payload->DataSize == sizeof(size_t));
+                size_t index = *(const size_t*)payload->Data;
+                
+                *asset_array = index;
+            }
+            ImGui::EndDragDropTarget();
+        }
+    }
+    inline void UIAssetInputList(AssetType asset_type, size_t *asset_array, unsigned int *array_count) {
         char *title = GetDragDropType(asset_type);
 
         ImGui::Text(title);
@@ -48,6 +84,11 @@ namespace CWEditor {
                     CW::TextureData *tex = CW::AssetManager::Get()->GetTextureData(asset_array[i]);
                     if (tex != 0)
                         sprintf(buff, "%s", tex->asset_path_dir);
+                } break;
+                case AssetType::MESH: {
+                    CW::Mesh *mesh = CW::AssetManager::Get()->GetMesh(asset_array[i]);
+                    if (mesh != 0)
+                        sprintf(buff, "%s", mesh->asset_path);
                 } break;
             }
             char material_label[32] = {};

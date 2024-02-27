@@ -56,6 +56,7 @@ namespace CW {
             inline std::unordered_map<TextureIndex, TextureData *>* GetLoadedTextures() { return &loaded_textures; }
             inline std::unordered_map<MaterialIndex, Material *>* GetLoadedMaterials() { return &loaded_materials; }
             inline std::unordered_map<ScriptIndex, ScriptData *>* GetLoadedScripts() { return &loaded_scripts; }
+            inline std::unordered_map<MeshIndex, Mesh *>* GetLoadedMeshes() { return &loaded_meshes; }
 
             inline char* GetAssetsPath() { return assets_path; }
 

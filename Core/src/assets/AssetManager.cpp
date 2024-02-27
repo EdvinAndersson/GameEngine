@@ -309,7 +309,7 @@ namespace CW {
         loaded_models.insert({ hashed_path, model });
 
         Mesh *mesh = new Mesh();
-        mesh->Load(model->GetAiScene());
+        mesh->Load(path, model->GetAiScene());
         loaded_meshes.insert({ hashed_path, mesh });
 
         model->mesh_index = hashed_path;
