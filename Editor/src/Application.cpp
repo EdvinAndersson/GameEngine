@@ -28,7 +28,7 @@ namespace CWEditor {
 
         CW::R3D_Init(window);
         
-        #if 1
+        #if 0
         { //Create project
             CW::ProjectSpecification spec;
             spec.project_name = "Unnamed Project";
@@ -42,7 +42,7 @@ namespace CWEditor {
         }
         #endif
 
-        //cogwheel->GetProjectManager()->LoadProject("Editor/res/projects/Project1/Unnamed Project.proj");
+        cogwheel->GetProjectManager()->LoadProject("Editor/res/projects/Project1/Unnamed Project.proj");
         
         EventListen(CW::WINDOW_CLOSE);
         EventListen(CW::WINDOW_RESIZE);
