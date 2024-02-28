@@ -5,9 +5,9 @@ void TestComponent_OnAwake(CW::GameObject game_object, TestComponent& comp) {
 void TestComponent_OnStart(CW::GameObject game_object, TestComponent& comp) {
 }
 void TestComponent_OnUpdate(CW::GameObject game_object, TestComponent& comp) {
-    printf("TestComponent_OnUpdate asdasdsadsasdsdds!\n");
+    CW::Transform& transform = game_object.GetComponent<CW::Transform>(_component_manager);
 
-    //CWEditor::Console::Log(CWEditor::LOG_WARNING, "HELLO!!!");
+    transform.rotation.y += 0.002;
 }
 void TestComponent_OnDestroy(CW::GameObject game_object, TestComponent& comp) {
 }

@@ -14,13 +14,13 @@ namespace CW {
         delete project_manager;
     }
 
-    int Cogwheel::Init() {
+    int Cogwheel::Init(bool build_scripts_dll) {
         running = true;
 
         EventListen(PROJECT_LOAD);
 
         asset_manager = new AssetManager();
-        ecs = new ECS();
+        ecs = new ECS(build_scripts_dll);
         project_manager = new ProjectManager();
 
         scene_manager = new SceneManager();

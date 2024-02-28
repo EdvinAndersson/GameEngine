@@ -10,10 +10,12 @@
 namespace CW {
     class ECS : public IEventListener {
         public:
-            ECS();
+            ECS(bool build_scripts_dll);
 
             void UpdateBaseComponents();
             void UpdateComponenets(Scene &scene);
             void OnEvent(Event event) override;
+        private:
+            bool build_scripts_dll;
     };
 }

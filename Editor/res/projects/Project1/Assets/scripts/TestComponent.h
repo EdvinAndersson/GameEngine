@@ -7,6 +7,9 @@
 struct TestComponent {
 };
 
+extern CW::ComponentManager *_component_manager;
+extern CW::EntityManager *_entity_manager;
+
 void TestComponent_OnAwake(CW::GameObject game_object, TestComponent& comp);
 void TestComponent_OnStart(CW::GameObject game_object, TestComponent& comp);
 void TestComponent_OnUpdate(CW::GameObject game_object, TestComponent& comp);

@@ -41,7 +41,6 @@ namespace CW {
 
         return str;
     }
-    
     void ProjectManager::LoadProject(char *project_file_path) {
         FILE *file = fopen(project_file_path, "r");
 
@@ -118,6 +117,12 @@ namespace CW {
                     mesh_renderer.material_count = deserialized.GetInt();
                     for (int m = 0; m < mesh_renderer.material_count; m++)
                         mesh_renderer.materials[m] = deserialized.GetSize_t();
+                }
+                for (int i = 5; i < MAX_COMPONENTS; i++){
+                    if (signature.test(i)) {
+                        size_t s = component_manager->GetComponentValue(i);
+                        AddGenereatedComponent(s, obj);
+                    }
                 }
             }
         }

@@ -38,8 +38,12 @@ namespace CW {
 			return AddComponent<T>(component_manager, entity_manager);
 		}
 		template<typename T>
-		T& GetComponent() {
+		T& GetComponent(ComponentManager *component_manager) {
 			return component_manager->GetComponent<T>(entity);
+		}
+		template<typename T>
+		T& GetComponent() {
+			return GetComponent<T>(component_manager);
 		}
 		template<typename T>
 		void RemoveComponent() {

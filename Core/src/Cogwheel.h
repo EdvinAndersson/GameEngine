@@ -14,7 +14,7 @@ namespace CW {
             Cogwheel();
             ~Cogwheel();
 
-            int Init();
+            int Init(bool build_scripts_dll = true);
             void Update();
             void Stop();
             inline bool IsRunning() { return running; }

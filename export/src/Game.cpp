@@ -16,7 +16,7 @@ namespace CWGame {
         CW_ASSERT(success == 0, "Could not create window...");
 
         cogwheel = new CW::Cogwheel();
-        cogwheel->Init();
+        cogwheel->Init(false);
 
         window->on_window_event = OnWindowEvent;
 
