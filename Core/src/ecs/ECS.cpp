@@ -34,7 +34,6 @@ namespace CW {
     }
 
     void ECS::UpdateBaseComponents() {
-        framed_function;
         {
             ComponentArray<MeshRenderer> *comp = component_manager->GetComponentArray<MeshRenderer>();
             UpdateMeshRenderers(comp);

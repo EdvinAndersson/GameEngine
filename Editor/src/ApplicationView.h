@@ -15,7 +15,6 @@
 #include "imgui/imgui.h"
 #include "imgui/backends/imgui_impl_opengl3.h"
 #include "imgui/backends/imgui_impl_win32.h"
-#include "framed/framed.h"
 
 #include <cstdlib>
 #include <shobjidl.h>

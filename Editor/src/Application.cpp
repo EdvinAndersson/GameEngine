@@ -12,8 +12,6 @@ namespace CWEditor {
     }
 
     void Application::Init() {
-        framed_init(true);
-
         window = new CW::Window();
         int success = window->Init(L"Cogwheel Engine", (int)(1920), (int)(1080));
         if (success == 1) {
@@ -58,16 +56,12 @@ namespace CWEditor {
 
     void Application::Run() {
         while (cogwheel->IsRunning()) {
-            framed_mark_frame_start();
             cogwheel->Update();
             
             application_view->Update();
 
-            {
-                framed_zone_block("Windows poll & swap");
-                window->PollEvents();
-                window->WinSwapBuffers();
-            }
+            window->PollEvents();
+            window->WinSwapBuffers();
         }
     }
     void Application::OnEvent(CW::Event event) {

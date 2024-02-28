@@ -62,8 +62,6 @@ namespace CWEditor {
         mesh_renderer.material_count++;
     }
     void ApplicationView::Update() {
-        framed_function;
-
         double time = window->GetTime();
         double delta_time = time - previous_time;
         double fps = 1 / delta_time;
@@ -122,7 +120,6 @@ namespace CWEditor {
         CW::R3D_SetViewModel(view);
         CW::R3D_SetViewPos(pos);
         {
-            framed_zone_block("Game View");
             ImGui::Begin("Game View");
 
             //Shadow pass
@@ -158,7 +155,6 @@ namespace CWEditor {
         CW::R3D_SetViewModel(dev_view);
         CW::R3D_SetViewPos(dev_pos);
         {
-            framed_zone_block("Dev View");
             ImGui::Begin("Dev View");
 
             //Shadow pass
@@ -195,7 +191,6 @@ namespace CWEditor {
             ImGui::End();
         }
         {
-            framed_zone_block("Scene objects");
             ImGui::ShowDemoWindow();
             ImGui::Begin("Scene objects");
             CW::Scene& active_scene = cogwheel->GetSceneManager()->GetActiveScene();
@@ -262,7 +257,6 @@ namespace CWEditor {
             ImGui::End();
         }
         {
-            framed_zone_block("Debug View");
             ImGui::Begin("Debug View");
             ImGui::SetWindowFontScale(1.3f);
             ImGui::Text("Project options");
@@ -345,14 +339,12 @@ namespace CWEditor {
             ImGui::End();
         }
         {
-            framed_zone_block("ImGui Render");
             ImGui::Render();
             ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         }
     }
 
     void ApplicationView::RenderScene() {
-        framed_function;
         CW::Scene& active_scene = cogwheel->GetSceneManager()->GetActiveScene();
 
         cogwheel->GetECS()->UpdateComponenets(active_scene);
@@ -380,7 +372,6 @@ namespace CWEditor {
         }
     }
     void ApplicationView::RenderDockspace() {
-        framed_function;
         static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None; // Config flags for the Dockspace
 
         ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
@@ -492,7 +483,6 @@ namespace CWEditor {
         ImGui::End();
     }
     void ApplicationView::RenderAssets() {
-        framed_function;
         static char* asset_path = "";
 
         if (ImGui::Button("Refresh")) {
@@ -550,7 +540,6 @@ namespace CWEditor {
         }
     }
     void ApplicationView::RenderComponents(){
-        framed_function;
         if(selected_game_object.entity == 0)
             return;
         ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_SpanAvailWidth;

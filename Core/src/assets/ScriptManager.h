@@ -6,8 +6,6 @@
 
 #include "Core/src/ecs/GameObject.h"
 
-#include "Editor/src/vendor/framed/framed.h"
-
 namespace CW {
     typedef void(*PFNInitGeneretedComponentsUtility)(ComponentManager *, EntityManager *);
     typedef void(*PFNRegisterGeneratedComponents)();

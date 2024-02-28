@@ -4,10 +4,12 @@ if not exist build mkdir build
 pushd build
 
 set compile_flags=/Fe:Game.exe /W4 /MP /FC /wd4201 -D_CRT_SECURE_NO_WARNINGS /MTd -D UNICODE ^
+-I../.. ^
 -I../src ^
 -I../../Core/src ^
 -I../../Core/src/vendor/assimp/include ^
--I../../Core/src/vendor/cglm-master/include
+-I../../Core/src/vendor/cglm-master/include ^
+-I../src/vendor
 
 set source_files=^
 ../src/*.cpp

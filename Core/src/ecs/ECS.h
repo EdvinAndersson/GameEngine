@@ -7,8 +7,6 @@
 #include "GameObject.h"
 #include "Rendering/Renderer3D.h"
 
-#include "Editor/src/vendor/framed/framed.h"
-
 namespace CW {
     class ECS : public IEventListener {
         public:

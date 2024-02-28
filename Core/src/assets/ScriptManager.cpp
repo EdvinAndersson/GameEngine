@@ -77,7 +77,7 @@ namespace CW {
 
     void InitGeneretedComponentsUtility() { _InitGeneretedComponentsUtility(component_manager, entity_manager); }
     void RegisterGeneratedComponents() { _RegisterGeneratedComponents(); }
-    void UpdateGeneratedComponents() { framed_function; _UpdateGeneratedComponents(); }
+    void UpdateGeneratedComponents() { _UpdateGeneratedComponents(); }
     void AddGenereatedComponent(size_t type, GameObject& obj) { _AddGenereatedComponent(type, obj); }
     bool HasGenereatedComponent(size_t type, GameObject& obj) { return _HasGenereatedComponent(type, obj); }
 }
