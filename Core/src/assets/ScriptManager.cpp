@@ -55,8 +55,8 @@ namespace CW {
         FreeLibrary(hDll);
     }
 
-    void LoadDLLFunctions(char *path) {
-        hDll = LoadLibraryA(path);
+    void LoadDLLFunctions() {
+        hDll = LoadLibraryA("ScriptsDLL.dll");
         CW_ASSERT(hDll != 0, "Could not link Scripts DLL");
 
         _InitGeneretedComponentsUtility = (PFNInitGeneretedComponentsUtility) GetProcAddress(hDll, "InitGeneretedComponentsUtility");
@@ -77,7 +77,7 @@ namespace CW {
 
     void InitGeneretedComponentsUtility() { _InitGeneretedComponentsUtility(component_manager, entity_manager); }
     void RegisterGeneratedComponents() { _RegisterGeneratedComponents(); }
-    void UpdateGeneratedComponents() { _UpdateGeneratedComponents(); }
+    void UpdateGeneratedComponents() { framed_function; _UpdateGeneratedComponents(); }
     void AddGenereatedComponent(size_t type, GameObject& obj) { _AddGenereatedComponent(type, obj); }
     bool HasGenereatedComponent(size_t type, GameObject& obj) { return _HasGenereatedComponent(type, obj); }
 }

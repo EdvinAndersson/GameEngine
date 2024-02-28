@@ -8,7 +8,7 @@ del *.obj
 del ScriptsDLL.dll
 del ScriptsDLL.lib
 
-set compile_flags=/c /W4 /Zi /MP /Od /FC /wd4201 /MTd -D UNICODE -D_CRT_SECURE_NO_WARNINGS ^
+set compile_flags=/c /W3 /Zi /MP /Od /FC /wd4201 /MTd -D UNICODE -D_CRT_SECURE_NO_WARNINGS ^
 -I../../ ^
 -I../../Core/src ^
 -I../../Core/src/vendor/assimp/include ^

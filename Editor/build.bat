@@ -7,7 +7,8 @@ set compile_flags=/W4 /Zi /MP /Od /FC /wd4201 /Fe:CogwheelEditor.exe /MTd -D UNI
 -I../.. ^
 -I../../Core/src ^
 -I../../Core/src/vendor/assimp/include ^
--I../../Core/src/vendor/cglm-master/include
+-I../../Core/src/vendor/cglm-master/include ^
+-I../src/vendor
 
 set source_files=^
 ../src/*.cpp ^

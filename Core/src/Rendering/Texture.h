@@ -26,6 +26,7 @@ namespace CW {
 		Texture texture;
 		unsigned char *data;
 		int width, height, nr_channels;
+		bool from_memory = true;
 
 		const char *type;
 		char path[256], asset_path_dir[256];

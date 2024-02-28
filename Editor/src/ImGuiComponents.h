@@ -5,9 +5,9 @@
 #include "Core/src/Rendering/Material.h"
 #include "Core/src/assets/AssetManager.h"
 
-#include "vendor/imgui/imgui.h"
-#include "vendor/imgui/backends/imgui_impl_opengl3.h"
-#include "vendor/imgui/backends/imgui_impl_win32.h"
+#include "imgui/imgui.h"
+#include "imgui/backends/imgui_impl_opengl3.h"
+#include "imgui/backends/imgui_impl_win32.h"
 
 #include "Core/src/assets/ScriptManager.h"
 

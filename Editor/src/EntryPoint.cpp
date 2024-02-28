@@ -1,3 +1,6 @@
+#define FRAMED_IMPLEMENTATION
+#include "framed/framed.h"
+
 #include "Editor/src/Application.h"
 
 int main() {

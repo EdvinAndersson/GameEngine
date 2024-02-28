@@ -6,6 +6,7 @@
 #include "Component.h"
 #include "ComponentArray.h"
 #include "CWAssert.h"
+#include "Utility.h"
 
 namespace CW {
 
@@ -22,7 +23,7 @@ namespace CW {
 			mComponentTypes.insert({ typeHash, mNextComponentType });
 
 			// Create a ComponentArray pointer and add it to the component arrays map
-			mComponentArrays.insert({ typeHash, std::make_shared<ComponentArray<T>>() });
+			mComponentArrays->Put(typeHash, new ComponentArray<T>(), sizeof(ComponentArray<T>));
 
 			// Increment the value so that the next component registered will be different
 			++mNextComponentType;
@@ -60,29 +61,29 @@ namespace CW {
 			return GetComponentArray<T>()->GetData(entity);
 		}
 
-		void EntityDestroyed(Entity &entity)
-		{
+		void EntityDestroyed(Entity &entity) {
 			// Notify each component array that an entity has been destroyed
 			// If it has a component for that entity, it will remove it
-			for (auto const &pair : mComponentArrays)
-			{
-				auto const &component = pair.second;
-
-				component->EntityDestroyed(entity);
+			size_t count = mComponentArrays->GetCount();
+			for (size_t i = 0; i < count; i++) {
+				if (mComponentArrays->GetRaw(i)) {
+					IComponentArray* component = (IComponentArray*) mComponentArrays->GetRaw(i)->value;
+					component->EntityDestroyed(entity);
+				}
 			}
 		}
 		// Convenience function to get the statically casted pointer to the ComponentArray of type T.
-		template<typename T>
-		std::shared_ptr<ComponentArray<T>> GetComponentArray()
-		{
+		template<typename T> 
+		ComponentArray<T>* GetComponentArray() {
 			size_t typeHash = typeid(T).hash_code();
 
 			CW_ASSERT(mComponentTypes.find(typeHash) != mComponentTypes.end(), "Component not registered before use.");
 
-			return std::static_pointer_cast<ComponentArray<T>>(mComponentArrays[typeHash]);
+			return (ComponentArray<T>*) mComponentArrays->Get(typeHash);
 		}
+
 		void ResetComponentArrays() {
-			mComponentArrays.clear();
+			mComponentArrays->Clear();
 			mComponentTypes.clear();
 			mNextComponentType = 0;
 		}
@@ -95,9 +96,8 @@ namespace CW {
 	private:
 		// Map from type string pointer to a component type
 		std::unordered_map<size_t, ComponentType> mComponentTypes{};
-
 		// Map from type string pointer to a component array
-		std::unordered_map<size_t, std::shared_ptr<IComponentArray>> mComponentArrays{};
+		HashMap *mComponentArrays = new HashMap(1000);
 
 		// The component type to be assigned to the next registered component - starting at 0
 		ComponentType mNextComponentType{};

@@ -13,7 +13,7 @@ namespace CW {
         EventListen(PROJECT_LOAD);
     }
 
-    inline void UpdateMeshRenderers(std::shared_ptr<ComponentArray<MeshRenderer>> components) {
+    inline void UpdateMeshRenderers(ComponentArray<MeshRenderer> *components) {
         size_t size = components->GetComponentArraySize();
         auto comp_datas = components->GetComponentArrayData();
 
@@ -26,7 +26,7 @@ namespace CW {
             R3D_RenderMesh(comp_datas[i].mesh, comp_datas[i].materials, comp_datas[i].material_count, transform.position, transform.scale, quat);
         }
     }
-    inline void UpdateCameras(std::shared_ptr<ComponentArray<Camera>> components) {
+    inline void UpdateCameras(ComponentArray<Camera> *components) {
         size_t size = components->GetComponentArraySize();
         auto comp_datas = components->GetComponentArrayData();
         for (int i = 0; i < size; i++) {
@@ -34,12 +34,13 @@ namespace CW {
     }
 
     void ECS::UpdateBaseComponents() {
+        framed_function;
         {
-            std::shared_ptr<ComponentArray<MeshRenderer>> comp = component_manager->GetComponentArray<MeshRenderer>();
+            ComponentArray<MeshRenderer> *comp = component_manager->GetComponentArray<MeshRenderer>();
             UpdateMeshRenderers(comp);
         }
         {
-            std::shared_ptr<ComponentArray<Camera>> comp = component_manager->GetComponentArray<Camera>();
+            ComponentArray<Camera> *comp = component_manager->GetComponentArray<Camera>();
             UpdateCameras(comp);
         }
     }
@@ -99,7 +100,7 @@ namespace CW {
                     fprintf(file_output, "    {\n");
                     fprintf(file_output, "        auto components = _component_manager->GetComponentArray<%s>();\n", script_data->name);
                     fprintf(file_output, "        %s *c = components->GetComponentArrayData();\n", script_data->name);
-                    fprintf(file_output, "        int count = _component_manager->GetComponentArray<%s>().get()->GetComponentArraySize();\n", script_data->name);
+                    fprintf(file_output, "        int count = _component_manager->GetComponentArray<%s>()->GetComponentArraySize();\n", script_data->name);
                     fprintf(file_output, "        for (int i = 0; i < count; i++) {\n");
                     fprintf(file_output, "            %s_OnUpdate(CW::GameObject { components->GetEntity(i) }, c[i]);\n", script_data->name);
                     fprintf(file_output, "        }\n");
@@ -131,8 +132,7 @@ namespace CW {
 
                 FreeDLL();
                 BuildDLL();
-
-                LoadDLLFunctions("ScriptsDLL.dll");
+                LoadDLLFunctions();
                 
                 CW::InitGeneretedComponentsUtility();
                 CW::RegisterGeneratedComponents();

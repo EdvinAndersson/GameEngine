@@ -13,35 +13,7 @@ namespace CW {
         EventListen(EventType::PROJECT_CREATE);
         EventListen(EventType::PROJECT_LOAD);
 
-        //Load default white texuture
-        default_texture_index = HashString("default_texture.png");
-        Texture_Format format = { GL_RGBA, TEXTURE_NEAREST_NEIGHBOR };
-        TextureData *texture_data = CreateBlankTexture(format, 0xFFFFFFFF);
-        strcpy(texture_data->asset_path_dir, "default_texture.png");
-        loaded_textures.insert({ default_texture_index, texture_data });
-
-        //Load default specular texuture
-        default_specular_texture_index = HashString("default_specular_texture.png");
-        Texture_Format format_specular = { GL_RGBA, TEXTURE_NEAREST_NEIGHBOR };
-        TextureData *texture_data_specular = CreateBlankTexture(format_specular, 0xFF2F2F2F);
-        strcpy(texture_data_specular->asset_path_dir, "default_specular_texture.png");
-        loaded_textures.insert({ default_specular_texture_index, texture_data_specular });
-
-        //Load default material
-        default_material_index = HashString("default_material.mat");
-        Material *material = new Material();
-        material->albedo_color = vec3s{ 1.0f, 1.0f, 1.0f };
-        material->albedo = default_texture_index;
-        material->normal_map = default_texture_index;
-        material->specular_map = default_specular_texture_index;
-        strcpy(material->asset_path, "default_material.mat");
-        loaded_materials.insert({ default_material_index, material });
-
-        //Load default cube mesh
-        default_mesh_index = HashString("default_mesh");
-        Mesh *mesh = new Mesh();
-        mesh->LoadMeshFromData((const char*) g_cube_model, sizeof(g_cube_model));
-        loaded_meshes.insert({ default_mesh_index, mesh });
+        LoadBuiltInAssets();
     }
 
     AssetManager* AssetManager::Get() {
@@ -83,9 +55,41 @@ namespace CW {
                 }
 
                 UnloadAssets();
+                LoadBuiltInAssets();
                 LoadAssets();
             } break;
         }
+    }
+    void AssetManager::LoadBuiltInAssets() {
+        //Load default white texuture
+        default_texture_index = HashString("default_texture.png");
+        Texture_Format format = { GL_RGBA, TEXTURE_NEAREST_NEIGHBOR };
+        TextureData *texture_data = CreateBlankTexture(format, 0xFFFFFFFF);
+        strcpy(texture_data->asset_path_dir, "default_texture.png");
+        loaded_textures.insert({ default_texture_index, texture_data });
+
+        //Load default specular texuture
+        default_specular_texture_index = HashString("default_specular_texture.png");
+        Texture_Format format_specular = { GL_RGBA, TEXTURE_NEAREST_NEIGHBOR };
+        TextureData *texture_data_specular = CreateBlankTexture(format_specular, 0xFF2F2F2F);
+        strcpy(texture_data_specular->asset_path_dir, "default_specular_texture.png");
+        loaded_textures.insert({ default_specular_texture_index, texture_data_specular });
+
+        //Load default material
+        default_material_index = HashString("default_material.mat");
+        Material *material = new Material();
+        material->albedo_color = vec3s{ 1.0f, 1.0f, 1.0f };
+        material->albedo = default_texture_index;
+        material->normal_map = default_texture_index;
+        material->specular_map = default_specular_texture_index;
+        strcpy(material->asset_path, "default_material.mat");
+        loaded_materials.insert({ default_material_index, material });
+
+        //Load default cube mesh
+        default_mesh_index = HashString("default_mesh");
+        Mesh *mesh = new Mesh();
+        mesh->LoadMeshFromData((const char*) g_cube_model, sizeof(g_cube_model));
+        loaded_meshes.insert({ default_mesh_index, mesh });
     }
     void AssetManager::LoadAssets() {
         DIR *dir = opendir(assets_path);
@@ -129,36 +133,22 @@ namespace CW {
     void AssetManager::UnloadAssets() {
         //Unload textures
         for (auto& it : loaded_textures) {
-            if (it.first == default_texture_index || it.first == default_specular_texture_index)
-                continue;
             FreeTextureData(it.second);
             delete it.second;
         }
-        CW::TextureData *default_texture_data = loaded_textures[default_texture_index];
-        CW::TextureData *default_specular_texture_data = loaded_textures[default_specular_texture_index]; 
         loaded_textures.clear();
-        loaded_textures.insert({ default_texture_index, default_texture_data });
-        loaded_textures.insert({ default_specular_texture_index, default_specular_texture_data });
 
         //Unload materials
         for (auto& it : loaded_materials) {
-            if (it.first == default_material_index)
-                continue;
             delete it.second;
         }
-        CW::Material *default_material = loaded_materials[default_material_index];
         loaded_materials.clear();
-        loaded_materials.insert({ default_material_index, default_material });
 
         //Unload meshes
         for (auto& it : loaded_meshes) {
-            if (it.first == default_mesh_index)
-                continue;
             delete it.second;
         }
-        Mesh *default_mesh = loaded_meshes[default_mesh_index];
         loaded_meshes.clear();
-        loaded_meshes.insert({ default_mesh_index, default_mesh });
 
         //Unload models
         for (auto& it : loaded_models) {

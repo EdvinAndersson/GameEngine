@@ -23,6 +23,7 @@ namespace CW {
         public:
             AssetManager();
 
+            void LoadBuiltInAssets();
             void LoadAssets();
             void UnloadAssets();
             void OnEvent(Event e) override;

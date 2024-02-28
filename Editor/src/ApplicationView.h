@@ -10,10 +10,12 @@
 
 #include "assets/AssetsBuilder.h"
 #include "ImGuiComponents.h"
+#include "Console.h"
 
-#include "vendor/imgui/imgui.h"
-#include "vendor/imgui/backends/imgui_impl_opengl3.h"
-#include "vendor/imgui/backends/imgui_impl_win32.h"
+#include "imgui/imgui.h"
+#include "imgui/backends/imgui_impl_opengl3.h"
+#include "imgui/backends/imgui_impl_win32.h"
+#include "framed/framed.h"
 
 #include <cstdlib>
 #include <shobjidl.h>
@@ -43,6 +45,9 @@ namespace CWEditor {
             CW::Window *window;
             CW::GameObject selected_game_object;
             
+            Console *console;
+            
+            //Assets View
             AssetsBuilder *assets_builder;
             vec2s asset_view_size = { 70.0f, 100.0f };
             size_t current_asset_folder_hash;

@@ -5,6 +5,7 @@
 CogwheelCore.lib
 ScriptsDLL.dll
 ScriptsDLL.lib
+framed.h
 
 tools/build_scripts/*.obj
 tools/GeneratedComponentsUtility.cpp

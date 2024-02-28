@@ -1,4 +1,3 @@
-#define EXPORTING_DLL
 #include "TestComponent2.h"
 
 void TestComponent2_OnAwake(CW::GameObject game_object, TestComponent2& comp) {
