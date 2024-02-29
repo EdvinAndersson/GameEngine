@@ -34,6 +34,7 @@ namespace CWEditor {
             void RenderDockspace();
             void RenderAssets();
             void RenderComponents();
+            void RenderAssetInspector();
 
             bool ShowPopup(CW::GameObject game_object);
             bool CheckNameConflict(char * name);
@@ -42,9 +43,10 @@ namespace CWEditor {
             CW::Framebuffer *framebuffer_game_view, *framebuffer_dev_view;
             CW::Cogwheel *cogwheel;
             CW::Window *window;
-            CW::GameObject selected_game_object;
-            
             Console *console;
+
+            CW::GameObject selected_game_object = CW::GameObject {};
+            AssetInfo selected_asset = {};
             
             //Assets View
             AssetsBuilder *assets_builder;

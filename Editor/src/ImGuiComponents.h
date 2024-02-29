@@ -13,58 +13,72 @@
 
 namespace CWEditor {
 
-    inline void UIDragFloat3(char *label, char *text, vec3s *vec3) {
+    inline bool UIDragFloat3(char *label, char *text, vec3s *vec3) {
+        bool updated = false;
+
         ImGui::Text(text);
         ImGui::PushItemWidth(-FLT_EPSILON);
-        ImGui::DragFloat3(label, (float*) vec3, 0.01f);
+        updated = ImGui::DragFloat3(label, (float*) vec3, 0.02f);
         ImGui::PopItemWidth();
+
+        return updated;
     }
-    inline void UICheckbox(char *text, bool *value) {
+    inline bool UICheckbox(char *text, bool *value) {
+        bool updated = false;
+
         ImGui::Text(text);
         ImGui::SameLine();
-        ImGui::Checkbox("##On", value);
-    }
-    inline void UIAssetInput(AssetType asset_type, size_t *asset_array) {
-        char *title = GetDragDropType(asset_type);
+        updated = ImGui::Checkbox("##On", value);
 
-        ImGui::Text(title);
+        return updated;
+    }
+    inline bool UIAssetInput(AssetType asset_type, char *label, size_t *asset) {
+        ImGui::PushID(asset);
+        bool updated = false;
+        char *asset_type_name = GetDragDropType(asset_type);
+
+        ImGui::Text(label);
         ImGui::SameLine();
         
         char buff[256] = {};
         switch (asset_type) {
             case AssetType::MATERIAL: {
-                CW::Material *mat = CW::AssetManager::Get()->GetMaterial(*asset_array);
+                CW::Material *mat = CW::AssetManager::Get()->GetMaterial(*asset);
                 if (mat != 0)
                     strcpy(buff, mat->asset_path);
             } break;
             case AssetType::TEXTURE: {
-                CW::TextureData *tex = CW::AssetManager::Get()->GetTextureData(*asset_array);
+                CW::TextureData *tex = CW::AssetManager::Get()->GetTextureData(*asset);
                 if (tex != 0)
                     strcpy(buff, tex->asset_path_dir);
             } break;
             case AssetType::MESH: {
-                CW::Mesh *mesh = CW::AssetManager::Get()->GetMesh(*asset_array);
+                CW::Mesh *mesh = CW::AssetManager::Get()->GetMesh(*asset);
                 if (mesh != 0)
                     strcpy(buff, mesh->asset_path);
             } break;
         }
         
         ImGui::PushItemWidth(-FLT_EPSILON);
-        ImGui::InputText(title, buff, 128, ImGuiInputTextFlags_ReadOnly);
+        ImGui::InputText(asset_type_name, buff, 128, ImGuiInputTextFlags_ReadOnly);
         ImGui::PopItemWidth();
         if (ImGui::BeginDragDropTarget())
         {
-            if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(title))
-            {
+            if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(asset_type_name)) {
+                updated = true;
                 IM_ASSERT(payload->DataSize == sizeof(size_t));
                 size_t index = *(const size_t*)payload->Data;
                 
-                *asset_array = index;
+                *asset = index;
             }
             ImGui::EndDragDropTarget();
         }
+        ImGui::PopID();
+
+        return updated;
     }
     inline void UIAssetInputList(AssetType asset_type, size_t *asset_array, unsigned int *array_count) {
+        ImGui::PushID(asset_array);
         char *title = GetDragDropType(asset_type);
 
         ImGui::Text(title);
@@ -114,6 +128,7 @@ namespace CWEditor {
                 ImGui::EndDragDropTarget();
             }
         }
+        ImGui::PopID();
     }
     inline void RenderAssetPopup(CW::GameObject game_object, AssetType asset_type){
         char title[128] = "Asset Popup";

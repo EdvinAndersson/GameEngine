@@ -209,8 +209,9 @@ namespace CWEditor {
                     node_flags |= ImGuiTreeNodeFlags_Selected;
             
                 bool node_open = ImGui::TreeNodeEx((void*)(intptr_t)i, node_flags, game_object_name);
-                if (ImGui::IsItemClicked()){
+                if (ImGui::IsItemClicked()) {
                     selected_game_object = game_object;
+                    selected_asset = {};
                     node_clicked = i;
                 }
                 
@@ -245,7 +246,11 @@ namespace CWEditor {
             //ImGui::SetNextWindowSize();
 
             ImGui::Begin("Components");
-            RenderComponents();
+            if (selected_game_object.entity != 0)
+                RenderComponents();
+            if (selected_asset.asset_index != 0)
+                RenderAssetInspector();
+
             ImGui::End();
         }
         {
@@ -368,6 +373,7 @@ namespace CWEditor {
             } break;
             case CW::EventType::PROJECT_LOAD_LATE: {
                 selected_game_object = CW::GameObject {};
+                selected_asset = {};
                 assets_builder->Refresh();
                 current_asset_folder_hash = CW::HashString("");
             } break;
@@ -423,14 +429,12 @@ namespace CWEditor {
         ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
         ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
         
-        if (ImGui::BeginMenuBar())
-        {
-            if (ImGui::BeginMenu("File"))
-            {   
-                if (ImGui::MenuItem("New Project")){
+        if (ImGui::BeginMenuBar()) {
+            if (ImGui::BeginMenu("File")) {   
+                if (ImGui::MenuItem("New Project")) {
                     
                 }
-                if (ImGui::MenuItem("Load Project")){
+                if (ImGui::MenuItem("Load Project")) {
                     std::string sSelectedFile;
                     std::string sFilePath;       
                     //  CREATE FILE OBJECT INSTANCE   
@@ -502,6 +506,42 @@ namespace CWEditor {
 
         ImGui::End();
     }
+    void ApplicationView::RenderAssetInspector() {
+        CW::Texture texture = CW::AssetManager::Get()->GetTextureData(selected_asset.icon)->texture;
+        ImGui::Image((ImTextureID) texture.id, ImVec2 { 80, 80 });
+        ImGui::SameLine();
+        ImGui::Text("%s", selected_asset.name);
+        ImGui::Separator();
+
+        switch (selected_asset.asset_type)
+        {
+            case AssetType::TEXTURE: {
+
+            } break;
+            case AssetType::MATERIAL: {
+                CW::Material *material = CW::AssetManager::Get()->GetMaterial(selected_asset.asset_index);
+                bool updated = false;
+
+                if (UIDragFloat3("Albedo Color", "Albedo Color", &material->albedo_color)) updated = true;
+                if (UIAssetInput(AssetType::TEXTURE, "Albedo", &material->albedo)) updated = true;
+                if (UIAssetInput(AssetType::TEXTURE, "Normal", &material->normal_map)) updated = true;
+                if (UIAssetInput(AssetType::TEXTURE, "Specular", &material->specular_map)) updated = true;
+
+                if (updated) {
+                    //CW::AssetManager::CreateAndLoadMaterialAsset()
+                }
+            } break;
+            case AssetType::MESH: {
+
+            } break;
+            case AssetType::MODEL: {
+
+            } break;
+            case AssetType::SCRIPT: {
+
+            } break;
+        }
+    }
     void ApplicationView::RenderAssets() {
         static char* asset_path = "";
 
@@ -537,6 +577,8 @@ namespace CWEditor {
                     asset_path = asset_info.path;
                     current_asset_folder_hash = CW::HashString(asset_path);
                 } else {
+                    selected_asset = asset_info;
+                    selected_game_object = CW::GameObject {};
                     is_clicked = false;
                 }
             }
@@ -560,8 +602,6 @@ namespace CWEditor {
         }
     }
     void ApplicationView::RenderComponents(){
-        if(selected_game_object.entity == 0)
-            return;
         ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_SpanAvailWidth;
         
         int index = 0;
@@ -587,13 +627,13 @@ namespace CWEditor {
                 }
                 ImGui::EndPopup();
             }
-            if(node_open) {
+            if (node_open) {
                 CW::Camera& camera = selected_game_object.GetComponent<CW::Camera>();
                 UICheckbox("Main Camera", &camera.is_main);
                 ImGui::TreePop();
             }
         }
-        if(selected_game_object.HasComponent<CW::MeshRenderer>()){
+        if (selected_game_object.HasComponent<CW::MeshRenderer>()) {
             node_open = ImGui::TreeNodeEx((void*)(intptr_t) index++, node_flags, "MeshRenderer");
             if (ImGui::BeginPopupContextItem("PopupComponent")) {
                 if (ImGui::Button("Remove")) {
@@ -604,9 +644,9 @@ namespace CWEditor {
                 }
                 ImGui::EndPopup();
             }
-            if(node_open){
+            if (node_open) {
                 CW::MeshRenderer& mesh_renderer = selected_game_object.GetComponent<CW::MeshRenderer>();
-                UIAssetInput(AssetType::MESH, &mesh_renderer.mesh);
+                UIAssetInput(AssetType::MESH, "Mesh", &mesh_renderer.mesh);
                 UIAssetInputList(AssetType::MATERIAL, mesh_renderer.materials, &mesh_renderer.material_count);
                 ImGui::TreePop();
             }
