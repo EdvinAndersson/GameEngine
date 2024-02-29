@@ -6,6 +6,8 @@
 
 namespace CW {
 
+    const ComponentType BASE_COMPONENTS = 4;
+
     struct Transform {
         vec3s position;
         vec3s scale;
@@ -16,9 +18,6 @@ namespace CW {
         MeshIndex mesh = 0;
         MaterialIndex materials[MAX_MATERIALS] = {};
         unsigned int material_count = 0;
-    };
-    struct Script {
-
     };
     struct Light {
 

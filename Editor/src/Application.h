@@ -14,6 +14,12 @@ extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg
 
 namespace CWEditor {
 
+    enum PlayMode {
+        NOT_RUNNING,
+        RUNNING,
+        RUNNING_PAUSED
+    };
+
     class Application : public CW::IEventListener {
         public:
             ~Application();
@@ -26,5 +32,7 @@ namespace CWEditor {
             CW::Cogwheel *cogwheel;
             CW::Window *window;
             ApplicationView *application_view;
+
+            PlayMode play_mode;
     };
 }

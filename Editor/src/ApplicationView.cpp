@@ -402,9 +402,27 @@ namespace CWEditor {
         ImGui::PopStyleVar();
         ImGui::PopStyleVar(2);
 
+        { //Header
+            ImGuiStyle& style = ImGui::GetStyle();
+            float width = 0.0f;
+            width += ImGui::CalcTextSize("Play").x;
+            width += ImGui::CalcTextSize("Pause!").x;
+            width += style.ItemSpacing.x;
+
+            float off = (ImGui::GetContentRegionAvail().x - width) * 0.5f;
+            ImGui::SetCursorPosX(ImGui::GetCursorPosX() + off);
+
+            ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 3);
+            if (ImGui::Button("Play")) {
+            }
+            ImGui::SameLine();
+            if (ImGui::Button("Pause")) {
+            }
+            ImGui::PopStyleVar();
+        }
         ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
         ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
-
+        
         if (ImGui::BeginMenuBar())
         {
             if (ImGui::BeginMenu("File"))
@@ -544,9 +562,11 @@ namespace CWEditor {
     void ApplicationView::RenderComponents(){
         if(selected_game_object.entity == 0)
             return;
-        ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_SpanAvailWidth;
+        ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_SpanAvailWidth;
         
-        bool node_open = ImGui::TreeNodeEx((void*)(intptr_t)0, node_flags, "Transform");
+        int index = 0;
+
+        bool node_open = ImGui::TreeNodeEx((void*)(intptr_t) index++, node_flags, "Transform");
         if(node_open){
             CW::Transform& transform = selected_game_object.GetComponent<CW::Transform>();
 
@@ -556,14 +576,34 @@ namespace CWEditor {
 
             ImGui::TreePop();
         }
-        if(selected_game_object.HasComponent<CW::Camera>()){
-            node_open = ImGui::TreeNodeEx((void*)(intptr_t)1, node_flags, "Camera");
-            if(node_open){
+        if (selected_game_object.HasComponent<CW::Camera>()) {
+            node_open = ImGui::TreeNodeEx((void*)(intptr_t) index++, node_flags, "Camera");
+            if (ImGui::BeginPopupContextItem("PopupComponent")) {
+                if (ImGui::Button("Remove")) {
+                    selected_game_object.RemoveComponent<CW::Camera>();
+                    ImGui::EndPopup();
+                    if(node_open) ImGui::TreePop();
+                    return;
+                }
+                ImGui::EndPopup();
+            }
+            if(node_open) {
+                CW::Camera& camera = selected_game_object.GetComponent<CW::Camera>();
+                UICheckbox("Main Camera", &camera.is_main);
                 ImGui::TreePop();
             }
         }
         if(selected_game_object.HasComponent<CW::MeshRenderer>()){
-            node_open = ImGui::TreeNodeEx((void*)(intptr_t)2, node_flags, "MeshRenderer");
+            node_open = ImGui::TreeNodeEx((void*)(intptr_t) index++, node_flags, "MeshRenderer");
+            if (ImGui::BeginPopupContextItem("PopupComponent")) {
+                if (ImGui::Button("Remove")) {
+                    selected_game_object.RemoveComponent<CW::MeshRenderer>();
+                    ImGui::EndPopup();
+                    if(node_open) ImGui::TreePop();
+                    return;
+                }
+                ImGui::EndPopup();
+            }
             if(node_open){
                 CW::MeshRenderer& mesh_renderer = selected_game_object.GetComponent<CW::MeshRenderer>();
                 UIAssetInput(AssetType::MESH, &mesh_renderer.mesh);
@@ -571,30 +611,42 @@ namespace CWEditor {
                 ImGui::TreePop();
             }
         }
-        if(selected_game_object.HasComponent<CW::Script>()){
-            node_open = ImGui::TreeNodeEx((void*)(intptr_t)3, node_flags, "Script");
-            if(node_open){
-                ImGui::TreePop();
-            }
-        }
         if(selected_game_object.HasComponent<CW::Light>()){
-            node_open = ImGui::TreeNodeEx((void*)(intptr_t)4, node_flags, "Light");
+            node_open = ImGui::TreeNodeEx((void*)(intptr_t) index++, node_flags, "Light");
+            if (ImGui::BeginPopupContextItem("PopupComponent")) {
+                if (ImGui::Button("Remove")) {
+                    selected_game_object.RemoveComponent<CW::Light>();
+                    ImGui::EndPopup();
+                    if(node_open) ImGui::TreePop();
+                    return;
+                }
+                ImGui::EndPopup();
+            }
             if(node_open){
                 ImGui::TreePop();
             }
         }
-        int index = 5;
+        
         for (auto& it : *CW::AssetManager::Get()->GetLoadedScripts()) {
             CW::ScriptData *script_data = it.second;
             if (CW::HasGenereatedComponent(CW::HashString(script_data->name), selected_game_object)) {
-                node_open = ImGui::TreeNodeEx((void*)(intptr_t)index++, node_flags, script_data->name);
-                if(node_open){
+                node_open = ImGui::TreeNodeEx((void*)(intptr_t) index++, node_flags, script_data->name);
+                if (ImGui::BeginPopupContextItem("PopupComponent")) {
+                    if (ImGui::Button("Remove")) {
+                        //CW::Genere
+                        ImGui::EndPopup();
+                        if(node_open) ImGui::TreePop();
+                        return;
+                    }
+                    ImGui::EndPopup();
+                }
+                if(node_open) {
                     ImGui::TreePop();
                 }
             }
         }
         RenderAssetPopup(selected_game_object, AssetType::SCRIPT);
-        if(ImGui::Button("New Component")){
+        if(ImGui::Button("Add Component")){
             OpenAssetPopup();
         }
     }

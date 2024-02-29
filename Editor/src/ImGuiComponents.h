@@ -19,6 +19,11 @@ namespace CWEditor {
         ImGui::DragFloat3(label, (float*) vec3, 0.01f);
         ImGui::PopItemWidth();
     }
+    inline void UICheckbox(char *text, bool *value) {
+        ImGui::Text(text);
+        ImGui::SameLine();
+        ImGui::Checkbox("##On", value);
+    }
     inline void UIAssetInput(AssetType asset_type, size_t *asset_array) {
         char *title = GetDragDropType(asset_type);
 
