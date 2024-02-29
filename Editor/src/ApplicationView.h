@@ -57,7 +57,7 @@ namespace CWEditor {
             vec3s pos = {0,0,0};
             vec3s dev_pos = {10, 10, 10};
             vec3s cam_rot = {0,0,0};
-            vec3s light_pos = {-12.0f, -12.0f, 12.0f};
+            vec3s light_pos = {1.0f, 2.0f, -1.0f};
 
             CW::TextureData *skybox_texture;
             

@@ -43,7 +43,7 @@ namespace CWGame {
             CW::R3D_Clear(vec4s {0,0,0,1} );
             
             CW::R3D_UseDefaultShader();
-            vec3s light_pos = {-12.0f, -12.0f, 12.0f};
+            vec3s light_pos = {1.0f, 2.0f, -1.0f};
             CW::R3D_GetDefaultShader().SetV3("dirLight.direction", vec3s {-light_pos.x,-light_pos.y,-light_pos.z});
 
             CW::R3D_SetPointLight(vec3s {3.0f, 0, 3.0f}, vec3s {0.4f, 0.4f, 0.4f}, vec3s {1.0f, 1.0f, 1.0f}, vec3s {0.5f, 0.5f, 0.5f}, 0.1, 0.3, 0.4f);
