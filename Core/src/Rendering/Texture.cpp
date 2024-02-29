@@ -92,7 +92,7 @@ namespace CW {
         int width = AssetManager::Get()->GetTextureData(right)->width;
         int height = AssetManager::Get()->GetTextureData(right)->width;
 
-        stbi_set_flip_vertically_on_load(true);
+        //stbi_set_flip_vertically_on_load(true);
         glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + 0,
             0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, AssetManager::Get()->GetTextureData(right)->data
         );
@@ -111,7 +111,7 @@ namespace CW {
         glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + 5,
             0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, AssetManager::Get()->GetTextureData(back)->data
         );
-        stbi_set_flip_vertically_on_load(false);
+        //stbi_set_flip_vertically_on_load(false);
 
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -131,14 +131,14 @@ namespace CW {
         glGenTextures(1, &texture_id);
         glBindTexture(GL_TEXTURE_CUBE_MAP, texture_id);
 
-        stbi_set_flip_vertically_on_load(true);
+        //stbi_set_flip_vertically_on_load(false);
         _LoadFace(right, 0);
         _LoadFace(left, 1);
         _LoadFace(top, 2);
         _LoadFace(bottom, 3);
         _LoadFace(front, 4);
         _LoadFace(back, 5);
-        stbi_set_flip_vertically_on_load(false);
+        //stbi_set_flip_vertically_on_load(true);
 
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);

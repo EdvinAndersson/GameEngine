@@ -3,6 +3,8 @@
 if not exist build mkdir build
 pushd build
 
+xcopy "..\..\Editor\build\CogwheelCore.lib" /y
+
 set compile_flags=/Fe:Game.exe /W4 /MP /FC /wd4201 -D_CRT_SECURE_NO_WARNINGS /MTd -D UNICODE ^
 -I../.. ^
 -I../src ^
@@ -22,5 +24,7 @@ del *.obj
 
 xcopy "..\..\Editor\res\projects\Project1\Assets" Assets /s /e /i /y
 xcopy "..\..\Editor\res\projects\Project1\Unnamed Project.proj" /y
+xcopy "..\..\Editor\build\ScriptsDLL.dll" /y
+xcopy "..\..\Editor\build\assimp-vc142-mtd.dll" /y
 
 popd

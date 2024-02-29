@@ -68,8 +68,12 @@ namespace CW {
 				if (material_indexes[mesh->mMaterialIndex - 1] == 0) { //Material has not been created
 					Material mat = {};
 					mat.albedo_color = vec3s{ 1.0, 1.0, 1.0 };
-					mat.albedo = diffuseMaps[0];
-					mat.normal_map = normalMaps[0];
+					if (diffuseMaps.size() > 0)
+						mat.albedo = diffuseMaps[0];
+					if (normalMaps.size() > 0)
+						mat.normal_map = normalMaps[0];
+					if (specularMaps.size() > 0)
+						mat.specular_map = specularMaps[0];
 
 					char mat_path[256] = {};
 					strcpy(mat_path, material->GetName().C_Str());

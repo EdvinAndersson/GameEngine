@@ -54,7 +54,7 @@ namespace CWEditor {
         camera.AddComponent<CW::Camera>();
         strcpy(camera.GetComponent<CW::Transform>().name, "Camera");
 
-        CW::GameObject obj = CW::GameObject::Instantiate(vec3s {0, 4, 0 });
+        CW::GameObject obj = CW::GameObject::Instantiate(vec3s {0, -4, 0 });
         obj.GetComponent<CW::Transform>().scale = vec3s {40, 1, 40};
         CW::MeshRenderer& mesh_renderer = obj.AddComponent<CW::MeshRenderer>();
         mesh_renderer.mesh = CW::AssetManager::Get()->GetDefaultMeshIndex();
@@ -117,6 +117,7 @@ namespace CWEditor {
         mat4s view = GLMS_MAT4_IDENTITY_INIT;
         view = glms_translate(view, pos);
         view = glms_mat4_mul(glms_quat_mat4(glms_euler_xyz_quat(cam_rot)), view);
+        view = glms_scale(view, vec3s { 1.0f, -1.0f, 1.0f });
         CW::R3D_SetViewModel(view);
         CW::R3D_SetViewPos(pos);
         {
@@ -152,6 +153,7 @@ namespace CWEditor {
         }
         mat4s dev_view = GLMS_MAT4_IDENTITY_INIT;
         dev_view = glms_translate(dev_view, dev_pos);
+        dev_view = glms_scale(dev_view, vec3s { 1.0f, -1.0f, 1.0f });
         CW::R3D_SetViewModel(dev_view);
         CW::R3D_SetViewPos(dev_pos);
         {
