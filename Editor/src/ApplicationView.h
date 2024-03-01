@@ -11,6 +11,7 @@
 #include "assets/AssetsBuilder.h"
 #include "ImGuiComponents.h"
 #include "Console.h"
+#include "ImGuiStyles.h"
 
 #include "imgui/imgui.h"
 #include "imgui/backends/imgui_impl_opengl3.h"

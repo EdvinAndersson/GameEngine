@@ -3,6 +3,7 @@
 #include "cglm/struct.h"
 
 namespace CWEditor {
+
     ApplicationView::ApplicationView() {}
 
     ApplicationView::~ApplicationView() {
@@ -38,9 +39,10 @@ namespace CWEditor {
         io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;   // Enable Keyboard Controls
         io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;    // Enable Gamepad Controls
         io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;       // Enable Docking
-        ImGui::StyleColorsDark();
         ImGui_ImplWin32_InitForOpenGL(window->GetHandle());
         ImGui_ImplOpenGL3_Init();
+        //ImGui::StyleColorsDark();
+        ImGuiStyleGray();
 
         skybox_texture = CW::CreateCubemapTexture(
             CW::AssetManager::Get()->GetTextureIndex("images/skybox/right.jpg"),
