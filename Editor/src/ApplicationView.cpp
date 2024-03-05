@@ -518,7 +518,10 @@ namespace CWEditor {
         switch (selected_asset.asset_type)
         {
             case AssetType::TEXTURE: {
+                CW::TextureData *texture_data = CW::AssetManager::Get()->GetTextureData(selected_asset.asset_index);
 
+                ImGui::Text("Width: %i", texture_data->width);
+                ImGui::Text("Height: %i", texture_data->height);
             } break;
             case AssetType::MATERIAL: {
                 CW::Material *material = CW::AssetManager::Get()->GetMaterial(selected_asset.asset_index);
@@ -671,11 +674,11 @@ namespace CWEditor {
         
         for (auto& it : *CW::AssetManager::Get()->GetLoadedScripts()) {
             CW::ScriptData *script_data = it.second;
-            if (CW::HasGenereatedComponent(CW::HashString(script_data->name), selected_game_object)) {
+            if (CW::HasGeneratedComponent(CW::HashString(script_data->name), selected_game_object)) {
                 node_open = ImGui::TreeNodeEx((void*)(intptr_t) index++, node_flags, script_data->name);
                 if (ImGui::BeginPopupContextItem("PopupComponent")) {
                     if (ImGui::Button("Remove")) {
-                        //CW::Genere
+                        CW::RemoveGeneratedComponent(CW::HashString(script_data->name), selected_game_object);
                         ImGui::EndPopup();
                         if(node_open) ImGui::TreePop();
                         return;

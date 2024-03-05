@@ -51,7 +51,6 @@ namespace CW {
 			printf("ERROR::ASSIMP::%s\n", aiGetErrorString());
 			return;
 		}
-
         ProcessNode(this, scene->mRootNode, scene);
     }
     void Mesh::ProcessNode(Mesh *m, aiNode *node, const aiScene *scene) {

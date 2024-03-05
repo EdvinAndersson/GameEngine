@@ -88,6 +88,7 @@ namespace CW {
         //Load default cube mesh
         default_mesh_index = HashString("default_mesh");
         Mesh *mesh = new Mesh();
+        strcpy(mesh->asset_path, "default_mesh.obj");
         mesh->LoadMeshFromData((const char*) g_cube_model, sizeof(g_cube_model));
         loaded_meshes.insert({ default_mesh_index, mesh });
     }

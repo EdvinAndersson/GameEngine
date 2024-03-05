@@ -6,11 +6,12 @@
 
 namespace CW {
 
-    PFNInitGeneretedComponentsUtility _InitGeneretedComponentsUtility;
+    PFNInitGeneratedComponentsUtility _InitGeneratedComponentsUtility;
     PFNRegisterGeneratedComponents _RegisterGeneratedComponents;
-    PFNAddGenereatedComponent _AddGenereatedComponent;
-    PFNHasGenereatedComponent _HasGenereatedComponent;
+    PFNAddGeneratedComponent _AddGeneratedComponent;
+    PFNHasGeneratedComponent _HasGeneratedComponent;
     PFNUpdateGeneratedComponents _UpdateGeneratedComponents;
+    PFNRemoveGeneratedComponent _RemoveGeneratedComponent;
 
     HINSTANCE hDll;
 
@@ -59,8 +60,8 @@ namespace CW {
         hDll = LoadLibraryA("ScriptsDLL.dll");
         CW_ASSERT(hDll != 0, "Could not link Scripts DLL");
 
-        _InitGeneretedComponentsUtility = (PFNInitGeneretedComponentsUtility) GetProcAddress(hDll, "InitGeneretedComponentsUtility");
-        CW_ASSERT(_InitGeneretedComponentsUtility, "Unable to load function pointer!");
+        _InitGeneratedComponentsUtility = (PFNInitGeneratedComponentsUtility) GetProcAddress(hDll, "InitGeneratedComponentsUtility");
+        CW_ASSERT(_InitGeneratedComponentsUtility, "Unable to load function pointer!");
 
         _RegisterGeneratedComponents = (PFNRegisterGeneratedComponents) GetProcAddress(hDll, "RegisterGeneratedComponents");
         CW_ASSERT(_RegisterGeneratedComponents, "Unable to load function pointer!");
@@ -68,16 +69,20 @@ namespace CW {
         _UpdateGeneratedComponents = (PFNUpdateGeneratedComponents) GetProcAddress(hDll, "UpdateGeneratedComponents");
         CW_ASSERT(_UpdateGeneratedComponents, "Unable to load function pointer!");
 
-        _AddGenereatedComponent = (PFNAddGenereatedComponent) GetProcAddress(hDll, "AddGenereatedComponent");
-        CW_ASSERT(_AddGenereatedComponent, "Unable to load function pointer!");
+        _AddGeneratedComponent = (PFNAddGeneratedComponent) GetProcAddress(hDll, "AddGeneratedComponent");
+        CW_ASSERT(_AddGeneratedComponent, "Unable to load function pointer!");
 
-        _HasGenereatedComponent = (PFNHasGenereatedComponent) GetProcAddress(hDll, "HasGenereatedComponent");
-        CW_ASSERT(_HasGenereatedComponent, "Unable to load function pointer!");
+        _HasGeneratedComponent = (PFNHasGeneratedComponent) GetProcAddress(hDll, "HasGeneratedComponent");
+        CW_ASSERT(_HasGeneratedComponent, "Unable to load function pointer!");
+
+        _RemoveGeneratedComponent = (PFNRemoveGeneratedComponent) GetProcAddress(hDll, "RemoveGeneratedComponent");
+        CW_ASSERT(_RemoveGeneratedComponent, "Unable to load function pointer!");
     }
 
-    void InitGeneretedComponentsUtility() { _InitGeneretedComponentsUtility(component_manager, entity_manager); }
+    void InitGeneratedComponentsUtility() { _InitGeneratedComponentsUtility(component_manager, entity_manager); }
     void RegisterGeneratedComponents() { _RegisterGeneratedComponents(); }
     void UpdateGeneratedComponents() { _UpdateGeneratedComponents(); }
-    void AddGenereatedComponent(size_t type, GameObject& obj) { _AddGenereatedComponent(type, obj); }
-    bool HasGenereatedComponent(size_t type, GameObject& obj) { return _HasGenereatedComponent(type, obj); }
+    void AddGeneratedComponent(size_t type, GameObject& obj) { _AddGeneratedComponent(type, obj); }
+    bool HasGeneratedComponent(size_t type, GameObject& obj) { return _HasGeneratedComponent(type, obj); }
+    void RemoveGeneratedComponent(size_t type, GameObject& obj) {_RemoveGeneratedComponent(type, obj); }
 }

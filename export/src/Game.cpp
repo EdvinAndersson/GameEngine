@@ -44,12 +44,10 @@ namespace CWGame {
             vec3s light_pos = {1.0f, 2.0f, -1.0f};
 
             //Shadow pass
-            //CW::R3D_BeginShadowPass(light_pos);
-            //cogwheel->GetECS()->UpdateComponenets();
-            //CW::R3D_EndShadowPass();
+            CW::R3D_BeginShadowPass(light_pos);
+            cogwheel->GetECS()->UpdateComponenets();
+            CW::R3D_EndShadowPass();
 
-            //glViewport(0, 0, window->GetWidth(), window->GetHeight());
-            //framebuffer->Bind();
             glViewport(0, 0, window->GetWidth(), window->GetHeight());
             glEnable(GL_DEPTH_TEST);
             CW::R3D_Clear(vec4s {0,0,0,1} );
@@ -60,9 +58,6 @@ namespace CWGame {
             CW::R3D_SetPointLight(vec3s {3.0f, 0, 3.0f}, vec3s {0.4f, 0.4f, 0.4f}, vec3s {1.0f, 1.0f, 1.0f}, vec3s {0.5f, 0.5f, 0.5f}, 0.1, 0.3, 0.4f);
 
             cogwheel->GetECS()->UpdateComponenets();
-            //framebuffer->UnBind();
-
-           // CW::R3D_RenderTexture(framebuffer->GetTexture());
 
             window->PollEvents();
             window->WinSwapBuffers();

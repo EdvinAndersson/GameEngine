@@ -13,6 +13,9 @@
 
 namespace CWEditor {
 
+    inline size_t RenderAssetPopup(CW::GameObject game_object, AssetType asset_type);
+    inline void OpenAssetPopup();
+
     inline bool UIDragFloat3(char *label, char *text, vec3s *vec3) {
         bool updated = false;
 
@@ -58,10 +61,16 @@ namespace CWEditor {
                     strcpy(buff, mesh->asset_path);
             } break;
         }
-        
-        ImGui::PushItemWidth(-FLT_EPSILON);
-        ImGui::InputText(asset_type_name, buff, 128, ImGuiInputTextFlags_ReadOnly);
-        ImGui::PopItemWidth();
+    
+        size_t asset_index = RenderAssetPopup(CW::GameObject {}, asset_type);
+        if (asset_index != 0)
+            *asset = asset_index;
+
+        ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, ImVec2(0,0));
+        if (ImGui::Button(buff, ImVec2(ImGui::GetWindowSize().x, 0.0f))){
+            OpenAssetPopup();
+        }
+        ImGui::PopStyleVar();
         if (ImGui::BeginDragDropTarget())
         {
             if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(asset_type_name)) {
@@ -130,7 +139,7 @@ namespace CWEditor {
         }
         ImGui::PopID();
     }
-    inline void RenderAssetPopup(CW::GameObject game_object, AssetType asset_type){
+    inline size_t RenderAssetPopup(CW::GameObject game_object, AssetType asset_type) {
         char title[128] = "Asset Popup";
         ImGuiWindowFlags flags = ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize; 
         if (ImGui::BeginPopup(title, flags)){
@@ -156,10 +165,10 @@ namespace CWEditor {
                     for (auto& it : *loaded_scripts) {
                         CW::ScriptData* script_data = it.second;
                         size_t hashed = CW::HashString(script_data->name);
-                        if (CW::HasGenereatedComponent(hashed, game_object)) continue;
+                        if (CW::HasGeneratedComponent(hashed, game_object)) continue;
 
                         if (filter.PassFilter(script_data->name) && ImGui::Button(script_data->name)) {
-                            CW::AddGenereatedComponent(hashed, game_object);
+                            CW::AddGeneratedComponent(hashed, game_object);
                             ImGui::CloseCurrentPopup();
                         }
                     }
@@ -167,11 +176,23 @@ namespace CWEditor {
                 case AssetType::TEXTURE: {
 
                 } break;
+                case AssetType::MESH: {
+                    auto *loaded_meshes = CW::AssetManager::Get()->GetLoadedMeshes();
+                    for (auto& it : *loaded_meshes) {
+                        CW::Mesh* mesh = it.second;
+                        if (filter.PassFilter(mesh->asset_path) && ImGui::Button(mesh->asset_path)) {
+                            ImGui::CloseCurrentPopup();
+                            ImGui::EndPopup();
+                            return it.first;
+                        }
+                    }
+                } break;
             }
             ImGui::EndPopup();    
         }
+        return 0;
     }
-    inline void OpenAssetPopup(){
+    inline void OpenAssetPopup() {
         char title[128] = "Asset Popup"; 
         ImGui::OpenPopup(title);   
     }

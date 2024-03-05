@@ -82,7 +82,7 @@ namespace CW {
                     fprintf(file_output, "CW::ComponentManager *_component_manager;\n");
                     fprintf(file_output, "CW::EntityManager *_entity_manager;\n\n");
 
-                    fprintf(file_output, "void InitGeneretedComponentsUtility(CW::ComponentManager *component_manager, CW::EntityManager *entity_manager) {\n");
+                    fprintf(file_output, "void InitGeneratedComponentsUtility(CW::ComponentManager *component_manager, CW::EntityManager *entity_manager) {\n");
                     fprintf(file_output, "    _component_manager = component_manager;\n");
                     fprintf(file_output, "    _entity_manager = entity_manager;\n");
                     fprintf(file_output, "}\n");
@@ -109,7 +109,7 @@ namespace CW {
                     }
                     fprintf(file_output, "}\n");
 
-                    fprintf(file_output, "void AddGenereatedComponent(size_t type, CW::GameObject& obj) {\n");
+                    fprintf(file_output, "void AddGeneratedComponent(size_t type, CW::GameObject& obj) {\n");
                     for (auto& it : *loaded_scripts) {
                         ScriptData *script_data = it.second;
                         fprintf(file_output, "    if (_%s == type || typeid(%s).hash_code() == type) {\n", script_data->name, script_data->name);
@@ -119,7 +119,7 @@ namespace CW {
                     }
                     fprintf(file_output, "}\n");
 
-                    fprintf(file_output, "bool HasGenereatedComponent(size_t type, CW::GameObject& obj) {\n");
+                    fprintf(file_output, "bool HasGeneratedComponent(size_t type, CW::GameObject& obj) {\n");
                     for (auto& it : *loaded_scripts) {
                         ScriptData *script_data = it.second;
                         fprintf(file_output, "    if (_%s == type) {\n", script_data->name);
@@ -129,6 +129,16 @@ namespace CW {
                     fprintf(file_output, "    return false;\n");
                     fprintf(file_output, "}\n");
 
+                    fprintf(file_output, "void RemoveGeneratedComponent(size_t type, CW::GameObject& obj) {\n");
+                    for (auto& it : *loaded_scripts) {
+                        ScriptData *script_data = it.second;
+                        fprintf(file_output, "    if (_%s == type || typeid(%s).hash_code() == type) {\n", script_data->name, script_data->name);
+                        fprintf(file_output, "        obj.RemoveComponent<%s>(_component_manager, _entity_manager);\n", script_data->name);
+                        fprintf(file_output, "        return;\n");
+                        fprintf(file_output, "    }\n");
+                    }
+                    fprintf(file_output, "}\n");
+
                     fclose(file_output);
 
                     FreeDLL();
@@ -136,7 +146,7 @@ namespace CW {
                 }
                 LoadDLLFunctions();
                 
-                CW::InitGeneretedComponentsUtility();
+                CW::InitGeneratedComponentsUtility();
                 CW::RegisterGeneratedComponents();
             } break;
         }

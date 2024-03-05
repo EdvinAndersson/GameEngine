@@ -121,7 +121,7 @@ namespace CW {
                 for (int i = BASE_COMPONENTS; i < MAX_COMPONENTS; i++){
                     if (signature.test(i)) {
                         size_t s = component_manager->GetComponentValue(i);
-                        AddGenereatedComponent(s, obj);
+                        AddGeneratedComponent(s, obj);
                     }
                 }
             }

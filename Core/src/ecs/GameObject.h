@@ -46,12 +46,16 @@ namespace CW {
 			return GetComponent<T>(component_manager);
 		}
 		template<typename T>
-		void RemoveComponent() {
+		void RemoveComponent(ComponentManager *component_manager, EntityManager *entity_manager) {
 			component_manager->RemoveComponent<T>(entity);
 
 			Signature signature = entity_manager->GetSignature(entity);
 			signature.set(component_manager->GetComponentType<T>(), false);
 			entity_manager->SetSignature(entity, signature);
+		}
+		template<typename T>
+		void RemoveComponent() {
+			RemoveComponent<T>(component_manager, entity_manager);
 		}
 		template<typename T>
 		bool HasComponent(ComponentManager *component_manager, EntityManager *entity_manager) {
