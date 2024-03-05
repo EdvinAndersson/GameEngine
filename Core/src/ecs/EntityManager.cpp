@@ -52,9 +52,11 @@ namespace CW {
 		// Initialize the queue with all possible entity IDs
 		for (uint32_t id = 0; id < MAX_ENTITIES; ++id)
 		{
-			mAvailableEntities.push(Entity(id + 1));
+			Entity e = Entity(id + 1);
+			mAvailableEntities.push(e);
+			mSignatures[e].reset();
 		}
-		mSignatures->reset();
+		
 		mLivingEntityCount = 0;
 	}
 }

@@ -13,7 +13,7 @@ namespace CW {
     struct R3D_Data {
         Window *window;
 
-        Shader default_shader, active_shader, skybox_shader, instance_shader, depth_shader;
+        Shader default_shader, active_shader, skybox_shader, instance_shader, depth_shader, quad_shader;
         Texture defualt_texture;
 
         const unsigned int frame_buffer_depth_width = 1024, frame_buffer_depth_height = 1024;
@@ -27,7 +27,7 @@ namespace CW {
         int max_instance_count = 100000, instance_count = 0;
         unsigned int instance_ssbo;
 
-        unsigned int depth_map_fbo, depth_map;
+        unsigned int depth_map_fbo, depth_map, quad_vao;
     };
 
     static R3D_Data *g_r3d_data;
@@ -63,6 +63,7 @@ namespace CW {
         g_r3d_data->skybox_shader = CreateShader(vertex_shader_skybox, fragment_shader_skybox);
         g_r3d_data->instance_shader = CreateShader(vertex_shader_instanced, fragment_shader);
         g_r3d_data->depth_shader = CreateShader(vertex_shader_depth, fragment_shader_depth);
+        g_r3d_data->quad_shader = CreateShader(vertex_shader_quad, fragment_shader_quad);
 
         g_r3d_data->defualt_texture = AssetManager::Get()->GetTexture("default_texture.png");
 
@@ -92,6 +93,27 @@ namespace CW {
         g_r3d_data->active_shader.Use();
 
         R3D__CreateInstanceSSBO();
+
+        float quadVertices[] = { // vertex attributes for a quad that fills the entire screen in Normalized Device Coordinates.
+        // positions   // texCoords
+        -1.0f,  1.0f,  0.0f, 1.0f,
+        -1.0f, -1.0f,  0.0f, 0.0f,
+         1.0f, -1.0f,  1.0f, 0.0f,
+
+        -1.0f,  1.0f,  0.0f, 1.0f,
+         1.0f, -1.0f,  1.0f, 0.0f,
+         1.0f,  1.0f,  1.0f, 1.0f
+    };
+        unsigned int quadVBO;
+        glGenVertexArrays(1, &g_r3d_data->quad_vao);
+        glGenBuffers(1, &quadVBO);
+        glBindVertexArray(g_r3d_data->quad_vao);
+        glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
+        glEnableVertexAttribArray(1);
+        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
     }
     void R3D_Clear(vec4s color) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -172,6 +194,15 @@ namespace CW {
 
         Mesh *mesh = AssetManager::Get()->GetMesh(mesh_index);
         mesh->DrawMesh(&g_r3d_data->active_shader, material_indexes, material_count);
+    }
+    void R3D_RenderTexture(Texture texture) {
+        glDisable(GL_DEPTH_TEST);
+
+        g_r3d_data->quad_shader.Use();
+        g_r3d_data->quad_shader.SetInt("screenTexture", 0);
+        glBindVertexArray(g_r3d_data->quad_vao);
+        glBindTexture(GL_TEXTURE_2D, texture.id);
+        glDrawArrays(GL_TRIANGLES, 0, 6);
     }
 
     void R3D__CreateInstanceSSBO() {

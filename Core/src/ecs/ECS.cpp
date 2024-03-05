@@ -45,7 +45,7 @@ namespace CW {
             UpdateCameras(comp);
         }
     }
-    void ECS::UpdateComponenets(Scene &scene) {
+    void ECS::UpdateComponenets() {
         UpdateBaseComponents();
         CW::UpdateGeneratedComponents();
     }

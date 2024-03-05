@@ -56,9 +56,9 @@ namespace CWEditor {
 
             console->scroll_to_bottom = false;
 
-            ImGui::EndChild();
-            ImGui::PopStyleColor();
         }
+        ImGui::EndChild();
+        ImGui::PopStyleColor();
     }
 
     void Console::Log(char *text) {

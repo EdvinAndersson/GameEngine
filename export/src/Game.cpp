@@ -25,6 +25,9 @@ namespace CWGame {
         EventListen(CW::EventType::PROJECT_LOAD);
 
         CW::R3D_Init(window);
+        glDisable(GL_FRAMEBUFFER_SRGB);
+
+        framebuffer = new CW::Framebuffer(CW::FramebufferType::DEFUALT, window->GetWidth(), window->GetHeight());
 
         cogwheel->GetProjectManager()->LoadProject("Unnamed Project.proj");
     }
@@ -38,19 +41,28 @@ namespace CWGame {
             view = glms_mat4_mul(glms_quat_mat4(glms_euler_xyz_quat({0,0,0})), view);
             CW::R3D_SetViewModel(view);
             CW::R3D_SetViewPos({0,0,0});
+            vec3s light_pos = {1.0f, 2.0f, -1.0f};
 
+            //Shadow pass
+            //CW::R3D_BeginShadowPass(light_pos);
+            //cogwheel->GetECS()->UpdateComponenets();
+            //CW::R3D_EndShadowPass();
+
+            //glViewport(0, 0, window->GetWidth(), window->GetHeight());
+            //framebuffer->Bind();
             glViewport(0, 0, window->GetWidth(), window->GetHeight());
+            glEnable(GL_DEPTH_TEST);
             CW::R3D_Clear(vec4s {0,0,0,1} );
             
             CW::R3D_UseDefaultShader();
-            vec3s light_pos = {1.0f, 2.0f, -1.0f};
             CW::R3D_GetDefaultShader().SetV3("dirLight.direction", vec3s {-light_pos.x,-light_pos.y,-light_pos.z});
 
             CW::R3D_SetPointLight(vec3s {3.0f, 0, 3.0f}, vec3s {0.4f, 0.4f, 0.4f}, vec3s {1.0f, 1.0f, 1.0f}, vec3s {0.5f, 0.5f, 0.5f}, 0.1, 0.3, 0.4f);
 
-            CW::Scene& active_scene = cogwheel->GetSceneManager()->GetActiveScene();
+            cogwheel->GetECS()->UpdateComponenets();
+            //framebuffer->UnBind();
 
-            cogwheel->GetECS()->UpdateComponenets(active_scene);
+           // CW::R3D_RenderTexture(framebuffer->GetTexture());
 
             window->PollEvents();
             window->WinSwapBuffers();
@@ -65,6 +77,8 @@ namespace CWGame {
             case CW::PROJECT_LOAD: {
                 CW::EventData_PROJECT_LOAD* e = (CW::EventData_PROJECT_LOAD*) event.data;
                 window->WinSetTitle(e->project->specification.project_name);
+                window->EnableVSync(e->project->specification.vsync);
+                window->WinSetSize(e->project->specification.windowed_size.x, e->project->specification.windowed_size.y);
             } break;
             case CW::EventType::WINDOW_RESIZE: {
                 CW::EventData_WINDOW_RESIZE *data = (CW::EventData_WINDOW_RESIZE*) event.data;
@@ -72,6 +86,7 @@ namespace CWGame {
                 //int height = (int) (data->width * aspect_ratio);
 
                 CW::R3D_Resize(data->width, data->height);
+                framebuffer->ReCreate(data->width, data->height);
             } break;
             default:
             {

@@ -7,6 +7,8 @@
 #include <direct.h>
 #include <memory>
 
+#include "CWAssert.h"
+
 namespace CW {
 
 	struct HashPair {
@@ -20,10 +22,16 @@ namespace CW {
 				this->count = count;
 				hash_pairs = (HashPair**) calloc(1, count * sizeof(HashPair));
 			}
+			inline ~HashMap() {
+				Clear();
+				free(hash_pairs);
+			}
 
 			inline void Put(size_t key, void *value, int data_size) {
 				size_t hashed = Hash(key);
 				
+				CW_ASSERT(hash_pairs[hashed] == 0, "Slot is already occupied hashmap!");
+
 				HashPair *pair = (HashPair*) calloc(1, sizeof(HashPair));
 				pair->key = key;
 				pair->value = calloc (1, data_size);
@@ -42,8 +50,7 @@ namespace CW {
 			inline void Clear() {
 				for (int i = 0; i < count; i++) {
 					if (hash_pairs[i] != 0) {
-						//delete hash_pairs[i]->value;
-						delete hash_pairs[i];
+						free(hash_pairs[i]);
 					}
 					hash_pairs[i] = 0;
 				}

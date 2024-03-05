@@ -28,6 +28,7 @@ namespace CWEditor {
 
         EventListen(CW::EventType::WINDOW_CLOSE);
         EventListen(CW::EventType::WINDOW_RESIZE);
+        EventListen(CW::EventType::PROJECT_LOAD);
         EventListen(CW::EventType::PROJECT_LOAD_LATE);
 
         glDisable(GL_FRAMEBUFFER_SRGB);
@@ -41,7 +42,6 @@ namespace CWEditor {
         io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;       // Enable Docking
         ImGui_ImplWin32_InitForOpenGL(window->GetHandle());
         ImGui_ImplOpenGL3_Init();
-        //ImGui::StyleColorsDark();
         ImGuiStyleGray();
 
         skybox_texture = CW::CreateCubemapTexture(
@@ -354,9 +354,7 @@ namespace CWEditor {
     }
 
     void ApplicationView::RenderScene() {
-        CW::Scene& active_scene = cogwheel->GetSceneManager()->GetActiveScene();
-
-        cogwheel->GetECS()->UpdateComponenets(active_scene);
+        cogwheel->GetECS()->UpdateComponenets();
     }
     void ApplicationView::OnEvent(CW::Event e) {
         switch (e.event_type) {
@@ -373,9 +371,11 @@ namespace CWEditor {
                 framebuffer_game_view->ReCreate(width, height);
                 CW::R3D_Resize(width, height);
             } break;
-            case CW::EventType::PROJECT_LOAD_LATE: {
+            case CW::EventType::PROJECT_LOAD: {
                 selected_game_object = CW::GameObject {};
                 selected_asset = {};
+            } break;
+            case CW::EventType::PROJECT_LOAD_LATE: {
                 assets_builder->Refresh();
                 current_asset_folder_hash = CW::HashString("");
             } break;

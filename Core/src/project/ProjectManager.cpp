@@ -118,7 +118,7 @@ namespace CW {
                     for (int m = 0; m < mesh_renderer.material_count; m++)
                         mesh_renderer.materials[m] = deserialized.GetSize_t();
                 }
-                for (int i = 5; i < MAX_COMPONENTS; i++){
+                for (int i = BASE_COMPONENTS; i < MAX_COMPONENTS; i++){
                     if (signature.test(i)) {
                         size_t s = component_manager->GetComponentValue(i);
                         AddGenereatedComponent(s, obj);

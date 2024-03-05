@@ -13,7 +13,7 @@ namespace CW {
             ECS(bool build_scripts_dll);
 
             void UpdateBaseComponents();
-            void UpdateComponenets(Scene &scene);
+            void UpdateComponenets();
             void OnEvent(Event event) override;
         private:
             bool build_scripts_dll;

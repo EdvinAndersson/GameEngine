@@ -5,6 +5,7 @@
 #include "CWAssert.h"
 #include "Rendering/Renderer3D.h"
 #include "event/EventManager.h"
+#include "Rendering/Framebuffer.h"
 
 namespace CWGame {
 
@@ -19,5 +20,7 @@ namespace CWGame {
         private:
             CW::Cogwheel *cogwheel;
             CW::Window *window;
+
+            CW::Framebuffer *framebuffer;
     };
 }
