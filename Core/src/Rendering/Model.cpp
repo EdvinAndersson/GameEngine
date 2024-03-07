@@ -76,7 +76,9 @@ namespace CW {
 						mat.specular_map = specularMaps[0];
 
 					char mat_path[256] = {};
-					strcpy(mat_path, material->GetName().C_Str());
+					strcpy(mat_path, asset_path_dir);
+					strcat(mat_path, "/");
+					strcat(mat_path, material->GetName().C_Str());
 					strcat(mat_path, ".mat");
 					AssetManager::Get()->CreateAndLoadMaterialAsset(mat_path, mat);
 					material_indexes[mesh->mMaterialIndex - 1] = AssetManager::Get()->GetMaterialIndex(mat_path);

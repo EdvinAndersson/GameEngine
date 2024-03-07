@@ -34,6 +34,7 @@ namespace CW {
         return texture_data;
     }
     void FreeTextureData(TextureData *texture_data) {
+        CW_ASSERT(texture_data, "NULL");
         if (texture_data->from_memory)
             stbi_image_free(texture_data->data);
     }

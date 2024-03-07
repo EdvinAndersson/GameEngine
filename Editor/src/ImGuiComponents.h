@@ -101,7 +101,10 @@ namespace CWEditor {
         ImGui::PopItemWidth();
 
         for (unsigned int i = 0; i < *array_count; i++) {
-            char buff[256] = {};
+            ImGui::PushID(i);
+            UIAssetInput(asset_type, "", &asset_array[i]);
+            ImGui::PopID();   
+            /*char buff[256] = {};
             switch (asset_type) {
                 case AssetType::MATERIAL: {
                     CW::Material *mat = CW::AssetManager::Get()->GetMaterial(asset_array[i]);
@@ -135,7 +138,7 @@ namespace CWEditor {
                     asset_array[i] = index;
                 }
                 ImGui::EndDragDropTarget();
-            }
+            }*/
         }
         ImGui::PopID();
     }
@@ -174,7 +177,26 @@ namespace CWEditor {
                     }
                 } break;
                 case AssetType::TEXTURE: {
-
+                    auto *loaded_textures = CW::AssetManager::Get()->GetLoadedTextures();
+                    for (auto& it : *loaded_textures) {
+                        CW::TextureData* texture_data = it.second;
+                        if (filter.PassFilter(texture_data->asset_path_dir) && ImGui::Button(texture_data->asset_path_dir)) {
+                            ImGui::CloseCurrentPopup();
+                            ImGui::EndPopup();
+                            return it.first;
+                        }
+                    }
+                } break;
+                case AssetType::MATERIAL: {
+                    auto *loaded_materials = CW::AssetManager::Get()->GetLoadedMaterials();
+                    for (auto& it : *loaded_materials) {
+                        CW::Material* material = it.second;
+                        if (filter.PassFilter(material->asset_path) && ImGui::Button(material->asset_path)) {
+                            ImGui::CloseCurrentPopup();
+                            ImGui::EndPopup();
+                            return it.first;
+                        }
+                    }
                 } break;
                 case AssetType::MESH: {
                     auto *loaded_meshes = CW::AssetManager::Get()->GetLoadedMeshes();

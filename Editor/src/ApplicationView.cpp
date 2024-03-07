@@ -731,7 +731,20 @@ namespace CWEditor {
                 if (ImGui::Button("New Name"))
                     ImGui::OpenPopup("New_Name_Popup");
 
-                if(ImGui::Button("Remove Game Object")){
+                if(ImGui::Button("Duplicate")){
+                    CW::Transform& transform = selected_game_object.GetComponent<CW::Transform>();
+                    
+                    CW::GameObject new_obj = CW::GameObject::Instantiate();
+                    CW::Transform& new_transform = new_obj.GetComponent<CW::Transform>();
+                    new_transform.position = transform.position;
+                    new_transform.rotation = transform.rotation;
+                    new_transform.scale = transform.scale;
+
+                    //selected_game_object = new_obj;
+
+                    ImGui::CloseCurrentPopup();
+                }
+                if(ImGui::Button("Remove")){
                     CW::GameObject::Destory(game_object);
                     selected_game_object = CW::GameObject {0};
                     Console::Log(LogLevel::LOG_ERROR, "Removed GameObject");
