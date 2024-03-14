@@ -44,24 +44,27 @@ namespace CWEditor {
         ImGui::SameLine();
         
         char buff[256] = {};
-        switch (asset_type) {
-            case AssetType::MATERIAL: {
-                CW::Material *mat = CW::AssetManager::Get()->GetMaterial(*asset);
-                if (mat != 0)
-                    strcpy(buff, mat->asset_path);
-            } break;
-            case AssetType::TEXTURE: {
-                CW::TextureData *tex = CW::AssetManager::Get()->GetTextureData(*asset);
-                if (tex != 0)
-                    strcpy(buff, tex->asset_path_dir);
-            } break;
-            case AssetType::MESH: {
-                CW::Mesh *mesh = CW::AssetManager::Get()->GetMesh(*asset);
-                if (mesh != 0)
-                    strcpy(buff, mesh->asset_path);
-            } break;
+
+        if (*asset != 0) {
+            switch (asset_type) {
+                case AssetType::MATERIAL: {
+                    CW::Material *mat = CW::AssetManager::Get()->GetMaterial(*asset);
+                    if (mat != 0)
+                        strcpy(buff, mat->asset_path);
+                } break;
+                case AssetType::TEXTURE: {
+                    CW::TextureData *tex = CW::AssetManager::Get()->GetTextureData(*asset);
+                    if (tex != 0)
+                        strcpy(buff, tex->asset_path_dir);
+                } break;
+                case AssetType::MESH: {
+                    CW::Mesh *mesh = CW::AssetManager::Get()->GetMesh(*asset);
+                    if (mesh != 0)
+                        strcpy(buff, mesh->asset_path);
+                } break;
+            }
         }
-    
+        
         size_t asset_index = RenderAssetPopup(CW::GameObject {}, asset_type);
         if (asset_index != 0)
             *asset = asset_index;
@@ -70,6 +73,7 @@ namespace CWEditor {
         if (ImGui::Button(buff, ImVec2(ImGui::GetWindowSize().x, 0.0f))){
             OpenAssetPopup();
         }
+        
         ImGui::PopStyleVar();
         if (ImGui::BeginDragDropTarget())
         {
@@ -103,42 +107,7 @@ namespace CWEditor {
         for (unsigned int i = 0; i < *array_count; i++) {
             ImGui::PushID(i);
             UIAssetInput(asset_type, "", &asset_array[i]);
-            ImGui::PopID();   
-            /*char buff[256] = {};
-            switch (asset_type) {
-                case AssetType::MATERIAL: {
-                    CW::Material *mat = CW::AssetManager::Get()->GetMaterial(asset_array[i]);
-                    if (mat != 0)
-                        sprintf(buff, "%s", mat->asset_path);
-                } break;
-                case AssetType::TEXTURE: {
-                    CW::TextureData *tex = CW::AssetManager::Get()->GetTextureData(asset_array[i]);
-                    if (tex != 0)
-                        sprintf(buff, "%s", tex->asset_path_dir);
-                } break;
-                case AssetType::MESH: {
-                    CW::Mesh *mesh = CW::AssetManager::Get()->GetMesh(asset_array[i]);
-                    if (mesh != 0)
-                        sprintf(buff, "%s", mesh->asset_path);
-                } break;
-            }
-            char material_label[32] = {};
-            sprintf(material_label, "%s %i", title, i);
-            
-            ImGui::PushItemWidth(-FLT_EPSILON);
-            ImGui::InputText(material_label, buff, 128, ImGuiInputTextFlags_ReadOnly);
-            ImGui::PopItemWidth();
-            if (ImGui::BeginDragDropTarget())
-            {
-                if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(title))
-                {
-                    IM_ASSERT(payload->DataSize == sizeof(size_t));
-                    size_t index = *(const size_t*)payload->Data;
-                    
-                    asset_array[i] = index;
-                }
-                ImGui::EndDragDropTarget();
-            }*/
+            ImGui::PopID();
         }
         ImGui::PopID();
     }

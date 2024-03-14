@@ -533,7 +533,8 @@ namespace CWEditor {
                 if (UIAssetInput(AssetType::TEXTURE, "Specular", &material->specular_map)) updated = true;
 
                 if (updated) {
-                    //CW::AssetManager::CreateAndLoadMaterialAsset()
+                    Console::Log("Updated!");
+                    CW::AssetManager::Get()->CreateAndLoadMaterialAsset(material->asset_path, *material);
                 }
             } break;
             case AssetType::MESH: {

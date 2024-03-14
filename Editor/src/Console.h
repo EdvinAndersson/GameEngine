@@ -2,7 +2,7 @@
 
 namespace CWEditor {
 
-    #define MAX_LOG_ENTRIES 256
+    #define MAX_LOG_ENTRIES 1024
 
     enum LogLevel {
         LOG_NORMAL,

@@ -182,6 +182,7 @@ namespace CW {
 
     Texture AssetManager::GetTexture(char *path) {
         size_t hashed_path = HashString(path);
+        CW_ASSERT(loaded_textures.find(hashed_path) != loaded_textures.end(), "Texture doesn't exist!");
 
         return loaded_textures[hashed_path]->texture;
     }
@@ -256,6 +257,8 @@ namespace CW {
     }
 
     Material* AssetManager::GetMaterial(MaterialIndex material_index) {
+        CW_ASSERT(loaded_materials.find(material_index) != loaded_materials.end(), "Material doesn't exist!");
+
         return loaded_materials[material_index];
     }
 
@@ -265,6 +268,7 @@ namespace CW {
 
     void AssetManager::LoadMesh(char *path) {
         size_t hashed_path = HashString(path);
+        CW_ASSERT(loaded_meshes.find(hashed_path) != loaded_meshes.end(), "Meshes doesn't exist!");
 
         if (loaded_meshes.find(hashed_path) != loaded_meshes.end()){
             printf("Mesh is already loaded! %s\n", path);
