@@ -73,7 +73,14 @@ namespace CWGame {
                 CW::EventData_PROJECT_LOAD* e = (CW::EventData_PROJECT_LOAD*) event.data;
                 window->WinSetTitle(e->project->specification.project_name);
                 window->EnableVSync(e->project->specification.vsync);
-                window->WinSetSize(e->project->specification.windowed_size.x, e->project->specification.windowed_size.y);
+                switch (e->project->specification.resolution_mode) {
+                    case CW::ResolutionMode::WINDOWED: {
+                        window->WinSetSize(e->project->specification.windowed_size.x, e->project->specification.windowed_size.y);
+                    } break;
+                    case CW::ResolutionMode::FULLSCREEN: {
+                        window->WinSetFullscreen(true);
+                    } break;
+                }
             } break;
             case CW::EventType::WINDOW_RESIZE: {
                 CW::EventData_WINDOW_RESIZE *data = (CW::EventData_WINDOW_RESIZE*) event.data;

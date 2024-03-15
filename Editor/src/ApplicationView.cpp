@@ -428,6 +428,11 @@ namespace CWEditor {
             }
             ImGui::PopStyleVar();
         }
+
+        // Project Settings
+        if(show_project_settings)
+            RenderProjectSettings();
+
         ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
         ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
         
@@ -489,6 +494,9 @@ namespace CWEditor {
                     f_FileSystem->Release();
                     CoUninitialize();
                     printf("yes\n");            
+                }
+                if (ImGui::MenuItem("Project Settings")) {
+                    ShowProjectSettings(true);
                 }
                 if (ImGui::MenuItem("Close"))
                     ImGui::CloseCurrentPopup();
@@ -765,6 +773,47 @@ namespace CWEditor {
             ImGui::EndPopup();
         }
         return is_clicked;
+    }
+    void ApplicationView::RenderProjectSettings() {
+        ImGui::SetNextWindowSize(ImVec2(500, 440), ImGuiCond_FirstUseEver);
+        if (ImGui::Begin("Example: Simple layout", &show_project_settings, ImGuiWindowFlags_MenuBar))
+        {
+            ImGui::BeginGroup();
+            ImGui::BeginChild("item view", ImVec2(0, -ImGui::GetFrameHeightWithSpacing()));
+            if (ImGui::BeginTabBar("##Tabs", ImGuiTabBarFlags_None))
+            {
+                if (ImGui::BeginTabItem("Settings"))
+                {
+                    CW::ProjectSpecification& spec = cogwheel->GetProjectManager()->GetCurrentProject()->specification;
+                    ImGui::Text("Project name: ");
+                    char buff[256] = {};
+                    strcpy(buff, spec.project_name);
+                    ImGui::PushItemWidth(-FLT_EPSILON);
+                    if (ImGui::InputText("Project Name", buff, PROJECT_NAME_SIZE)) {
+                        //strncpy(spec.project_name, buff, PROJECT_NAME_SIZE);
+                    }
+                    ImGui::PopItemWidth();
+
+                    const char* items[] = { "Windowed", "Fullscreen" };
+                    ImGui::Text("Resolution mode: ");
+                    ImGui::PushItemWidth(-FLT_EPSILON);
+                    ImGui::Combo("Resolution Mode", (int*)&spec.resolution_mode, items, IM_ARRAYSIZE(items));
+                    ImGui::PopItemWidth();
+
+                    ImGui::Checkbox("Vsync", &spec.vsync);
+
+                    ImGui::EndTabItem();
+                }
+                if (ImGui::BeginTabItem("Render Settings")) {
+                    ImGui::Text("ID: 0123456789");
+                    ImGui::EndTabItem();
+                }
+                ImGui::EndTabBar();
+            }
+            ImGui::EndChild();
+            ImGui::EndGroup();
+        }
+        ImGui::End();
     }
     bool ApplicationView::CheckNameConflict(char *name){
         CW::Scene& active_scene = cogwheel->GetSceneManager()->GetActiveScene();

@@ -5,6 +5,7 @@
 #include "Core/src/Rendering/Renderer3D.h"
 #include "Core/src/Rendering/Framebuffer.h"
 #include "Core/src/Utility.h"
+#include "Core/src/project/ProjectSpecification.h"
 
 #include "tools/GeneratedComponentsUtility.h"
 
@@ -36,7 +37,9 @@ namespace CWEditor {
             void RenderAssets();
             void RenderComponents();
             void RenderAssetInspector();
+            void RenderProjectSettings();
 
+            inline void ShowProjectSettings(bool show) { show_project_settings = show; }
             bool ShowPopup(CW::GameObject game_object);
             bool CheckNameConflict(char * name);
             char* GetSubDirectory(char *dir);
@@ -53,6 +56,8 @@ namespace CWEditor {
             AssetsBuilder *assets_builder;
             vec2s asset_view_size = { 70.0f, 100.0f };
             size_t current_asset_folder_hash;
+
+            bool show_project_settings = false;
 
             CW::TextureIndex t[8] = {};
             unsigned int count = 0;

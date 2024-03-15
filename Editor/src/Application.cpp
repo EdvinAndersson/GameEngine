@@ -31,7 +31,7 @@ namespace CWEditor {
         #if 1
         { //Create project
             CW::ProjectSpecification spec;
-            spec.project_name = "Unnamed Project";
+            strcpy(spec.project_name, "Unnamed Project");
             spec.vsync = true;
             spec.resolution_mode = CW::ResolutionMode::WINDOWED;
             spec.windowed_size = vec2s { 1920, 1080 };

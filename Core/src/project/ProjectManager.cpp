@@ -66,7 +66,7 @@ namespace CW {
         
         Deserialize deserialized(data, ';');
 
-        project_specification.project_name = deserialized.GetString();
+        strncpy(project_specification.project_name, deserialized.GetString(), PROJECT_NAME_SIZE);
         project_specification.resolution_mode = (CW::ResolutionMode) deserialized.GetInt();
         project_specification.vsync = deserialized.GetInt();
         project_specification.windowed_size = vec2s { (float) deserialized.GetInt(), (float) deserialized.GetInt() };
