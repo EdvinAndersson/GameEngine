@@ -265,26 +265,10 @@ namespace CWEditor {
             if (ImGui::Button("Save project")) {
                 cogwheel->GetProjectManager()->SaveProject();
             }
-            if (ImGui::Button("Load project 1")) {
-                cogwheel->GetProjectManager()->LoadProject("Editor/res/projects/Project1/Unnamed Project.proj");
-            }
-            if (ImGui::Button("Load project 2")) {
-                cogwheel->GetProjectManager()->LoadProject("Editor/res/projects/Project2/Unnamed Project.proj");
-            }
             ImGui::Spacing();
             ImGui::Spacing();
             ImGui::Text("Scene changes");
             static CW::MaterialIndex material = CW::AssetManager::Get()->GetDefaultMaterialIndex();
-            if (ImGui::Button("Create Random Cube")) {
-                CW::GameObject obj = CW::GameObject::Instantiate(vec3s {(float) (CW::Random()*2.0f-1)*5, (float) (CW::Random()*2.0f-1)*5, -5-(float) CW::Random()*5.0f });
-                obj.GetComponent<CW::Transform>().rotation = vec3s {0, glm_rad(0), 0};               
-                CW::MeshRenderer& mesh_renderer = obj.AddComponent<CW::MeshRenderer>();
-                CW::ModelIndex model_index = CW::AssetManager::Get()->GetModelIndex("brick/brick.obj");
-                CW::Model *model = CW::AssetManager::Get()->GetModel(model_index);
-                mesh_renderer.mesh = model_index;
-                memcpy(mesh_renderer.materials, model->material_indexes, MAX_MATERIALS * sizeof(CW::MaterialIndex));
-                mesh_renderer.material_count = model->material_count;
-            }
             if(ImGui::IsItemHovered(ImGuiHoveredFlags_DelayNormal)){
                 ImGui::SetTooltip("Creates a random cube guess were XD");
             }
@@ -435,58 +419,7 @@ namespace CWEditor {
                     
                 }
                 if (ImGui::MenuItem("Load Project")) {
-                    std::string sSelectedFile;
-                    std::string sFilePath;       
-                    //  CREATE FILE OBJECT INSTANCE   
-                    HRESULT f_SysHr = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
-                    if (FAILED(f_SysHr))
-                        printf("failed\n");
-                    // CREATE FileOpenDialog OBJECT
-                    IFileOpenDialog* f_FileSystem;
-                    f_SysHr = CoCreateInstance(CLSID_FileOpenDialog, NULL, CLSCTX_ALL, IID_IFileOpenDialog, reinterpret_cast<void**>(&f_FileSystem));
-                    if (FAILED(f_SysHr)) {
-                        CoUninitialize();
-                        printf("failed\n");
-                    }
-                    //  SHOW OPEN FILE DIALOG WINDOW
-                    f_SysHr = f_FileSystem->Show(NULL);
-                    if (FAILED(f_SysHr)) {
-                        f_FileSystem->Release();
-                        CoUninitialize();
-                        printf("failed\n");
-                    }
-                    //  RETRIEVE FILE NAME FROM THE SELECTED ITEM
-                    IShellItem* f_Files;
-                    f_SysHr = f_FileSystem->GetResult(&f_Files);
-                    if (FAILED(f_SysHr)) {
-                        f_FileSystem->Release();
-                        CoUninitialize();
-                        printf("failed\n");
-                    }
-                    //  STORE AND CONVERT THE FILE NAME
-                    PWSTR f_Path;
-                    f_SysHr = f_Files->GetDisplayName(SIGDN_FILESYSPATH, &f_Path);
-                    if (FAILED(f_SysHr)) {
-                        f_Files->Release();
-                        f_FileSystem->Release();
-                        CoUninitialize();
-                        printf("failed\n");
-                    }  
-                    //  FORMAT AND STORE THE FILE PATH
-                    std::wstring path(f_Path);
-                    std::string c(path.begin(), path.end());
-                    sFilePath = c;
-
-                    //  FORMAT STRING FOR EXECUTABLE NAME
-                    const size_t slash = sFilePath.find_last_of("/\\");
-                    sSelectedFile = sFilePath.substr(slash + 1);
-
-                    //  SUCCESS, CLEAN UP
-                    CoTaskMemFree(f_Path);
-                    f_Files->Release();
-                    f_FileSystem->Release();
-                    CoUninitialize();
-                    printf("yes\n");            
+                    cogwheel->GetProjectManager()->LoadProject((char*)GetProjectFilePath().c_str());
                 }
                 if (ImGui::MenuItem("Project Settings")) {
                     ShowProjectSettings(true);
@@ -810,6 +743,57 @@ namespace CWEditor {
             ImGui::EndGroup();
         }
         ImGui::End();
+    }
+    std::string ApplicationView::GetProjectFilePath(){
+        std::string sFilePath;       
+        //  CREATE FILE OBJECT INSTANCE   
+        HRESULT f_SysHr = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
+        if (FAILED(f_SysHr))
+            return "0";
+        // CREATE FileOpenDialog OBJECT
+        IFileOpenDialog* f_FileSystem;
+        f_SysHr = CoCreateInstance(CLSID_FileOpenDialog, NULL, CLSCTX_ALL, IID_IFileOpenDialog, reinterpret_cast<void**>(&f_FileSystem));
+        if (FAILED(f_SysHr)) {
+            CoUninitialize();
+            return "0";
+        }
+        //  SHOW OPEN FILE DIALOG WINDOW
+        f_SysHr = f_FileSystem->Show(NULL);
+        if (FAILED(f_SysHr)) {
+            f_FileSystem->Release();
+            CoUninitialize();
+            return "0";
+        }
+        //  RETRIEVE FILE NAME FROM THE SELECTED ITEM
+        IShellItem* f_Files;
+        f_SysHr = f_FileSystem->GetResult(&f_Files);
+        if (FAILED(f_SysHr)) {
+            f_FileSystem->Release();
+            CoUninitialize();
+            return "0";
+        }
+        //  STORE AND CONVERT THE FILE NAME
+        PWSTR f_Path;
+        f_SysHr = f_Files->GetDisplayName(SIGDN_FILESYSPATH, &f_Path);
+        if (FAILED(f_SysHr)) {
+            f_Files->Release();
+            f_FileSystem->Release();
+            CoUninitialize();
+            return "0";
+        }  
+        //  FORMAT AND STORE THE FILE PATH
+        std::wstring path(f_Path);
+        std::string c(path.begin(), path.end());
+        sFilePath = c;
+
+        //  SUCCESS, CLEAN UP
+        CoTaskMemFree(f_Path);
+        f_Files->Release();
+        f_FileSystem->Release();
+        CoUninitialize();
+        std::replace(sFilePath.begin(), sFilePath.end(), '\\', '/');
+        return sFilePath;            
+                
     }
     bool ApplicationView::CheckNameConflict(char *name){
         CW::Scene& active_scene = cogwheel->GetSceneManager()->GetActiveScene();
