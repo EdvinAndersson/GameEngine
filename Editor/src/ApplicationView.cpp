@@ -272,26 +272,10 @@ namespace CWEditor {
             if (ImGui::Button("Save project")) {
                 cogwheel->GetProjectManager()->SaveProject();
             }
-            if (ImGui::Button("Load project 1")) {
-                cogwheel->GetProjectManager()->LoadProject("Editor/res/projects/Project1/Unnamed Project.proj");
-            }
-            if (ImGui::Button("Load project 2")) {
-                cogwheel->GetProjectManager()->LoadProject("Editor/res/projects/Project2/Unnamed Project.proj");
-            }
             ImGui::Spacing();
             ImGui::Spacing();
             ImGui::Text("Scene changes");
             static CW::MaterialIndex material = CW::AssetManager::Get()->GetDefaultMaterialIndex();
-            if (ImGui::Button("Create Random Cube")) {
-                CW::GameObject obj = CW::GameObject::Instantiate(vec3s {(float) (CW::Random()*2.0f-1)*5, (float) (CW::Random()*2.0f-1)*5, -5-(float) CW::Random()*5.0f });
-                obj.GetComponent<CW::Transform>().rotation = vec3s {0, glm_rad(0), 0};               
-                CW::MeshRenderer& mesh_renderer = obj.AddComponent<CW::MeshRenderer>();
-                CW::ModelIndex model_index = CW::AssetManager::Get()->GetModelIndex("brick/brick.obj");
-                CW::Model *model = CW::AssetManager::Get()->GetModel(model_index);
-                mesh_renderer.mesh = model_index;
-                memcpy(mesh_renderer.materials, model->material_indexes, MAX_MATERIALS * sizeof(CW::MaterialIndex));
-                mesh_renderer.material_count = model->material_count;
-            }
             if(ImGui::IsItemHovered(ImGuiHoveredFlags_DelayNormal)){
                 ImGui::SetTooltip("Creates a random cube guess were XD");
             }
@@ -442,7 +426,7 @@ namespace CWEditor {
                     
                 }
                 if (ImGui::MenuItem("Load Project")) {
-                    loadProject();
+                    cogwheel->GetProjectManager()->LoadProject((char*)GetProjectFilePath().c_str());
                 }
                 if (ImGui::MenuItem("Project Settings")) {
                     ShowProjectSettings(true);
@@ -764,8 +748,7 @@ namespace CWEditor {
         }
         ImGui::End();
     }
-    std::string ApplicationView::loadProject(){
-        std::string sSelectedFile;
+    std::string ApplicationView::GetProjectFilePath(){
         std::string sFilePath;       
         //  CREATE FILE OBJECT INSTANCE   
         HRESULT f_SysHr = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
@@ -807,16 +790,13 @@ namespace CWEditor {
         std::string c(path.begin(), path.end());
         sFilePath = c;
 
-        //  FORMAT STRING FOR EXECUTABLE NAME
-        const size_t slash = sFilePath.find_last_of("/\\");
-        sSelectedFile = sFilePath.substr(slash + 1);
-
         //  SUCCESS, CLEAN UP
         CoTaskMemFree(f_Path);
         f_Files->Release();
         f_FileSystem->Release();
         CoUninitialize();
-        return sSelectedFile;            
+        std::replace(sFilePath.begin(), sFilePath.end(), '\\', '/');
+        return sFilePath;            
                 
     }
     bool ApplicationView::CheckNameConflict(char *name){
