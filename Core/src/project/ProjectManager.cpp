@@ -118,6 +118,11 @@ namespace CW {
                     for (int m = 0; m < mesh_renderer.material_count; m++)
                         mesh_renderer.materials[m] = deserialized.GetSize_t();
                 }
+                if (signature.test(3)) {
+                    CW::Camera& camera = obj.AddComponent<CW::Camera>();
+                    camera.fov = deserialized.GetFloat();
+                    camera.is_main = deserialized.GetInt();
+                }
                 for (int i = BASE_COMPONENTS; i < MAX_COMPONENTS; i++){
                     if (signature.test(i)) {
                         size_t s = component_manager->GetComponentValue(i);
@@ -159,6 +164,7 @@ namespace CW {
         serialized.SubmitInt(current_project->specification.vsync);
         serialized.SubmitInt(current_project->specification.windowed_size.x);
         serialized.SubmitInt(current_project->specification.windowed_size.y);
+
         serialized.SubmitInt(scene_manager->GetSceneCount());
         for (unsigned int i = 0; i < scene_manager->GetSceneCount(); i++) {
             Scene& scene = scene_manager->GetScenes()[i];
@@ -193,6 +199,11 @@ namespace CW {
                     serialized.SubmitSize_t(mesh_renderer.material_count);
                     for (int m = 0; m < mesh_renderer.material_count; m++)
                         serialized.SubmitSize_t(mesh_renderer.materials[m]);
+                }
+                if (obj.HasComponent<CW::Camera>()) {
+                    CW::Camera& camera = obj.GetComponent<CW::Camera>();
+                    serialized.SubmitFloat(camera.fov);
+                    serialized.SubmitInt(camera.is_main);
                 }
             }
         }

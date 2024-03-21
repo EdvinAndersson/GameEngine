@@ -132,6 +132,14 @@ namespace CWEditor {
                             ImGui::CloseCurrentPopup();
                         }
                     }
+                    if (!game_object.HasComponent<CW::Camera>() && filter.PassFilter("Camera")) {
+                        if (ImGui::Button("Camera")){
+                            CW::Camera& cam = game_object.AddComponent<CW::Camera>();
+                            cam.is_main = true;
+                            cam.fov = 45.0f;
+                            ImGui::CloseCurrentPopup();
+                        }
+                    }
 
                     auto *loaded_scripts = CW::AssetManager::Get()->GetLoadedScripts();
                     for (auto& it : *loaded_scripts) {

@@ -102,7 +102,6 @@ namespace CWEditor {
         if (window->GetInputState(CW::SHIFT)) {
             dev_pos.y -= 0.1f;
         }
-
         if (window->GetInputState(CW::UP)) {
             light_pos.z += 0.1f;
         }
@@ -116,12 +115,6 @@ namespace CWEditor {
             light_pos.x += 0.1f;
         }
 
-        mat4s view = GLMS_MAT4_IDENTITY_INIT;
-        view = glms_translate(view, pos);
-        view = glms_mat4_mul(glms_quat_mat4(glms_euler_xyz_quat(cam_rot)), view);
-        view = glms_scale(view, vec3s { 1.0f, -1.0f, 1.0f });
-        CW::R3D_SetViewModel(view);
-        CW::R3D_SetViewPos(pos);
         {
             ImGui::Begin("Game View");
 
@@ -142,7 +135,7 @@ namespace CWEditor {
             
             RenderScene();
 
-            CW::R3D_RenderSkybox(skybox_texture->texture, view);
+            CW::R3D_RenderSkybox(skybox_texture->texture, CW::g_main_camera->view);
             
             framebuffer_game_view->UnBind();
 
@@ -776,7 +769,7 @@ namespace CWEditor {
     }
     void ApplicationView::RenderProjectSettings() {
         ImGui::SetNextWindowSize(ImVec2(500, 440), ImGuiCond_FirstUseEver);
-        if (ImGui::Begin("Example: Simple layout", &show_project_settings, ImGuiWindowFlags_MenuBar))
+        if (ImGui::Begin("Project Settings", &show_project_settings, ImGuiWindowFlags_MenuBar))
         {
             ImGui::BeginGroup();
             ImGui::BeginChild("item view", ImVec2(0, -ImGui::GetFrameHeightWithSpacing()));
@@ -785,19 +778,22 @@ namespace CWEditor {
                 if (ImGui::BeginTabItem("Settings"))
                 {
                     CW::ProjectSpecification& spec = cogwheel->GetProjectManager()->GetCurrentProject()->specification;
-                    ImGui::Text("Project name: ");
-                    char buff[256] = {};
-                    strcpy(buff, spec.project_name);
-                    ImGui::PushItemWidth(-FLT_EPSILON);
-                    if (ImGui::InputText("Project Name", buff, PROJECT_NAME_SIZE)) {
-                        //strncpy(spec.project_name, buff, PROJECT_NAME_SIZE);
-                    }
-                    ImGui::PopItemWidth();
+                    ImGui::Text("Project name: %s", spec.project_name);
 
                     const char* items[] = { "Windowed", "Fullscreen" };
                     ImGui::Text("Resolution mode: ");
                     ImGui::PushItemWidth(-FLT_EPSILON);
-                    ImGui::Combo("Resolution Mode", (int*)&spec.resolution_mode, items, IM_ARRAYSIZE(items));
+                    ImGui::Combo("Resolution mode", (int*)&spec.resolution_mode, items, IM_ARRAYSIZE(items));
+                    ImGui::PopItemWidth();
+
+                    ImGuiInputTextFlags flags = ImGuiInputTextFlags_CharsDecimal;
+                    if (spec.resolution_mode != CW::ResolutionMode::WINDOWED) flags |= ImGuiInputTextFlags_ReadOnly;
+                    ImGui::Text("Resolution size: ");
+                    ImGui::PushItemWidth(-FLT_EPSILON);
+                    int size[2] = { (int) spec.windowed_size.raw[0], (int) spec.windowed_size.raw[1] };
+                    ImGui::InputInt2("Resolution size", size, flags);
+                    spec.windowed_size.x = (float) size[0];
+                    spec.windowed_size.y = (float) size[1];
                     ImGui::PopItemWidth();
 
                     ImGui::Checkbox("Vsync", &spec.vsync);

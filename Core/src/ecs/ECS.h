@@ -6,6 +6,7 @@
 #include "assets/AssetManager.h"
 #include "GameObject.h"
 #include "Rendering/Renderer3D.h"
+#include "Rendering/WorldCamera.h"
 
 namespace CW {
     class ECS : public IEventListener {

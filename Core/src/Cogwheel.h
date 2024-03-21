@@ -5,6 +5,7 @@
 #include "scene/SceneManager.h"
 #include "project/ProjectManager.h"
 #include "assets/AssetManager.h"
+#include "Rendering/WorldCamera.h"
 
 namespace CW {
 
@@ -28,6 +29,7 @@ namespace CW {
             SceneManager *scene_manager;
             ProjectManager *project_manager;
             AssetManager *asset_manager;
+
             bool running;
     };
 }

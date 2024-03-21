@@ -5,6 +5,8 @@
 
 namespace CW {
 
+    WorldCamera *g_main_camera = new WorldCamera();
+
     Cogwheel::Cogwheel() {}
 
     Cogwheel::~Cogwheel() {
@@ -12,6 +14,7 @@ namespace CW {
         delete ecs;
         delete scene_manager;
         delete project_manager;
+        delete g_main_camera;
     }
 
     int Cogwheel::Init(bool build_scripts_dll) {
@@ -31,6 +34,8 @@ namespace CW {
 
     void Cogwheel::Update() {
         //Update systems here
+        
+        g_main_camera->Update();
     }
 
     void Cogwheel::Stop() {

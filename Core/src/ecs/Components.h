@@ -24,5 +24,6 @@ namespace CW {
     };
     struct Camera {
         bool is_main;
+        float fov;
     };
 }

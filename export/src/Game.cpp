@@ -36,11 +36,12 @@ namespace CWGame {
         while (cogwheel->IsRunning()) {
             cogwheel->Update();
 
-            mat4s view = GLMS_MAT4_IDENTITY_INIT;
-            view = glms_translate(view, {0,0,0});
-            view = glms_mat4_mul(glms_quat_mat4(glms_euler_xyz_quat({0,0,0})), view);
-            CW::R3D_SetViewModel(view);
-            CW::R3D_SetViewPos({0,0,0});
+            //mat4s view = GLMS_MAT4_IDENTITY_INIT;
+            //view = glms_translate(view, {0,0,0});
+            //view = glms_mat4_mul(glms_quat_mat4(glms_euler_xyz_quat({0,0,0})), view);
+            //CW::R3D_SetViewModel(view);
+            //CW::R3D_SetViewPos({0,0,0});
+            
             vec3s light_pos = {1.0f, 2.0f, -1.0f};
 
             //Shadow pass
@@ -73,6 +74,7 @@ namespace CWGame {
                 CW::EventData_PROJECT_LOAD* e = (CW::EventData_PROJECT_LOAD*) event.data;
                 window->WinSetTitle(e->project->specification.project_name);
                 window->EnableVSync(e->project->specification.vsync);
+                
                 switch (e->project->specification.resolution_mode) {
                     case CW::ResolutionMode::WINDOWED: {
                         window->WinSetSize(e->project->specification.windowed_size.x, e->project->specification.windowed_size.y);

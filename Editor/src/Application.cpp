@@ -25,6 +25,7 @@ namespace CWEditor {
 
         cogwheel = new CW::Cogwheel();
         cogwheel->Init();
+        CW::g_main_camera->flip_y = -1;
 
         CW::R3D_Init(window);
         

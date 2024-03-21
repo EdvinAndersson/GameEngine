@@ -32,6 +32,15 @@ namespace CW {
         size_t size = components->GetComponentArraySize();
         auto comp_datas = components->GetComponentArrayData();
         for (int i = 0; i < size; i++) {
+            GameObject game_object = GameObject { components->GetEntity(i) };
+            Transform& transform = game_object.GetComponent<Transform>();
+            Camera& camera = game_object.GetComponent<Camera>();
+            if (camera.is_main) {
+                CW::g_main_camera->pos = transform.position;
+                CW::g_main_camera->pos.x = -CW::g_main_camera->pos.x;
+                CW::g_main_camera->rotation = transform.rotation;
+                CW::g_main_camera->fov = camera.fov;
+            }
         }
     }
 
