@@ -43,6 +43,7 @@ namespace CWEditor {
             bool ShowPopup(CW::GameObject game_object);
             bool CheckNameConflict(char * name);
             char* GetSubDirectory(char *dir);
+            std::string loadProject();
 
             CW::Framebuffer *framebuffer_game_view, *framebuffer_dev_view;
             CW::Cogwheel *cogwheel;
