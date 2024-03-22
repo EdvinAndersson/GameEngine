@@ -83,38 +83,6 @@ namespace CWEditor {
         ImGui::NewFrame();
 
         RenderDockspace();
-
-        if (window->GetInputState(CW::W)) {
-            dev_pos.z += 0.1f;
-        }
-        if (window->GetInputState(CW::A)) {
-            dev_pos.x += 0.1f;
-        }
-        if (window->GetInputState(CW::S)) {
-            dev_pos.z -= 0.1f;
-        }
-        if (window->GetInputState(CW::D)) {
-            dev_pos.x -= 0.1f;
-        }
-        if (window->GetInputState(CW::SPACE)) {
-            dev_pos.y += 0.1f;
-        }
-        if (window->GetInputState(CW::SHIFT)) {
-            dev_pos.y -= 0.1f;
-        }
-        if (window->GetInputState(CW::UP)) {
-            light_pos.z += 0.1f;
-        }
-        if (window->GetInputState(CW::DOWN)) {
-            light_pos.z -= 0.1f;
-        }
-        if (window->GetInputState(CW::LEFT)) {
-            light_pos.x -= 0.1f;
-        }
-        if (window->GetInputState(CW::RIGHT)) {
-            light_pos.x += 0.1f;
-        }
-
         {
             ImGui::Begin("Game View");
 
@@ -131,7 +99,7 @@ namespace CWEditor {
             CW::R3D_UseDefaultShader();
             CW::R3D_GetDefaultShader().SetV3("dirLight.direction", vec3s {-light_pos.x,-light_pos.y,-light_pos.z});
 
-            CW::R3D_SetPointLight(vec3s {3.0f, 0, 3.0f}, vec3s {0.4f, 0.4f, 0.4f}, vec3s {1.0f, 1.0f, 1.0f}, vec3s {0.5f, 0.5f, 0.5f}, 0.1, 0.3, 0.4f);
+            CW::R3D_SetPointLight(vec3s {3.0f, 0.0f, 3.0f}, vec3s {0.4f, 0.4f, 0.4f}, vec3s {1.0f, 1.0f, 1.0f}, vec3s {0.5f, 0.5f, 0.5f}, 0.1f, 0.3f, 0.4f);
             
             RenderScene();
 
@@ -153,6 +121,43 @@ namespace CWEditor {
         CW::R3D_SetViewPos(dev_pos);
         {
             ImGui::Begin("Dev View");
+            static bool down = false;
+            if (ImGui::IsWindowHovered()) {
+                if (ImGui::IsMouseDown(ImGuiMouseButton_Right)) {
+                    if (!down) {
+                        Console::Log("Hide Cursor");
+                        window->WinShowCursor(false);
+                        down = true;
+                    }
+                } else {
+                    if (down) {
+                        Console::Log("Show Cursor");
+                        window->WinShowCursor(true);
+                        down = false;
+                    }
+                }
+
+                window->WinShowCursor(!down);
+                
+                if (window->GetInputState(CW::W)) {
+                    dev_pos.z += 0.1f;
+                }
+                if (window->GetInputState(CW::A)) {
+                    dev_pos.x += 0.1f;
+                }
+                if (window->GetInputState(CW::S)) {
+                    dev_pos.z -= 0.1f;
+                }
+                if (window->GetInputState(CW::D)) {
+                    dev_pos.x -= 0.1f;
+                }
+                if (window->GetInputState(CW::SPACE)) {
+                    dev_pos.y += 0.1f;
+                }
+                if (window->GetInputState(CW::SHIFT)) {
+                    dev_pos.y -= 0.1f;
+                }
+            }
 
             //Shadow pass
             CW::R3D_BeginShadowPass(light_pos);
