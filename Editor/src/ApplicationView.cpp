@@ -193,7 +193,7 @@ namespace CWEditor {
             ImGui::End();
         }
         {
-            ImGui::ShowDemoWindow();
+            //ImGui::ShowDemoWindow();
             ImGui::Begin("Scene objects");
             CW::Scene& active_scene = cogwheel->GetSceneManager()->GetActiveScene();
             static int selection_mask = (1 << 2);
@@ -265,7 +265,7 @@ namespace CWEditor {
 
             ImGui::Begin("Assets");
             RenderAssetCreationPopup();
-            if (ImGui::IsMouseClicked(ImGuiMouseButton_Right) && (ImGui::IsWindowHovered() || ImGui::IsAnyItemHovered())) {
+            if (ImGui::IsMouseClicked(ImGuiMouseButton_Right) && ImGui::IsWindowHovered()) {
                 OpenAssetCreationPopup();
             }
             RenderAssets();
