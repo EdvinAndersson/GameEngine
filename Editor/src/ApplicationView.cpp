@@ -53,7 +53,8 @@ namespace CWEditor {
             CW::AssetManager::Get()->GetTextureIndex("images/skybox/back.jpg"));
         
         CW::GameObject camera = CW::GameObject::Instantiate(vec3s {0, 4, 0 });
-        camera.AddComponent<CW::Camera>();
+        CW::Camera& c = camera.AddComponent<CW::Camera>();
+        c.is_main = true;
         strcpy(camera.GetComponent<CW::Transform>().name, "Camera");
 
         CW::GameObject obj = CW::GameObject::Instantiate(vec3s {0, -4, 0 });
@@ -125,37 +126,36 @@ namespace CWEditor {
             if (ImGui::IsWindowHovered()) {
                 if (ImGui::IsMouseDown(ImGuiMouseButton_Right)) {
                     if (!down) {
-                        Console::Log("Hide Cursor");
                         window->WinShowCursor(false);
                         down = true;
                     }
                 } else {
                     if (down) {
-                        Console::Log("Show Cursor");
                         window->WinShowCursor(true);
                         down = false;
                     }
                 }
 
-                window->WinShowCursor(!down);
-                
-                if (window->GetInputState(CW::W)) {
-                    dev_pos.z += 0.1f;
-                }
-                if (window->GetInputState(CW::A)) {
-                    dev_pos.x += 0.1f;
-                }
-                if (window->GetInputState(CW::S)) {
-                    dev_pos.z -= 0.1f;
-                }
-                if (window->GetInputState(CW::D)) {
-                    dev_pos.x -= 0.1f;
-                }
-                if (window->GetInputState(CW::SPACE)) {
-                    dev_pos.y += 0.1f;
-                }
-                if (window->GetInputState(CW::SHIFT)) {
-                    dev_pos.y -= 0.1f;
+                //window->WinShowCursor(!down); TODO: FIX
+                if (down) {
+                    if (window->GetInputState(CW::W)) {
+                        dev_pos.z += 0.1f;
+                    }
+                    if (window->GetInputState(CW::A)) {
+                        dev_pos.x += 0.1f;
+                    }
+                    if (window->GetInputState(CW::S)) {
+                        dev_pos.z -= 0.1f;
+                    }
+                    if (window->GetInputState(CW::D)) {
+                        dev_pos.x -= 0.1f;
+                    }
+                    if (window->GetInputState(CW::SPACE)) {
+                        dev_pos.y += 0.1f;
+                    }
+                    if (window->GetInputState(CW::SHIFT)) {
+                        dev_pos.y -= 0.1f;
+                    }
                 }
             }
 
@@ -254,7 +254,20 @@ namespace CWEditor {
             ImGui::End();
         }
         {
+/*
+                CW::Material mat = {};
+                mat.albedo_color = vec3s { 0.0f, 0.0f, 1.0f };
+                mat.albedo = CW::AssetManager::Get()->GetTextureIndex("brick/brickwall.png");
+                mat.normal_map = CW::AssetManager::Get()->GetDefaultTextureIndex();
+                mat.specular_map = CW::AssetManager::Get()->GetDefaultSpecularTextureIndex();
+                CW::AssetManager::Get()->CreateAndLoadMaterialAsset("Material1.mat", mat);
+*/
+
             ImGui::Begin("Assets");
+            RenderAssetCreationPopup();
+            if (ImGui::IsMouseClicked(ImGuiMouseButton_Right) && (ImGui::IsWindowHovered() || ImGui::IsAnyItemHovered())) {
+                OpenAssetCreationPopup();
+            }
             RenderAssets();
             ImGui::End();
         }
@@ -265,7 +278,7 @@ namespace CWEditor {
         }
         {
             ImGui::Begin("Debug View");
-            ImGui::SetWindowFontScale(1.3f);
+            ImGui::SetWindowFontScale(1.0f);
             ImGui::Text("Project options");
             if (ImGui::Button("Save project")) {
                 cogwheel->GetProjectManager()->SaveProject();

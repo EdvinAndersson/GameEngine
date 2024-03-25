@@ -55,7 +55,7 @@ namespace CWEditor {
             
             //Assets View
             AssetsBuilder *assets_builder;
-            vec2s asset_view_size = { 70.0f, 100.0f };
+            vec2s asset_view_size = { 80.0f, 110.0f };
             size_t current_asset_folder_hash;
 
             bool show_project_settings = false;
