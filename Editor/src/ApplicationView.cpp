@@ -254,15 +254,6 @@ namespace CWEditor {
             ImGui::End();
         }
         {
-/*
-                CW::Material mat = {};
-                mat.albedo_color = vec3s { 0.0f, 0.0f, 1.0f };
-                mat.albedo = CW::AssetManager::Get()->GetTextureIndex("brick/brickwall.png");
-                mat.normal_map = CW::AssetManager::Get()->GetDefaultTextureIndex();
-                mat.specular_map = CW::AssetManager::Get()->GetDefaultSpecularTextureIndex();
-                CW::AssetManager::Get()->CreateAndLoadMaterialAsset("Material1.mat", mat);
-*/
-
             ImGui::Begin("Assets");
             RenderAssetCreationPopup();
             if (ImGui::IsMouseClicked(ImGuiMouseButton_Right) && ImGui::IsWindowHovered()) {
