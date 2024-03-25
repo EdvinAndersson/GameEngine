@@ -195,4 +195,38 @@ namespace CWEditor {
         char title[128] = "Asset Popup"; 
         ImGui::OpenPopup(title);   
     }
+    inline bool RenderAssetCreationPopup(){
+        bool flags = ImGuiPopupFlags_None;
+        bool asset_update = false;
+
+        if (ImGui::BeginPopupContextItem("Asset Creation", flags)) { 
+            
+            if (ImGui::Button("New Script")){
+                ImGui::CloseCurrentPopup();
+            }
+            if (ImGui::Button("New Material")){
+                CW::Material mat = {};
+                mat.albedo_color = vec3s { 1.0f, 1.0f, 1.0f };
+                mat.albedo = CW::AssetManager::Get()->GetDefaultTextureIndex();
+                mat.normal_map = CW::AssetManager::Get()->GetDefaultTextureIndex();
+                mat.specular_map = CW::AssetManager::Get()->GetDefaultSpecularTextureIndex();
+                CW::AssetManager::Get()->CreateAndLoadMaterialAsset("Material1.mat", mat);
+
+                asset_update = true;
+                ImGui::CloseCurrentPopup();
+            }
+
+                
+            if (ImGui::Button("Close")) {
+                ImGui::CloseCurrentPopup();
+            }
+
+            ImGui::EndPopup();
+        }
+
+        return asset_update;
+    }
+    inline void OpenAssetCreationPopup() {
+        ImGui::OpenPopup("Asset Creation");
+    }
 }
