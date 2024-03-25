@@ -368,6 +368,7 @@ namespace CWEditor {
                     cogwheel->GetProjectManager()->SaveProject();
                 }
                 if(ImGui::MenuItem("Export project")){
+                    cogwheel->GetProjectManager()->SaveProject();
                     STARTUPINFOA si = {};
                     PROCESS_INFORMATION pi = {};
                     bool success = CreateProcessA(NULL, "export\\export.bat", NULL, NULL, false, 0, NULL, NULL, &si, &pi);
