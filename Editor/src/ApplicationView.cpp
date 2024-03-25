@@ -373,9 +373,6 @@ namespace CWEditor {
                 if (ImGui::MenuItem("Load Project")) {
                     cogwheel->GetProjectManager()->LoadProject((char*)GetProjectFilePath().c_str());
                 }
-                if (ImGui::MenuItem("Project Settings")) {
-                    ShowProjectSettings(true);
-                }
                 if(ImGui::MenuItem("Save project")){
                     cogwheel->GetProjectManager()->SaveProject();
                 }
@@ -385,6 +382,9 @@ namespace CWEditor {
                     bool success = CreateProcessA(NULL, "export\\export.bat", NULL, NULL, false, 0, NULL, NULL, &si, &pi);
                     
                     CW_ASSERT(success != 0, "Could not build the game!");
+                }
+                if (ImGui::MenuItem("Project Settings")) {
+                    ShowProjectSettings(true);
                 }
                 if (ImGui::MenuItem("Close"))
                     ImGui::CloseCurrentPopup();
