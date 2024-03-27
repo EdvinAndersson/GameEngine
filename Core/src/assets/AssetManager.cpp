@@ -224,7 +224,18 @@ namespace CW {
 
         fclose(file);
     }
+    void AssetManager::DeleteMaterial(MaterialIndex material_index) {
+        Material *material = loaded_materials[material_index];
+        loaded_materials.erase(material_index);
 
+        char full_path[1024] = {};
+        strcpy(full_path, assets_path);
+        strcat(full_path, "/");
+        strcat(full_path, material->asset_path);
+        DeleteFileA(full_path);
+
+        delete material;
+    }
     void AssetManager::CreateAndLoadMaterialAsset(char *path, Material material) {
         char full_path[1024] = {};
         strcpy(full_path, assets_path);

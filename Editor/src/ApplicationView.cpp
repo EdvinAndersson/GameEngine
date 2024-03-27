@@ -215,7 +215,7 @@ namespace CWEditor {
                     node_clicked = i;
                 }
                 
-                if(ShowPopup(game_object)){
+                if (ShowPopup(game_object)) {
                     node_clicked = i;
                 }
                 if (node_clicked != -1) {
@@ -255,9 +255,12 @@ namespace CWEditor {
         }
         {
             ImGui::Begin("Assets");
-            RenderAssetCreationPopup();
-            if (ImGui::IsMouseClicked(ImGuiMouseButton_Right) && ImGui::IsWindowHovered()) {
+            bool asset_update = RenderAssetCreationPopup();
+            if (asset_update) assets_builder->Refresh();
+
+            if (ImGui::IsMouseClicked(ImGuiMouseButton_Right) && ImGui::IsWindowHovered(ImGuiHoveredFlags_ChildWindows)) {
                 OpenAssetCreationPopup();
+                selected_asset_info = 0;
             }
             RenderAssets();
             ImGui::End();
@@ -476,8 +479,11 @@ namespace CWEditor {
                     is_clicked = false;
                 }
             }
-            if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None))
-            {
+            if (ImGui::IsItemClicked(ImGuiMouseButton_Right)) {
+                selected_asset_info = &asset_info;
+            }
+
+            if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None)) {
                 ImGui::SetDragDropPayload(GetDragDropType(asset_info.asset_type), &asset_info.asset_index, sizeof(size_t));
                 ImGui::Text("Drag");
                 ImGui::EndDragDropSource();
@@ -492,7 +498,10 @@ namespace CWEditor {
             if (next_button < window_visible)
                 ImGui::SameLine();
 
-            if (is_clicked) return;
+            if (is_clicked) {
+                selected_asset_info = 0;
+                return;
+            }
         }
     }
     void ApplicationView::RenderComponents(){
@@ -645,7 +654,7 @@ namespace CWEditor {
                 Console::Log("Added a new GameObject");
                 ImGui::CloseCurrentPopup();
             }
-            if (ImGui::Button("close") || enter_pressed) {
+            if (ImGui::Button("Close") || enter_pressed) {
                 Console::Log(LogLevel::LOG_WARNING, "Closed popup");
                 ImGui::CloseCurrentPopup();
             }
@@ -653,6 +662,65 @@ namespace CWEditor {
             ImGui::EndPopup();
         }
         return is_clicked;
+    }
+    bool ApplicationView::RenderAssetCreationPopup() {
+        bool flags = ImGuiPopupFlags_None;
+        bool asset_update = false;
+
+        if (ImGui::BeginPopupContextItem("Asset Creation", flags)) { 
+            if (!selected_asset_info) {
+                if (ImGui::Button("New Script")){
+                    ImGui::CloseCurrentPopup();
+                }
+                if (ImGui::BeginPopupContextItem("New_Material_Popup")){
+                    static char buf1[48] = ""; 
+
+                    ImGui::Text("Material Name: ");
+
+                    ImGui::PushItemWidth(-FLT_EPSILON);
+                    ImGui::InputText("Material", buf1, 32);
+                    ImGui::PopItemWidth();
+
+                    if(window->GetInputState(CW::KeyCode::RETURN)){
+                        CW::Material mat = {};
+                        mat.albedo_color = vec3s { 1.0f, 1.0f, 1.0f };
+                        mat.albedo = CW::AssetManager::Get()->GetDefaultTextureIndex();
+                        mat.normal_map = CW::AssetManager::Get()->GetDefaultTextureIndex();
+                        mat.specular_map = CW::AssetManager::Get()->GetDefaultSpecularTextureIndex();
+                        strcat(buf1, ".mat");
+                        CW::AssetManager::Get()->CreateAndLoadMaterialAsset(buf1, mat);
+
+                        asset_update = true;
+                        ImGui::CloseCurrentPopup();
+                    }
+                    ImGui::EndPopup(); 
+                }
+
+                if (ImGui::Button("New Material"))
+                    ImGui::OpenPopup("New_Material_Popup");
+            } else {
+                if (ImGui::Button("Delete")) {
+                    selected_asset.asset_index = 0;
+                    asset_update = true;
+                    ImGui::CloseCurrentPopup();
+
+                    switch (selected_asset_info->asset_type)
+                    {
+                        case AssetType::MATERIAL: {
+                            CW::AssetManager::Get()->DeleteMaterial(selected_asset_info->asset_index);
+                        } break;
+                    }
+                }
+            }
+                
+            if (ImGui::Button("Close")) {
+                ImGui::CloseCurrentPopup();
+            }
+
+            ImGui::EndPopup();
+        }
+
+        return asset_update;
     }
     void ApplicationView::RenderProjectSettings() {
         ImGui::SetNextWindowSize(ImVec2(500, 440), ImGuiCond_FirstUseEver);

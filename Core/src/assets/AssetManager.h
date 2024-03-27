@@ -35,6 +35,7 @@ namespace CW {
             inline TextureData* GetTextureData(TextureIndex texture) { return loaded_textures[texture]; }
 
             void LoadMaterial(char *path);
+            void DeleteMaterial(MaterialIndex material_index);
             void CreateAndLoadMaterialAsset(char *path, Material material);
             Material* GetMaterial(MaterialIndex material_index);
             MaterialIndex GetMaterialIndex(char *path);

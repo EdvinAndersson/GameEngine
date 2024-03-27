@@ -38,6 +38,7 @@ namespace CWEditor {
             void RenderComponents();
             void RenderAssetInspector();
             void RenderProjectSettings();
+            bool RenderAssetCreationPopup();
 
             inline void ShowProjectSettings(bool show) { show_project_settings = show; }
             bool ShowPopup(CW::GameObject game_object);
@@ -57,6 +58,7 @@ namespace CWEditor {
             AssetsBuilder *assets_builder;
             vec2s asset_view_size = { 80.0f, 110.0f };
             size_t current_asset_folder_hash;
+            AssetInfo *selected_asset_info;
 
             bool show_project_settings = false;
 
