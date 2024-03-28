@@ -320,7 +320,57 @@ namespace CW {
 
         model->mesh_index = hashed_path;
     }
+    void AssetManager::CreateScript(char *path, char *script_name) {
+        size_t hashed_path = HashString(path);
 
+        if (loaded_scripts.find(hashed_path) != loaded_scripts.end()){
+            printf("Script already exist with that name! %s\n", path);
+            return;
+        }
+        char full_path[1024] = {};
+
+        strcpy(full_path, assets_path);
+        strcat(full_path, "/");
+        strcat(full_path, path);
+        strcat(full_path, script_name);
+        strcat(full_path, ".h");
+        
+        HANDLE file_handle = CreateFileA(full_path, GENERIC_WRITE, 0, NULL, CREATE_NEW, FILE_ATTRIBUTE_NORMAL, NULL);
+        CW_ASSERT(file_handle != INVALID_HANDLE_VALUE, "Could not create header file...");
+        CloseHandle(file_handle);
+
+        FILE *file = fopen(full_path, "w");
+        fprintf(file, "#pragma once\n\n");
+        fprintf(file, "#include \"Core/src/ecs/GameObject.h\"\n");
+        fprintf(file, "#include \"Core/src/ecs/Components.h\"\n\n");
+        fprintf(file, "struct %s {\n", script_name);
+        fprintf(file, "};\n\n");
+        fprintf(file, "extern CW::ComponentManager *_component_manager;\n");
+        fprintf(file, "extern CW::EntityManager *_entity_manager;\n");
+        fprintf(file, "void %s_OnAwake(CW::GameObject game_object, %s& comp);\n", script_name, script_name);
+        fprintf(file, "void %s_OnStart(CW::GameObject game_object, %s& comp);\n", script_name, script_name);
+        fprintf(file, "void %s_OnUpdate(CW::GameObject game_object, %s& comp);\n", script_name, script_name);
+        fprintf(file, "void %s_OnDestroy(CW::GameObject game_object, %s& comp);\n", script_name, script_name);
+        fclose(file);
+
+        strcpy(full_path, assets_path);
+        strcat(full_path, "/");
+        strcat(full_path, path);
+        strcat(full_path, script_name);
+        strcat(full_path, ".cpp");
+        
+        file_handle = CreateFileA(full_path, GENERIC_WRITE, 0, NULL, CREATE_NEW, FILE_ATTRIBUTE_NORMAL, NULL);
+        CW_ASSERT(file_handle != INVALID_HANDLE_VALUE, "Could not create source file...");
+        CloseHandle(file_handle);
+
+        file = fopen(full_path, "w");
+        fprintf(file, "#include \"%s.h\"\n\n", script_name);
+        fprintf(file, "void %s_OnAwake(CW::GameObject game_object, %s& comp) {\n}\n", script_name, script_name);
+        fprintf(file, "void %s_OnStart(CW::GameObject game_object, %s& comp) {\n}\n", script_name, script_name);
+        fprintf(file, "void %s_OnUpdate(CW::GameObject game_object, %s& comp) {\n}\n", script_name, script_name);
+        fprintf(file, "void %s_OnDestroy(CW::GameObject game_object, %s& comp) {\n}\n", script_name, script_name);
+        fclose(file);
+    }
     void AssetManager::LoadScript(char *path) {
         size_t hashed_path = HashString(path);
 
@@ -331,8 +381,12 @@ namespace CW {
 
         ScriptData *script_data = new ScriptData();
         strcpy(script_data->asset_path, path);
-        char *name = strchr(path, '/') + 1;
-        strncpy(script_data->name, name, strlen(name)-2); //remove .h
+        char *name = strchr(path, '/');
+        if (name)
+            strncpy(script_data->name, name+1, strlen(name+1)-2); //remove .h
+        else
+            strncpy(script_data->name, path, strlen(path)-2); //remove .h
+    
         printf("name: %s\n", script_data->name);
 
         loaded_scripts.insert({ hashed_path, script_data });

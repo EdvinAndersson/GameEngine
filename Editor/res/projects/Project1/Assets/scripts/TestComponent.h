@@ -2,7 +2,6 @@
 
 #include "Core/src/ecs/GameObject.h"
 #include "Core/src/ecs/Components.h"
-#include "Editor/src/Console.h"
 
 struct TestComponent {
 };

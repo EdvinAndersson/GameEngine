@@ -48,6 +48,7 @@ namespace CW {
             inline ModelIndex GetModelIndex(char *path) { return HashString(path); }
             Model* GetModel(ModelIndex model_index) { return loaded_models[model_index]; }
 
+            void CreateScript(char *path, char *script_name);
             void LoadScript(char *path);
 
             inline TextureIndex GetDefaultTextureIndex() { return default_texture_index; }

@@ -669,7 +669,9 @@ namespace CWEditor {
 
         if (ImGui::BeginPopupContextItem("Asset Creation", flags)) { 
             if (!selected_asset_info) {
-                if (ImGui::Button("New Script")){
+                if (ImGui::Button("New Script")) {
+                    CW::AssetManager::Get()->CreateScript("scripts/", "PlayerMovement");
+
                     ImGui::CloseCurrentPopup();
                 }
                 if (ImGui::BeginPopupContextItem("New_Material_Popup")){
